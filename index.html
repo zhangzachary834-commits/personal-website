@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zachary Zhang — Personal Portfolio &amp; Dimension of Thought</title>
+    <meta name="description" content="Personal website and systems research portfolio of Zachary Zhang (Computer Science &amp; Mathematics) and Dimension of Thought platform.">
+    <meta name="author" content="Zachary Zhang">
+    <meta name="keywords" content="Zachary Zhang, Earthcall, C++20, WebGPU, Dimension of Thought, Ontology, Robotics, OpenVLA">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Zachary Zhang — Portfolio &amp; Dimension of Thought">
+    <meta property="og:description" content="Computer Science &amp; Mathematics · Systems Architect · Creator of Earthcall and Dimension of Thought.">
+    <meta property="og:image" content="assets/dimension-emblem.jpg">
+    <meta property="og:url" content="https://zhangzachary834-commits.github.io">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Zachary Zhang — Portfolio &amp; Dimension of Thought">
+    <meta name="twitter:description" content="Computer Science &amp; Mathematics · Systems Architect · Creator of Earthcall and Dimension of Thought.">
+    <meta name="twitter:image" content="assets/dimension-emblem.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+    <link rel="apple-touch-icon" href="assets/favicon.jpg">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
+
+    <!-- Top Site Navigation -->
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <!-- Top Left Mode Switcher Widget -->
+            <div class="nav-left-brand">
+                <div class="mode-switcher-pill" role="tablist" aria-label="Site View Mode Switcher">
+                    <button class="mode-btn active" id="mode-personal-btn" data-mode="personal" role="tab" aria-selected="true" title="Switch to Zachary Zhang's Personal &amp; Professional Portfolio">
+                        <span class="mode-btn-icon">👤</span>
+                        <span class="mode-btn-text">Zachary Zhang</span>
+                    </button>
+                    <button class="mode-btn" id="mode-dimension-btn" data-mode="dimension" role="tab" aria-selected="false" title="Switch to Dimension of Thought Platform">
+                        <span class="mode-btn-icon">✧</span>
+                        <span class="mode-btn-text">Dimension of Thought</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Nav Links for Personal Mode -->
+            <nav class="nav-menu" id="nav-menu-personal" aria-label="Personal Portfolio Navigation">
+                <ul class="nav-links">
+                    <li><a href="#p-home" class="nav-link active">Home</a></li>
+                    <li><a href="#p-now" class="nav-link">Now</a></li>
+                    <li><a href="#p-earthcall" class="nav-link">Earthcall</a></li>
+                    <li><a href="#p-work" class="nav-link">Projects</a></li>
+                    <li><a href="#p-about" class="nav-link">About</a></li>
+                    <li><a href="#p-skills" class="nav-link">Skills</a></li>
+                    <li><a href="#p-contact" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+
+            <!-- Dynamic Nav Links for Dimension Mode -->
+            <nav class="nav-menu" id="nav-menu-dimension" aria-label="Dimension of Thought Navigation" style="display: none;">
+                <ul class="nav-links">
+                    <li><a href="#d-home" class="nav-link">Home</a></li>
+                    <li><a href="story.html" class="nav-link">Story</a></li>
+                    <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
+                    <li><a href="library.html" class="nav-link">The Library</a></li>
+                    <li><a href="ecosystem.html" class="nav-link">Ecosystem</a></li>
+                    <li><a href="contact.html" class="nav-link">Dialogue</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <button id="terminal-toggle-btn" class="icon-btn" title="Open Interactive CLI (press ` )" aria-label="Open Interactive CLI">
+                    <span class="cli-glyph" aria-hidden="true">&gt;_</span>
+                    <span class="btn-label">CLI</span>
+                </button>
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light mode">
+                    <span id="theme-icon" aria-hidden="true">☽</span>
+                </button>
+                <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Vertical Section Scroll Navigator (Personal Mode) -->
+    <nav class="vertical-scroll-nav" id="v-nav-personal" aria-label="Personal Section Fast Navigation">
+        <ul class="v-nav-list">
+            <li class="v-nav-item">
+                <a href="#p-home" class="v-nav-link active" data-target="p-home" aria-label="Jump to Home">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Home</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#p-now" class="v-nav-link" data-target="p-now" aria-label="Jump to Now">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Now</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#p-earthcall" class="v-nav-link" data-target="p-earthcall" aria-label="Jump to Earthcall">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Earthcall</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#p-work" class="v-nav-link" data-target="p-work" aria-label="Jump to Projects">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Projects</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#p-about" class="v-nav-link" data-target="p-about" aria-label="Jump to About">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">About</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#p-skills" class="v-nav-link" data-target="p-skills" aria-label="Jump to Skills">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Skills</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#p-contact" class="v-nav-link" data-target="p-contact" aria-label="Jump to Contact">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Vertical Section Scroll Navigator (Dimension Mode) -->
+    <nav class="vertical-scroll-nav" id="v-nav-dimension" aria-label="Dimension Section Fast Navigation" style="display: none;">
+        <ul class="v-nav-list">
+            <li class="v-nav-item">
+                <a href="#d-home" class="v-nav-link active" data-target="d-home" aria-label="Jump to Dimension Home">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Home</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#d-story" class="v-nav-link" data-target="d-story" aria-label="Jump to The Story">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">The Story</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#d-manifesto" class="v-nav-link" data-target="d-manifesto" aria-label="Jump to Manifesto">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Manifesto</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#d-library" class="v-nav-link" data-target="d-library" aria-label="Jump to The Library">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">The Library</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#d-ecosystem" class="v-nav-link" data-target="d-ecosystem" aria-label="Jump to Ecosystem">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Ecosystem</span>
+                </a>
+            </li>
+            <li class="v-nav-item">
+                <a href="#d-contact" class="v-nav-link" data-target="d-contact" aria-label="Jump to Dialogue">
+                    <span class="v-nav-dot"></span>
+                    <span class="v-nav-label">Dialogue</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <!-- ===================================================================
+             MODE 1: ZACHARY ZHANG — PERSONAL & PROFESSIONAL PORTFOLIO
+             =================================================================== -->
+        <div id="mode-personal-view" class="site-mode-view active-mode">
+            <!-- Personal Hero -->
+            <section id="p-home" class="hero section">
+                <canvas id="field-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
+                <div class="container hero-container">
+                    <p class="hero-kicker">
+                        <span class="pulse-dot" aria-hidden="true"></span>
+                        CS &amp; Mathematics · Systems Architecture · Ontology
+                    </p>
+
+                    <h1 class="hero-title">
+                        Software that represents<br>
+                        beings <em>as they actually are</em>.
+                    </h1>
+
+                    <div class="hero-typewriter-container" aria-live="polite">
+                        <span class="typewriter-prefix">&gt;</span>
+                        <span id="p-typewriter-text" class="typewriter-text"></span>
+                        <span class="cursor" aria-hidden="true">▍</span>
+                    </div>
+
+                    <p class="hero-bio">
+                        I’m <strong>Zachary Zhang</strong>. I work at the intersection of computer science and mathematics, building
+                        <a href="#p-earthcall" class="inline-link">Earthcall</a> — a Person-centered ontology that orders the engine attached to it.
+                        Alongside low-level systems, I work on robotics perception and machine learning.
+                    </p>
+
+                    <div class="hero-cta-group">
+                        <a href="#p-earthcall" class="btn btn-primary">Enter Earthcall <span aria-hidden="true">→</span></a>
+                        <a href="#p-work" class="btn btn-secondary">Selected Work</a>
+                        <button class="btn btn-ghost copy-email-btn" data-email="zhangzachary834@gmail.com" title="Copy email address">
+                            Copy Email
+                        </button>
+                    </div>
+
+                    <ul class="hero-stats" aria-label="Key Highlights">
+                        <li class="stat-card">
+                            <span class="stat-value">Earthcall</span>
+                            <span class="stat-label">Ontology that orders its engine</span>
+                        </li>
+                        <li class="stat-card">
+                            <span class="stat-value">C++20 · WebGPU</span>
+                            <span class="stat-label">Runtime Laws, OntoMath, WASM</span>
+                        </li>
+                        <li class="stat-card">
+                            <span class="stat-value">Person, Not User</span>
+                            <span class="stat-label">Agents act. Humans are Persons.</span>
+                        </li>
+                        <li class="stat-card">
+                            <span class="stat-value">CS &amp; Mathematics</span>
+                            <span class="stat-label">Systems &amp; Ontology Architect</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="#p-now" class="scroll-indicator" aria-label="Scroll to Now">
+                    <span>Now</span>
+                    <span class="scroll-chevron" aria-hidden="true"></span>
+                </a>
+            </section>
+
+            <!-- Personal Now Section -->
+            <section id="p-now" class="section now-section">
+                <div class="container">
+                    <div class="section-header left">
+                        <span class="section-tag">00 // Present Tense</span>
+                        <h2 class="section-title">What I’m Building Now</h2>
+                        <p class="section-subtitle">Active systems engineering, lab research, and software craft.</p>
+                    </div>
+
+                    <div class="now-grid">
+                        <article class="now-card now-featured">
+                            <p class="now-label">Flagship</p>
+                            <h3>Earthcall’s Person-Facing Authoring Surface</h3>
+                            <p>
+                                Turning Creator Console tools — brush, 3D select, morph, snap, save/load — into First Movers
+                                so authoring is not a bolted-on “game UI.” Laws can be switched off; default locomotion is
+                                not a lock. The Person Interface is the world, not a widget kit sitting on top of it.
+                            </p>
+                            <ul class="now-chips">
+                                <li>First Movers</li>
+                                <li>GUI as Law</li>
+                                <li>Shape Generator</li>
+                                <li>World Saves</li>
+                            </ul>
+                        </article>
+                        <article class="now-card">
+                            <p class="now-label">Robotics</p>
+                            <h3>OpenVLA on a JAKA Manipulator</h3>
+                            <p>
+                                Vision-language-action inference (OpenVLA-OFT) from macOS, executed on remote CUDA,
+                                with Intel RealSense depth, AprilTag pose calibration, and a live teleoperation dashboard for a JAKA manipulator.
+                            </p>
+                        </article>
+                        <article class="now-card">
+                            <p class="now-label">How I Work</p>
+                            <h3>One Person, Many First Movers</h3>
+                            <p>
+                                I orchestrate multiple AI coding agents against the same ontology. They write C++, they coordinate, but they
+                                are not Persons. I am. That distinction is load-bearing in Earthcall, and in how I actually build.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Personal Earthcall Section -->
+            <section id="p-earthcall" class="section earthcall-section">
+                <div class="container">
+                    <div class="section-header left">
+                        <span class="section-tag">01 // Flagship Substrate</span>
+                        <h2 class="section-title">Earthcall</h2>
+                        <p class="section-subtitle">A Person-centered ontology. An engine is attached to it — not the other way around.</p>
+                    </div>
+
+                    <blockquote class="pull-quote">
+                        “Unlike most of software history, Earthcall is built on a foundational conviction that all beings must be represented
+                        not by illusions hiding a teleologically indifferent operating system, but rather according to what they are —
+                        their actual, innate structure in reality.”
+                        <cite>— Earthcall Manifesto</cite>
+                    </blockquote>
+
+                    <div class="earthcall-layout">
+                        <div class="earthcall-copy">
+                            <p>
+                                Earthcall is not a game engine with philosophy in the docs. Domain nouns are not C++ classes.
+                                A tree is not a <code>Tree</code>. A robot is not a <code>RobotEntity</code>. Beings are authored in-world
+                                from primitives every other subsystem can see, then governed by <strong>Laws</strong> — runtime mathematical
+                                rules a Person writes, not hardcoded collisions wearing a story.
+                            </p>
+                            <p>
+                                The top-level source tree <em>is</em> the ontology:
+                                <code>Person</code>, <code>ConstructedBeing</code>, <code>Relation</code>, <code>Singularity</code>,
+                                <code>ZonesOfEarth</code>, <code>Identity</code>. Adding a folder is an ontological claim.
+                            </p>
+                            <p>
+                                People author behavior at runtime. Instead of shipping “move object X to Y,” Earthcall compiles through a Rete-style Law network expressed in
+                                <strong>OntoMath</strong> — one mathematical substrate for geometry, physics, and authored change.
+                            </p>
+                            <p>
+                                Rendering is a modern WebGPU pipeline with a C++20 substrate, WASM, embedded React/Vite Person surface, and Python foreign IPC.
+                            </p>
+                            <div class="project-links-row">
+                                <a class="btn btn-primary" href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer">View Repository ↗</a>
+                                <a class="btn btn-ghost" href="https://github.com/zhangzachary834-commits/Earthcall/blob/main/docs/core/EarthcallOurverse.md" target="_blank" rel="noopener noreferrer">Read Manifesto ↗</a>
+                            </div>
+                        </div>
+
+                        <aside class="ontology-stack" aria-label="Earthcall Substrate Stack">
+                            <h3>Substrate Order</h3>
+                            <ol class="stack-list">
+                                <li>
+                                    <span class="stack-name">Person</span>
+                                    <span class="stack-desc">A human being. Body belongs here. AI is never this.</span>
+                                </li>
+                                <li>
+                                    <span class="stack-name">Ontology</span>
+                                    <span class="stack-desc">Beings, Relations, Formations, Identity, Zones.</span>
+                                </li>
+                                <li>
+                                    <span class="stack-name">Laws</span>
+                                    <span class="stack-desc">Runtime-authored math. First Movers can be switched off.</span>
+                                </li>
+                                <li>
+                                    <span class="stack-name">OntoMath</span>
+                                    <span class="stack-desc">One language for shape, change, collision, telos.</span>
+                                </li>
+                                <li>
+                                    <span class="stack-name">Singularity</span>
+                                    <span class="stack-desc">Ground of the machine: Kernel, channels, permissions.</span>
+                                </li>
+                                <li>
+                                    <span class="stack-name">Vessel</span>
+                                    <span class="stack-desc">C++20 · WebGPU · WASM · React · Python IPC</span>
+                                </li>
+                            </ol>
+                        </aside>
+                    </div>
+
+                    <div class="refusals">
+                        <h3>Load-Bearing Refusals</h3>
+                        <p class="refusals-lead">These are not style rules. They are the architecture.</p>
+                        <div class="refusal-grid">
+                            <article>
+                                <h4>No Domain Class</h4>
+                                <p>No <code>Tree</code>, <code>Vehicle</code>, or hardcoded entity classes. What a thing is is authored in-world.</p>
+                            </article>
+                            <article>
+                                <h4>The Tree is the Ontology</h4>
+                                <p>No arbitrary subsystem directories. Foreign hardware/software live under Singularity as channels.</p>
+                            </article>
+                            <article>
+                                <h4>Person Means Human</h4>
+                                <p>A Person is an actual human. Generative models are First Movers or Objects; they do not get a Body.</p>
+                            </article>
+                            <article>
+                                <h4>No Black Box</h4>
+                                <p>Every field a being carries is a registered property path. Unregistered is ungoverned.</p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Personal Work / Projects Section -->
+            <section id="p-work" class="section work-section">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">02 // Selected Work</span>
+                        <h2 class="section-title">Systems &amp; Projects</h2>
+                        <p class="section-subtitle">Robotics in the lab, computational geometry, and tools that serve real people.</p>
+                    </div>
+
+                    <div class="project-filters" role="tablist" aria-label="Filter Projects">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="robotics">Robotics</button>
+                        <button class="filter-btn" data-filter="systems">Systems</button>
+                        <button class="filter-btn" data-filter="tools">Tools</button>
+                    </div>
+
+                    <div class="projects-grid">
+                        <article class="project-card" data-category="robotics">
+                            <div class="project-card-header">
+                                <div>
+                                    <h3>Vision Pipeline &amp; JAKA Arm</h3>
+                                    <p class="project-role">Spatial Perception · Teleoperation · VLA</p>
+                                </div>
+                            </div>
+                            <p class="project-description">
+                                A full stack for manipulator perception and control: OpenVLA-OFT for vision-language-action,
+                                Intel RealSense color+depth with AprilTag pose calibration, and a JAKA dashboard jogging the arm from live tracker poses.
+                            </p>
+                            <div class="tech-tag-list">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">PyTorch</span>
+                                <span class="tech-tag">OpenVLA-OFT</span>
+                                <span class="tech-tag">Intel RealSense</span>
+                                <span class="tech-tag">AprilTag</span>
+                                <span class="tech-tag">JAKA SDK</span>
+                            </div>
+                        </article>
+
+                        <article class="project-card" data-category="systems">
+                            <div class="project-card-header">
+                                <div>
+                                    <h3>SAT Physics &amp; Collision Engine</h3>
+                                    <p class="project-role">Computational Geometry · Physics</p>
+                                </div>
+                            </div>
+                            <p class="project-description">
+                                Continuous 3D convex polyhedron collision detection and contact manifold generation implemented using the Separating Axis Theorem (SAT) in modern C++20.
+                            </p>
+                            <div class="tech-tag-list">
+                                <span class="tech-tag">C++20</span>
+                                <span class="tech-tag">Linear Algebra</span>
+                                <span class="tech-tag">Geometry</span>
+                                <span class="tech-tag">WebGPU</span>
+                            </div>
+                        </article>
+
+                        <article class="project-card" data-category="tools">
+                            <div class="project-card-header">
+                                <div>
+                                    <h3>TeacherOps</h3>
+                                    <p class="project-role">Human-in-the-Loop Operations</p>
+                                </div>
+                                <a href="https://github.com/zhangzachary834-commits/teacherops" target="_blank" rel="noopener noreferrer" class="proj-link-btn">GitHub ↗</a>
+                            </div>
+                            <p class="project-description">
+                                A local FastAPI + SQLite assistant for a family tutoring hub: teacher matching, parent inquiries, follow-ups, and drafted coordination messages. Automation stops where human judgment begins.
+                            </p>
+                            <div class="tech-tag-list">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">FastAPI</span>
+                                <span class="tech-tag">SQLite</span>
+                                <span class="tech-tag">Uvicorn</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Personal About Section -->
+            <section id="p-about" class="section about-section">
+                <div class="container">
+                    <div class="section-header left">
+                        <span class="section-tag">03 // Background</span>
+                        <h2 class="section-title">About &amp; Principles</h2>
+                        <p class="section-subtitle">Low-level systems, mathematical rigor, and a refusal to treat people as telemetry units.</p>
+                    </div>
+
+                    <div class="about-grid">
+                        <div class="about-text-column">
+                            <p class="lead-text">
+                                I am driven by a foundational question: how can software represent real substance and human intention with actual fidelity, instead of wrapping a teleologically indifferent machine in prettier objects?
+                            </p>
+                            <p>
+                                That question is why Earthcall exists, and why I build software that places the Person at the foundation. Alongside ontology, I work with linear algebra and vector calculus as working languages.
+                            </p>
+                            <p>
+                                I write C++ when the substrate must be honest. I write Python when a lab or an operations workflow needs something running immediately.
+                            </p>
+
+                            <dl class="quick-facts">
+                                <div class="fact-item">
+                                    <dt>Disciplines</dt>
+                                    <dd>Computer Science &amp; Mathematics</dd>
+                                </div>
+                                <div class="fact-item">
+                                    <dt>Primary Work</dt>
+                                    <dd>Ontology Architecture, WebGPU, Robotics Perception</dd>
+                                </div>
+                                <div class="fact-item">
+                                    <dt>Location</dt>
+                                    <dd>Los Angeles, CA</dd>
+                                </div>
+                                <div class="fact-item">
+                                    <dt>Email</dt>
+                                    <dd><a href="mailto:zhangzachary834@gmail.com">zhangzachary834@gmail.com</a></dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="about-pillars-column">
+                            <h3 class="pillars-heading">How I Judge a System</h3>
+                            <article class="pillar-card">
+                                <div class="pillar-header">
+                                    <span class="pillar-num">01</span>
+                                    <h4>Ontology Before Engine</h4>
+                                </div>
+                                <p>If the folder tree, class names, or data formats lie about what a being is, no renderer can save it. Structure first; vessel second.</p>
+                            </article>
+                            <article class="pillar-card">
+                                <div class="pillar-header">
+                                    <span class="pillar-num">02</span>
+                                    <h4>Math as the Language of Law</h4>
+                                </div>
+                                <p>Movement, collision, and change are mathematical projections and manifolds. OntoMath is one language, not a pile of special cases.</p>
+                            </article>
+                            <article class="pillar-card">
+                                <div class="pillar-header">
+                                    <span class="pillar-num">03</span>
+                                    <h4>Reach is Total; Authority is Gated</h4>
+                                </div>
+                                <p>Hiding a field is not securing it. Kernel, Governable, Gated — one coherent permission story.</p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Personal Skills Section -->
+            <section id="p-skills" class="section skills-section">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">04 // Toolchain</span>
+                        <h2 class="section-title">Technical Arsenal</h2>
+                        <p class="section-subtitle">Specialization where the real systems live.</p>
+                    </div>
+
+                    <div class="skills-categories-grid">
+                        <article class="skill-category-card">
+                            <h3>Languages</h3>
+                            <ul class="skill-list">
+                                <li><span>C++20</span><span class="skill-level">Daily, Earthcall</span></li>
+                                <li><span>Python 3</span><span class="skill-level">Robotics, Tools</span></li>
+                                <li><span>JavaScript / TypeScript</span><span class="skill-level">Person Surface</span></li>
+                                <li><span>WGSL / GLSL</span><span class="skill-level">WebGPU Shaders</span></li>
+                                <li><span>HTML / CSS</span><span class="skill-level">Modern Dashboards</span></li>
+                            </ul>
+                        </article>
+                        <article class="skill-category-card">
+                            <h3>Systems &amp; Graphics</h3>
+                            <ul class="skill-list">
+                                <li><span>WebGPU</span><span class="skill-level">Earthcall Vessel</span></li>
+                                <li><span>CMake &amp; WASM</span><span class="skill-level">Native + Web</span></li>
+                                <li><span>POSIX / Linux / macOS</span><span class="skill-level">Substrate</span></li>
+                                <li><span>FlatBuffers / IPC</span><span class="skill-level">Foreign Interop</span></li>
+                            </ul>
+                        </article>
+                        <article class="skill-category-card">
+                            <h3>Math &amp; Robotics</h3>
+                            <ul class="skill-list">
+                                <li><span>Linear Algebra &amp; Vector Calculus</span><span class="skill-level">Working Language</span></li>
+                                <li><span>Rete Laws / OntoMath</span><span class="skill-level">Earthcall Core</span></li>
+                                <li><span>OpenVLA, RealSense, AprilTag</span><span class="skill-level">Lab Stack</span></li>
+                                <li><span>JAKA SDK Teleoperation</span><span class="skill-level">Hardware Loop</span></li>
+                            </ul>
+                        </article>
+                        <article class="skill-category-card">
+                            <h3>Process &amp; Web</h3>
+                            <ul class="skill-list">
+                                <li><span>React / Vite</span><span class="skill-level">UI Surface</span></li>
+                                <li><span>FastAPI &amp; SQLite</span><span class="skill-level">TeacherOps</span></li>
+                                <li><span>Git &amp; GitHub</span><span class="skill-level">Daily</span></li>
+                                <li><span>Multi-Agent Orchestration</span><span class="skill-level">First Movers</span></li>
+                            </ul>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Personal Contact Section -->
+            <section id="p-contact" class="section contact-section">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">05 // Connect</span>
+                        <h2 class="section-title">Get in Touch</h2>
+                        <p class="section-subtitle">Systems engineering, ontology, robotics, or research collaboration.</p>
+                    </div>
+
+                    <div class="contact-wrapper">
+                        <div class="contact-card-main">
+                            <div class="contact-links-grid">
+                                <div class="contact-item-card">
+                                    <div class="contact-item-info">
+                                        <span class="item-label">Direct Email</span>
+                                        <a href="mailto:zhangzachary834@gmail.com" class="item-link">zhangzachary834@gmail.com</a>
+                                    </div>
+                                    <button class="btn btn-small btn-primary copy-email-btn" data-email="zhangzachary834@gmail.com">Copy Email</button>
+                                </div>
+                                <div class="contact-item-card">
+                                    <div class="contact-item-info">
+                                        <span class="item-label">GitHub</span>
+                                        <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="item-link">zhangzachary834-commits</a>
+                                    </div>
+                                    <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Explore ↗</a>
+                                </div>
+                                <div class="contact-item-card">
+                                    <div class="contact-item-info">
+                                        <span class="item-label">LinkedIn</span>
+                                        <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="item-link">zachary-of-zhang</a>
+                                    </div>
+                                    <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Connect ↗</a>
+                                </div>
+                            </div>
+
+                            <div class="quick-composer">
+                                <h3>Send a Quick Note</h3>
+                                <p class="composer-desc">Opens your mail client with a pre-filled draft directly to Zach.</p>
+                                <form id="personal-email-form" class="composer-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="p-form-name">Your Name</label>
+                                            <input type="text" id="p-form-name" name="name" placeholder="Ada Lovelace" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="p-form-subject">Subject</label>
+                                            <input type="text" id="p-form-subject" name="subject" placeholder="Earthcall / Systems / Collaboration" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="p-form-message">Message</label>
+                                        <textarea id="p-form-message" name="message" rows="4" placeholder="Hi Zachary — I saw your work on..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-submit">Open Pre-filled Email <span aria-hidden="true">→</span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+        <!-- ===================================================================
+             MODE 2: DIMENSION OF THOUGHT — LIFE CONNECTIONS & PHILOSOPHY PLATFORM
+             =================================================================== -->
+        <div id="mode-dimension-view" class="site-mode-view">
+            <!-- Dimension Hero -->
+            <section id="d-home" class="hero section">
+                <canvas id="constellation-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
+                <div class="container hero-container">
+                    <div class="hero-split-layout">
+                        <div class="hero-copy-column">
+                            <p class="hero-kicker">
+                                <span class="pulse-dot" aria-hidden="true"></span>
+                                Life Connections Platform · Holistic Digital Space
+                            </p>
+
+                            <h1 class="hero-title">
+                                The internet is many scattered stars.<br>
+                                Dimension of Thought seeks to form the <em>constellation</em>.
+                            </h1>
+
+                            <div class="hero-typewriter-container" aria-live="polite">
+                                <span class="typewriter-prefix">✧</span>
+                                <span id="d-typewriter-text" class="typewriter-text"></span>
+                                <span class="cursor" aria-hidden="true">▍</span>
+                            </div>
+
+                            <p class="hero-bio">
+                                Welcome to <strong>Dimension of Thought</strong>. More than a blog, forum, or academic journal — it is an open digital embodiment of human life, relationships, and deep thought. Created by <strong>Zachary Zhang</strong>, this space explores how digital power can bring us closer to real life, shaping technology after the mind, heart, and soul.
+                            </p>
+
+                            <div class="hero-cta-group">
+                                <a href="library.html" class="btn btn-primary">Explore The Library <span aria-hidden="true">→</span></a>
+                                <a href="manifesto.html" class="btn btn-secondary">Read The Manifesto</a>
+                                <a href="ecosystem.html" class="btn btn-ghost">Earthcall &amp; Initiatives</a>
+                                <button class="btn btn-ghost copy-email-btn" data-email="zhangzachary834@gmail.com" title="Copy email address">
+                                    Copy Email
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="hero-visual-column">
+                            <div class="emblem-showcase-card">
+                                <div class="emblem-glow-ring" aria-hidden="true"></div>
+                                <img src="assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="hero-emblem-img" width="280" height="280">
+                                <div class="emblem-caption">
+                                    <span class="emblem-tag">✧ Visual Emblem</span>
+                                    <p>The Living Word, The Quill, and The Cosmic Symphony</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="hero-stats" aria-label="Core Pillars">
+                        <li class="stat-card">
+                            <span class="stat-value">The Constellation</span>
+                            <span class="stat-label">Unifying fragmented communities into relational wholeness</span>
+                        </li>
+                        <li class="stat-card">
+                            <span class="stat-value">Narrative Continuum</span>
+                            <span class="stat-label">Reality as an interconnected tapestry of grand stories</span>
+                        </li>
+                        <li class="stat-card">
+                            <span class="stat-value">Writers of Light</span>
+                            <span class="stat-label">Storytelling and collaborative words from the heart</span>
+                        </li>
+                        <li class="stat-card">
+                            <span class="stat-value">Earthcall Substrate</span>
+                            <span class="stat-label">Person-centered computational ontology &amp; engine</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="#d-story" class="scroll-indicator" aria-label="Scroll to Story">
+                    <span>The Story</span>
+                    <span class="scroll-chevron" aria-hidden="true"></span>
+                </a>
+            </section>
+
+            <!-- Dimension Story Section -->
+            <section id="d-story" class="section story-section">
+                <div class="container">
+                    <div class="section-header left">
+                        <span class="section-tag">01 // Origin &amp; Vision</span>
+                        <h2 class="section-title">The Story of Dimension of Thought</h2>
+                        <p class="section-subtitle">From disconnected spheres of life to a digital embodiment of relationships.</p>
+                    </div>
+
+                    <div class="story-grid">
+                        <article class="story-card story-origin">
+                            <div class="story-card-tag">Origin Story</div>
+                            <h3 class="story-heading">Bringing Our Worlds Together</h3>
+                            <p class="story-quote">
+                                “Hey there. I'm Zach, the founder of Dimension of Thought. Originally, I created this space because the many communities in my life existed as isolated islands. My family didn't know my school very well, my school didn't know my church, and my church didn't know my family.”
+                            </p>
+                            <p>
+                                We live in a world where our identities are fractured across separate platforms and institutions. Over time, I realized this site’s true purpose: not merely to serve as a bulletin board, but to become a <strong>digital embodiment of life and relationships</strong>.
+                            </p>
+                            <div style="margin-top: auto; padding-top: 14px;">
+                                <a href="story.html" class="btn btn-primary btn-small">Read Full Story →</a>
+                            </div>
+                        </article>
+
+                        <article class="story-card story-construction">
+                            <div class="story-card-tag">Philosophy of Building</div>
+                            <h3 class="story-heading">Why We Publish the Construction Site</h3>
+                            <p class="story-quote">
+                                “You might wonder why so many ideas here are actively unfolding in the open. Ah, you'd be surprised at the reason why! It's because I believe there is much more to sharing than just polished and finished work.”
+                            </p>
+                            <p>
+                                I want to invite you directly into the process from the ground up. When you see the building being raised brick by brick, you are invited to become part of the vision. Every builder's heart matters.
+                            </p>
+                            <div class="story-footer-note">
+                                <span class="badge">Open Collaboration</span>
+                                <span>Soon, this will be our shared vision.</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dimension Manifesto Section -->
+            <section id="d-manifesto" class="section manifesto-section">
+                <div class="container">
+                    <div class="section-header left">
+                        <span class="section-tag">02 // Constitutional Manifesto</span>
+                        <h2 class="section-title">Elevating the Discussion</h2>
+                        <p class="section-subtitle">Beyond linear boxes and into the depth of the human person.</p>
+                    </div>
+
+                    <blockquote class="manifesto-pull-quote">
+                        “Here, we don't just think about how things work. We think about the very reality in which they work in the first place. True knowledge is knowledge that can be acted upon, brought into our lives, and makes life more beautiful and good. Good art is not merely to be admired, but to be lived.”
+                    </blockquote>
+
+                    <div class="manifesto-grid">
+                        <article class="manifesto-card">
+                            <div class="manifesto-icon">▢ ➔ ✧</div>
+                            <h3>Beyond Lines and Squares</h3>
+                            <p>
+                                Currently, the digital landscape operates almost exclusively in straight lines and rigid squares. We are breaking traditional social tools down to reshape them around the human soul.
+                            </p>
+                        </article>
+
+                        <article class="manifesto-card">
+                            <div class="manifesto-icon">♾</div>
+                            <h3>The Holistic Narrative Continuum</h3>
+                            <p>
+                                Reality is a unified, grand story where mathematical truth, moral beauty, human sorrow, scientific discovery, and community fellowship harmonize into one continuum.
+                            </p>
+                        </article>
+
+                        <article class="manifesto-card">
+                            <div class="manifesto-icon">♥</div>
+                            <h3>Bringing Digital Closer to Real Life</h3>
+                            <p>
+                                Software must serve the Person—elevating our minds, strengthening our communities, and releasing the profound potential within each person.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 24px;">
+                        <a href="manifesto.html" class="btn btn-primary">Explore The Full Manifesto &amp; Creed →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dimension Library Section -->
+            <section id="d-library" class="section library-section">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">03 // The Library &amp; Archives</span>
+                        <h2 class="section-title">Essays, Research &amp; Inquiries</h2>
+                        <p class="section-subtitle">Thoughtful investigations into ontology, faith, moral philosophy, and human narrative.</p>
+                    </div>
+
+                    <div class="essays-grid">
+                        <article class="essay-card" data-category="ontology">
+                            <div class="essay-meta">
+                                <span class="essay-tag">Epistemology · Relational Ontology</span>
+                                <span class="essay-read-time">9 min read</span>
+                            </div>
+                            <h3 class="essay-title"><a href="posts/you-dont-prove-persons.html">You Don't Prove Persons</a></h3>
+                            <p class="essay-subtitle">The Category Error Hiding Inside "There's No Scientific Evidence for God"</p>
+                            <p class="essay-excerpt">
+                                Applying empirical object-metrics to personal reality is a profound category error. You do not dissect a person to prove their love; you enter relation.
+                            </p>
+                            <div class="essay-card-footer">
+                                <span class="essay-author">By Zachary Zhang</span>
+                                <a href="posts/you-dont-prove-persons.html" class="btn btn-small btn-primary">Read Full Essay →</a>
+                            </div>
+                        </article>
+
+                        <article class="essay-card" data-category="reflections">
+                            <div class="essay-meta">
+                                <span class="essay-tag">Narrative &amp; Vocation</span>
+                                <span class="essay-read-time">9 min read</span>
+                            </div>
+                            <h3 class="essay-title"><a href="posts/central-valley-ucla.html">The Tale of the Central Valley &amp; UCLA's Quiet Revolution</a></h3>
+                            <p class="essay-subtitle">Highway 99, California's Agricultural Spine, and the Pursuit of Purpose</p>
+                            <p class="essay-excerpt">
+                                Imagine driving down Highway 99 through California's Central Valley. Connecting the soil of hard labor to the lecture halls of UCLA reveals a quiet revolution of human purpose.
+                            </p>
+                            <div class="essay-card-footer">
+                                <span class="essay-author">By Zachary Zhang</span>
+                                <a href="posts/central-valley-ucla.html" class="btn btn-small btn-primary">Read Full Essay →</a>
+                            </div>
+                        </article>
+
+                        <article class="essay-card" data-category="ontology">
+                            <div class="essay-meta">
+                                <span class="essay-tag">Metaphysics &amp; Systems</span>
+                                <span class="essay-read-time">8 min read</span>
+                            </div>
+                            <h3 class="essay-title"><a href="posts/narrative-continuum.html">The Holistic Narrative Continuum</a></h3>
+                            <p class="essay-subtitle">Why Reality is an Overarching Symphony of Smaller Stories</p>
+                            <p class="essay-excerpt">
+                                Reality is not a collection of isolated, colliding atoms in empty space. It is a grand narrative where every person, relation, and discovery forms an unbreakable continuum.
+                            </p>
+                            <div class="essay-card-footer">
+                                <span class="essay-author">By Zachary Zhang</span>
+                                <a href="posts/narrative-continuum.html" class="btn btn-small btn-primary">Read Full Essay →</a>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 36px;">
+                        <a href="library.html" class="btn btn-secondary">View All Essays in The Library Archive →</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dimension Ecosystem Section -->
+            <section id="d-ecosystem" class="section ecosystem-section">
+                <div class="container">
+                    <div class="section-header left">
+                        <span class="section-tag">04 // Ecosystem &amp; Initiatives</span>
+                        <h2 class="section-title">Where Thought Meets Action</h2>
+                        <p class="section-subtitle">The software, communities, and creative services powering the Dimension.</p>
+                    </div>
+
+                    <div class="initiatives-grid">
+                        <article class="initiative-card initiative-highlight">
+                            <div class="initiative-badge">Computational Substrate</div>
+                            <h3>Earthcall</h3>
+                            <p class="initiative-lead">A Person-centered ontology that orders the software engine attached to it.</p>
+                            <p>Earthcall is the technical and mathematical embodiment of Dimension of Thought’s philosophy, establishing the Person as the fundamental ontological foundation.</p>
+                            <div class="initiative-actions">
+                                <a href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-small">GitHub Repository ↗</a>
+                                <a href="ecosystem.html" class="btn btn-ghost btn-small">Explore Substrate →</a>
+                            </div>
+                        </article>
+
+                        <article class="initiative-card">
+                            <div class="initiative-badge">Community Service</div>
+                            <h3>Writers of Light</h3>
+                            <p class="initiative-lead">Experienced writers ready to help you flesh out the words of your heart.</p>
+                            <p>Free editorial and collaborative writing assistance for stories, personal messages, and philosophical essays. Starting with the heart, not with economy.</p>
+                            <div class="initiative-actions">
+                                <a href="ecosystem.html" class="btn btn-secondary btn-small">Learn More →</a>
+                            </div>
+                        </article>
+
+                        <article class="initiative-card">
+                            <div class="initiative-badge">Discussion Forum</div>
+                            <h3>Living Through Dialogue</h3>
+                            <p class="initiative-lead">Conversational circles exploring life, science, faith, and art at their deepest levels.</p>
+                            <p>A haven away from algorithmically polarized feeds, integrating scientific analysis, emotional nuance, artistic beauty, and spiritual wisdom.</p>
+                            <div class="initiative-actions">
+                                <a href="ecosystem.html" class="btn btn-secondary btn-small">Join Circle →</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dimension Contact Section -->
+            <section id="d-contact" class="section contact-section">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">05 // Community &amp; Connection</span>
+                        <h2 class="section-title">Join the Dimension of Thought</h2>
+                        <p class="section-subtitle">Start a conversation, share a reflection, or collaborate with us.</p>
+                    </div>
+
+                    <div class="contact-wrapper">
+                        <div class="contact-card-main">
+                            <div class="contact-links-grid">
+                                <div class="contact-item-card">
+                                    <div class="contact-item-info">
+                                        <span class="item-label">Direct Email</span>
+                                        <a href="mailto:zhangzachary834@gmail.com" class="item-link">zhangzachary834@gmail.com</a>
+                                    </div>
+                                    <button class="btn btn-small btn-primary copy-email-btn" data-email="zhangzachary834@gmail.com">Copy Email</button>
+                                </div>
+                                <div class="contact-item-card">
+                                    <div class="contact-item-info">
+                                        <span class="item-label">GitHub</span>
+                                        <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="item-link">zhangzachary834-commits</a>
+                                    </div>
+                                    <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Explore ↗</a>
+                                </div>
+                                <div class="contact-item-card">
+                                    <div class="contact-item-info">
+                                        <span class="item-label">LinkedIn</span>
+                                        <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="item-link">zachary-of-zhang</a>
+                                    </div>
+                                    <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Connect ↗</a>
+                                </div>
+                            </div>
+
+                            <div class="quick-composer">
+                                <h3>Share a Thought or Reflection</h3>
+                                <p class="composer-desc">Send a message directly to Zach regarding an essay, Writers of Light, or the platform.</p>
+                                <form id="dim-email-form" class="composer-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="d-form-name">Your Name</label>
+                                            <input type="text" id="d-form-name" name="name" placeholder="Your Name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="d-form-topic">Area of Interest</label>
+                                            <select id="d-form-topic" name="topic">
+                                                <option value="General Discussion">General Thought &amp; Connection</option>
+                                                <option value="Writers of Light">Writers of Light</option>
+                                                <option value="Essay Feedback">Essay Feedback</option>
+                                                <option value="Earthcall Substrate">Earthcall Substrate</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="d-form-subject">Subject</label>
+                                        <input type="text" id="d-form-subject" name="subject" placeholder="Thoughts on..." required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="d-form-message">Your Message</label>
+                                        <textarea id="d-form-message" name="message" rows="4" placeholder="Share your words here..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-submit">Open Pre-filled Email <span aria-hidden="true">→</span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Terminal Modal -->
+    <div id="terminal-modal" class="terminal-modal" role="dialog" aria-modal="true" aria-labelledby="terminal-title" hidden>
+        <div class="terminal-backdrop" id="terminal-backdrop"></div>
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-controls">
+                    <button type="button" class="control-dot close-dot" id="terminal-close-btn" title="Close" aria-label="Close terminal"></button>
+                    <span class="control-dot min-dot" aria-hidden="true"></span>
+                    <span class="control-dot max-dot" aria-hidden="true"></span>
+                </div>
+                <div class="terminal-title" id="terminal-title">zachary@personal-substrate — cli</div>
+                <div class="terminal-hint">ESC to close · ` to toggle</div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+                <div class="terminal-output" id="terminal-output">
+                    <p class="term-line term-welcome">✧ Zachary Zhang // Dimension of Thought CLI</p>
+                    <p class="term-line term-sub">Type <span class="term-cmd-highlight">help</span> for commands. Try <span class="term-cmd-highlight">mode personal</span> or <span class="term-cmd-highlight">mode dimension</span>.</p>
+                </div>
+                <div class="terminal-input-line">
+                    <label class="term-prompt" for="terminal-input">guest@zachary:~$</label>
+                    <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast-notification" role="status" aria-live="polite">
+        <span class="toast-icon" aria-hidden="true">✓</span>
+        <span id="toast-message" class="toast-message">Copied to clipboard.</span>
+    </div>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="back-to-top-btn" title="Back to top" aria-label="Back to top">↑</button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-brand-row">
+                    <img src="assets/favicon.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
+                    <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
+                </div>
+                <p class="footer-tagline">Systems, Ontology, and the Constellation of Life &amp; Community.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer Navigation">
+                <a href="#p-home" class="footer-link-personal">Portfolio</a>
+                <a href="#d-home" class="footer-link-dimension">Dimension of Thought</a>
+                <a href="library.html">The Library</a>
+                <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
