@@ -98,8 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Set initial mode on page load
-    setSiteMode(savedMode);
+
 
     // -------------------------------------------------------------------------
     // Typewriter Effects for Both Modes
@@ -167,6 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const hamburgerBtn = document.getElementById("hamburger-btn");
     const scrollProgressBar = document.getElementById("scroll-progress");
     const backToTopBtn = document.getElementById("back-to-top");
+
+    // Set initial mode on page load
+    setSiteMode(savedMode);
 
     if (hamburgerBtn) {
         hamburgerBtn.addEventListener("click", () => {
@@ -289,15 +291,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // -------------------------------------------------------------------------
-    // Constellation Canvas Animation
+    // Interactive Card Spotlight Hover Tracker
     // -------------------------------------------------------------------------
-    const canvas = document.getElementById("constellation-canvas") || document.getElementById("field-canvas");
+    const interactiveCards = document.querySelectorAll(
+        ".stat-card, .now-card, .project-card, .pillar-card, .skill-category-card, .story-card, .manifesto-card, .essay-card, .initiative-card, .contact-item-card"
+    );
+
+    interactiveCards.forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty("--mouse-x", `${x}px`);
+            card.style.setProperty("--mouse-y", `${y}px`);
+        });
+    });
+
+    // -------------------------------------------------------------------------
+    // Constellation Canvas Animation & Interactive Particle Field
+    // -------------------------------------------------------------------------
+    const canvas = document.getElementById("global-bg-canvas");
     const ctx = canvas ? canvas.getContext("2d") : null;
     const constellationLabels = [
         "Person", "Story", "Dialogue", "Continuum", "Relation",
         "Writers of Light", "Earthcall", "Community", "Wisdom", "Constellation"
     ];
     let stars = [];
+    let bgStars = [];
+    let nebulae = [];
+    let time = 0;
+    let mousePos = { x: -1000, y: -1000, active: false };
 
     function resizeConstellation() {
         if (!canvas) return;
@@ -313,72 +336,450 @@ document.addEventListener("DOMContentLoaded", () => {
         const rect = canvas.getBoundingClientRect();
         const w = rect.width;
         const h = rect.height;
-        const count = Math.min(Math.floor(w / 45), 32);
+        const count = Math.min(Math.floor(w / 18), 120); // Foreground stars
 
         stars = [];
         for (let i = 0; i < count; i++) {
             const hasLabel = i < constellationLabels.length;
+            const isTeal = i % 3 === 0;
+            const isPurple = i % 3 === 1;
             stars.push({
                 x: Math.random() * w,
                 y: Math.random() * h,
-                vx: (Math.random() - 0.5) * 0.22,
-                vy: (Math.random() - 0.5) * 0.22,
-                radius: hasLabel ? 3.2 : Math.random() * 2 + 1,
+                vx: (Math.random() - 0.5) * 0.15,
+                vy: (Math.random() - 0.5) * 0.15,
+                radius: hasLabel ? 3.4 : Math.random() * 1.5 + 0.5,
                 label: hasLabel ? constellationLabels[i] : null,
-                twinkle: Math.random() * Math.PI
+                isTeal: isTeal,
+                isPurple: isPurple,
+                twinkleSpeed: Math.random() * 0.02 + 0.01,
+                twinkleOffset: Math.random() * Math.PI * 2,
+                orbitOffset: Math.random() * Math.PI * 2,
+                pulseEnergy: 0,
+                pulseTarget: 0,
+                pulseState: 0,
+                pulseJumps: 0,
+                pulseHue: 0
+            });
+        }
+
+        // Add lots of very subtle background stars
+        const bgCount = Math.min(Math.floor(w / 4), 500); 
+        bgStars = [];
+        for (let i = 0; i < bgCount; i++) {
+            bgStars.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.04, // Very slow
+                vy: (Math.random() - 0.5) * 0.04,
+                radius: Math.random() * 0.8 + 0.2, // Tiny
+                twinkleSpeed: Math.random() * 0.015 + 0.005,
+                twinkleOffset: Math.random() * Math.PI * 2,
+                colorIndex: i % 3 // 0: gold, 1: teal, 2: purple
+            });
+        }
+
+        nebulae = [];
+        for (let i = 0; i < 5; i++) {
+            nebulae.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.25,
+                vy: (Math.random() - 0.5) * 0.25,
+                r: Math.random() * 400 + 250,
+                colorIndex: i % 3
             });
         }
     }
 
+    if (canvas) {
+        window.addEventListener("mousemove", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
+                mousePos.x = e.clientX - rect.left;
+                mousePos.y = e.clientY - rect.top;
+                mousePos.active = true;
+            } else {
+                mousePos.active = false;
+            }
+        });
+
+        window.addEventListener("click", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                
+                if (!window.cursorPulses) window.cursorPulses = [];
+                if (!window.extraTethers) window.extraTethers = [];
+                
+                // Get existing hover stars
+                let hoverStars = stars.filter(s => Math.hypot(s.x - mx, s.y - my) < 130);
+                
+                // Spawn 1-5 NEW temporary threads that reach further out!
+                const rand = Math.random();
+                let numStrands = 1;
+                if (rand > 0.4) numStrands = 2; 
+                if (rand > 0.7) numStrands = 3; 
+                if (rand > 0.9) numStrands = 4; 
+                if (rand > 0.97) numStrands = 5; 
+                
+                let potentialNew = stars.filter(s => {
+                    let d = Math.hypot(s.x - mx, s.y - my);
+                    return d >= 130 && d < 380; // Only stars outside hover radius
+                }).sort(() => Math.random() - 0.5).slice(0, numStrands); // Random subset
+                
+                for (let s of potentialNew) {
+                    window.extraTethers.push({ target: s, life: 1.0 }); // Temporary tether
+                }
+                
+                // Pulse ALL connected threads (hover + new ones)
+                let allPulsed = hoverStars.concat(potentialNew);
+                for (const s of allPulsed) {
+                    window.cursorPulses.push({
+                        target: s,
+                        progress: 0,
+                        speed: 0.035 + Math.random() * 0.02
+                    });
+                }
+            }
+        });
+    }
+
     function drawConstellation() {
         if (!ctx || !canvas || reduceMotion) return;
+        time += 1;
         const rect = canvas.getBoundingClientRect();
         const w = rect.width;
         const h = rect.height;
+        
         ctx.clearRect(0, 0, w, h);
 
         const isDark = htmlElement.getAttribute("data-theme") !== "light";
-        const starColor = isDark ? "rgba(212, 176, 106, 0.85)" : "rgba(140, 106, 34, 0.85)";
-        const lineColor = isDark ? "rgba(212, 176, 106, " : "rgba(140, 106, 34, ";
-        const labelColor = isDark ? "rgba(245, 240, 230, 0.45)" : "rgba(27, 24, 19, 0.45)";
+        const goldColor = isDark ? "rgba(216, 180, 110," : "rgba(242, 133, 41,"; // Vibrant Orange in light mode
+        const tealColor = isDark ? "rgba(110, 231, 216," : "rgba(14, 153, 204,"; // Vibrant Sky Blue in light mode
+        const purpleColor = isDark ? "rgba(168, 85, 247," : "rgba(224, 61, 137,"; // Vibrant Pink in light mode
+        const labelColor = isDark ? "rgba(247, 243, 235, 0.6)" : "rgba(24, 21, 16, 0.6)";
 
-        for (const s of stars) {
+        const cascadeStartHue = isDark ? 170 : 195; // Dark: Teal (170), Light: Sky Blue (195)
+        const cascadeHueShift = isDark ? 8 : 10; // Dark shifts to Purple (290), Light shifts to Orange (345/360)
+        const cascadeSat = isDark ? 85 : 90;
+        const cascadeLit = isDark ? 65 : 52; // Lower lightness for light mode so it pops against white
+        
+        // Draw Dynamic Nebulae (blending)
+        ctx.globalCompositeOperation = isDark ? "screen" : "multiply";
+        for (const n of nebulae) {
+            n.x += n.vx;
+            n.y += n.vy;
+            if (n.x < -n.r || n.x > w + n.r) n.vx *= -1;
+            if (n.y < -n.r || n.y > h + n.r) n.vy *= -1;
+
+            const baseColor = n.colorIndex === 0 ? goldColor : (n.colorIndex === 1 ? tealColor : purpleColor);
+            const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+            grad.addColorStop(0, `${baseColor} 0.12)`);
+            grad.addColorStop(1, `${baseColor} 0)`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+        }
+        ctx.globalCompositeOperation = "source-over";
+
+        // Draw Background Stars
+        for (const s of bgStars) {
             s.x += s.vx;
             s.y += s.vy;
-            s.twinkle += 0.03;
-            if (s.x < 10 || s.x > w - 10) s.vx *= -1;
-            if (s.y < 10 || s.y > h - 10) s.vy *= -1;
+            if (s.x < -10) s.x = w + 10;
+            if (s.x > w + 10) s.x = -10;
+            if (s.y < -10) s.y = h + 10;
+            if (s.y > h + 10) s.y = -10;
+
+            const blink = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.5 + 0.5;
+            const colorStr = s.colorIndex === 0 ? goldColor : (s.colorIndex === 1 ? tealColor : purpleColor);
+            
+            ctx.fillStyle = `${colorStr} ${0.1 + blink * 0.25})`;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.radius * (0.5 + blink * 0.5), 0, Math.PI * 2);
+            ctx.fill();
+        }
+        // Spontaneous cascade ignition
+        if (Math.random() < 0.003 && stars.length > 0) { // 0.3% chance per frame (~1 every 5 seconds)
+            const randStar = stars[Math.floor(Math.random() * stars.length)];
+            if (randStar.pulseState === 0) {
+                randStar.pulseTarget = Math.random() * 0.5 + 0.5; // Random max intensity
+                randStar.pulseEnergy = 0.05;
+                randStar.pulseState = 1; // 1 = rising
+                randStar.pulseJumps = Math.floor(Math.random() * 12) + 4; // Cascade 4 to 15 times
+                randStar.pulseHue = cascadeStartHue; // Theme-aware starting hue
+            }
         }
 
-        for (let i = 0; i < stars.length; i++) {
-            for (let j = i + 1; j < stars.length; j++) {
-                const a = stars[i];
-                const b = stars[j];
-                const dist = Math.hypot(a.x - b.x, a.y - b.y);
-                const maxDist = w > 768 ? 200 : 130;
-                if (dist < maxDist) {
-                    const alpha = (1 - dist / maxDist) * 0.25;
-                    ctx.strokeStyle = `${lineColor}${alpha})`;
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.moveTo(a.x, a.y);
-                    ctx.lineTo(b.x, b.y);
-                    ctx.stroke();
+        // Move stars
+        for (const s of stars) {
+            // Smooth pulse transitions
+            if (s.pulseState === 1) {
+                s.pulseEnergy += 0.04; // Deliberate smooth rise
+                if (s.pulseEnergy >= s.pulseTarget) {
+                    s.pulseEnergy = s.pulseTarget;
+                    s.pulseState = 2; // start decaying
+                }
+            } else if (s.pulseState === 2) {
+                s.pulseEnergy -= 0.008; // Smooth slow decay
+                if (s.pulseEnergy <= 0) {
+                    s.pulseEnergy = 0;
+                    s.pulseState = 0;
+                }
+            }
+
+            s.x += s.vx;
+            s.y += s.vy;
+            if (s.x < -10) s.x = w + 10;
+            if (s.x > w + 10) s.x = -10;
+            if (s.y < -10) s.y = h + 10;
+            if (s.y > h + 10) s.y = -10;
+
+            if (mousePos.active) {
+                const dx = s.x - mousePos.x;
+                const dy = s.y - mousePos.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < 120 && dist > 1) {
+                    const force = (120 - dist) / 120 * 0.5;
+                    s.x += (dx / dist) * force;
+                    s.y += (dy / dist) * force;
                 }
             }
         }
 
+        // Draw Folding Lines (Dynamic Bezier Curves)
+        for (let i = 0; i < stars.length; i++) {
+            // Check ALL remaining stars to build a complete dense network
+            for (let j = i + 1; j < stars.length; j++) {
+                const a = stars[i];
+                const b = stars[j];
+                const dist = Math.hypot(a.x - b.x, a.y - b.y);
+                const maxDist = w > 768 ? 160 : 100;
+                
+                if (dist < maxDist) {
+                    let cascadeAlpha = 0;
+                    
+                    // Propagate Cascade Signal
+                    if (a.pulseState !== 0 || b.pulseState !== 0) {
+                        cascadeAlpha = Math.max(a.pulseEnergy, b.pulseEnergy);
+                        
+                        // Pass the signal forward once it's brightly glowing to create a slight delay
+                        if (a.pulseEnergy > 0.5 && a.pulseJumps > 0 && b.pulseState === 0) {
+                            if (Math.random() < 0.08) { // 8% chance per frame once charged
+                                b.pulseTarget = Math.random() * 0.4 + 0.6; // random peak 0.6 to 1.0
+                                b.pulseEnergy = 0.05;
+                                b.pulseState = 1;
+                                b.pulseJumps = a.pulseJumps - 1;
+                                b.pulseHue = (a.pulseHue + cascadeHueShift) % 360; // Theme-aware shift
+                                // Drastically reduce A's remaining jumps to prevent an exponential nuclear chain explosion!
+                                a.pulseJumps = Math.floor(a.pulseJumps / 2.5); 
+                            }
+                        } else if (b.pulseEnergy > 0.5 && b.pulseJumps > 0 && a.pulseState === 0) {
+                            if (Math.random() < 0.08) {
+                                a.pulseTarget = Math.random() * 0.4 + 0.6;
+                                a.pulseEnergy = 0.05;
+                                a.pulseState = 1;
+                                a.pulseJumps = b.pulseJumps - 1;
+                                a.pulseHue = (b.pulseHue + cascadeHueShift) % 360; // Theme-aware shift
+                                b.pulseJumps = Math.floor(b.pulseJumps / 2.5);
+                            }
+                        }
+                    }
+
+                    // Organic pulsing so connections appear and disappear on their own over time
+                    const organicFade = Math.sin(time * 0.006 + a.orbitOffset + b.orbitOffset) * 0.5 + 0.5;
+                    const baseAlpha = (1 - dist / maxDist) * 0.45;
+                    let alpha = baseAlpha * organicFade;
+                    
+                    // Cascade flash dramatically boosts visibility
+                    if (cascadeAlpha > 0) {
+                        alpha = Math.max(alpha, cascadeAlpha * 0.9);
+                    }
+                    
+                    if (alpha > 0.01) {
+                        if (cascadeAlpha > 0.1) {
+                            const hueA = a.pulseState !== 0 ? a.pulseHue : b.pulseHue;
+                            const hueB = b.pulseState !== 0 ? b.pulseHue : a.pulseHue;
+
+                            const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+                            grad.addColorStop(0, `hsla(${hueA}, ${cascadeSat}%, ${cascadeLit}%, ${alpha})`);
+                            grad.addColorStop(1, `hsla(${hueB}, ${cascadeSat}%, ${cascadeLit}%, ${alpha})`);
+                            ctx.strokeStyle = grad;
+                            ctx.lineWidth = 1.6;
+                        } else {
+                            ctx.strokeStyle = `${goldColor} ${alpha})`;
+                            ctx.lineWidth = 1.0;
+                        }
+                    
+                        // Folding effect by dynamically moving control point
+                        const cx = (a.x + b.x) / 2 + Math.sin(time * 0.02 + a.orbitOffset) * 45;
+                        const cy = (a.y + b.y) / 2 + Math.cos(time * 0.02 + b.orbitOffset) * 45;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.quadraticCurveTo(cx, cy, b.x, b.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Draw Connections to Cursor
+        if (mousePos.active && w > 600) {
+            let activeTethers = [];
+            for (const s of stars) {
+                const dist = Math.hypot(s.x - mousePos.x, s.y - mousePos.y);
+                if (dist < 130) {
+                    activeTethers.push({ target: s, dist: dist, alphaMultiplier: 1.0 });
+                }
+            }
+            if (window.extraTethers) {
+                for (let i = window.extraTethers.length - 1; i >= 0; i--) {
+                    let et = window.extraTethers[i];
+                    et.life -= 0.015;
+                    if (et.life <= 0) {
+                        window.extraTethers.splice(i, 1);
+                    } else {
+                        const dist = Math.hypot(et.target.x - mousePos.x, et.target.y - mousePos.y);
+                        if (dist >= 130) { // Only add if it's outside the standard hover range
+                            activeTethers.push({ target: et.target, dist: dist, alphaMultiplier: et.life });
+                        }
+                    }
+                }
+            }
+
+            for (const t of activeTethers) {
+                const s = t.target;
+                const dist = t.dist;
+                
+                let baseAlpha = 0;
+                let baseThickness = 1.0;
+                if (t.alphaMultiplier === 1.0 && dist < 130) {
+                    baseAlpha = (1 - dist / 130) * 0.6;
+                    baseThickness = 1.0 + (1 - dist / 130) * 1.5;
+                } else {
+                    // Temporary extra tethers rely entirely on life instead of distance
+                    baseAlpha = 0.4 * t.alphaMultiplier;
+                    baseThickness = 1.0 + t.alphaMultiplier;
+                }
+                
+                const starColorMatch = s.isTeal ? tealColor : (s.isPurple ? purpleColor : goldColor);
+                
+                // --- 1. Draw Normal Hover Line ---
+                const normalGrad = ctx.createLinearGradient(mousePos.x, mousePos.y, s.x, s.y);
+                normalGrad.addColorStop(0, `hsla(${cascadeStartHue}, ${cascadeSat}%, ${cascadeLit}%, 0)`);
+                normalGrad.addColorStop(0.3, `hsla(${cascadeStartHue}, ${cascadeSat}%, ${cascadeLit}%, ${baseAlpha * 0.3})`);
+                normalGrad.addColorStop(1, `${starColorMatch} ${baseAlpha})`);
+
+                ctx.strokeStyle = normalGrad;
+                ctx.beginPath();
+                ctx.moveTo(mousePos.x, mousePos.y);
+                ctx.lineTo(s.x, s.y);
+                
+                ctx.lineWidth = baseThickness * 3.0;
+                ctx.globalAlpha = 0.3;
+                ctx.stroke();
+                
+                ctx.lineWidth = baseThickness * 0.8;
+                ctx.globalAlpha = 1.0;
+                ctx.stroke();
+
+                // --- 2. Draw Pulse Overlay ---
+                let activePulse = window.cursorPulses ? window.cursorPulses.find(p => p.target === s) : null;
+                
+                if (activePulse) {
+                    let cp = activePulse.progress;
+                    // Fades slowly after reaching the star (progress > 1.0)
+                    let fade = cp > 1.0 ? Math.max(0, 1.0 - (cp - 1.0) / 1.5) : 1.0;
+
+                    if (fade > 0) {
+                        const pulseBaseAlpha = Math.min(1.0, baseAlpha + 0.3);
+                        const pulseGrad = ctx.createLinearGradient(mousePos.x, mousePos.y, s.x, s.y);
+                        
+                        const safeStop = (offset, color) => pulseGrad.addColorStop(Math.max(0, Math.min(1, offset)), color);
+
+                        safeStop(0, `hsla(180, 100%, 70%, 0)`);
+                        
+                        // The traveling wave: Cyan -> Blue -> Violet -> Purple
+                        safeStop(cp - 0.45, `hsla(180, 100%, 70%, ${pulseBaseAlpha * 0.4})`); // Cyan Tail
+                        safeStop(cp - 0.15, `hsla(220, 100%, 75%, ${Math.min(1.0, pulseBaseAlpha * 1.5)})`); // Blue Mid
+                        safeStop(cp + 0.05, `hsla(260, 100%, 85%, 1)`); // Violet Core
+                        safeStop(cp + 0.35, `hsla(280, 100%, 70%, ${pulseBaseAlpha * 0.4})`); // Purple Head
+
+                        safeStop(1, `hsla(280, 100%, 70%, 0)`);
+
+                        ctx.strokeStyle = pulseGrad;
+                        ctx.beginPath();
+                        ctx.moveTo(mousePos.x, mousePos.y);
+                        ctx.lineTo(s.x, s.y);
+
+                        // Pulse causes the strand to physically bulge
+                        let thicknessBulge = Math.sin(Math.min(1, cp) * Math.PI) * 3.0;
+                        
+                        ctx.lineWidth = baseThickness * 3.0 + thicknessBulge;
+                        ctx.globalAlpha = 0.3 * fade;
+                        ctx.stroke();
+
+                        ctx.lineWidth = baseThickness * 0.8 + (thicknessBulge * 0.4);
+                        ctx.globalAlpha = 1.0 * fade;
+                        ctx.stroke();
+                        
+                        ctx.globalAlpha = 1.0; // Reset
+                    }
+                }
+            }
+        }
+
+        // Draw Stars (Blinking & Shining)
         ctx.font = "11px 'IBM Plex Mono', monospace";
         for (const s of stars) {
-            const glow = Math.sin(s.twinkle) * 0.5 + 0.5;
-            ctx.fillStyle = starColor;
+            const blink = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.5 + 0.5;
+            const colorStr = s.isTeal ? tealColor : (s.isPurple ? purpleColor : goldColor);
+            
+            let starAlpha = 0.3 + blink * 0.7;
+            let starRadius = s.radius * (0.5 + blink * 0.5);
+            if (s.pulseEnergy > 0) {
+                starAlpha = Math.max(starAlpha, s.pulseEnergy);
+                starRadius += s.pulseEnergy * 2.0;
+                ctx.fillStyle = `hsla(${s.pulseHue}, ${cascadeSat}%, ${cascadeLit}%, ${starAlpha})`;
+                ctx.shadowColor = `hsla(${s.pulseHue}, ${cascadeSat}%, ${cascadeLit}%, 1)`;
+            } else {
+                ctx.fillStyle = `${colorStr} ${starAlpha})`;
+                ctx.shadowColor = `${colorStr} 1)`;
+            }
+
+            ctx.shadowBlur = (blink * 12) + (s.pulseEnergy * 20);
+            
             ctx.beginPath();
-            ctx.arc(s.x, s.y, s.radius * (0.8 + glow * 0.3), 0, Math.PI * 2);
+            ctx.arc(s.x, s.y, starRadius, 0, Math.PI * 2);
             ctx.fill();
+            ctx.shadowBlur = 0; // Reset
 
             if (s.label && w > 800) {
                 ctx.fillStyle = labelColor;
                 ctx.fillText(s.label, s.x + 8, s.y - 8);
+            }
+        }
+        // Update Traveling Cursor Pulses (like blood pumping through veins)
+        if (window.cursorPulses) {
+            for (let i = window.cursorPulses.length - 1; i >= 0; i--) {
+                let p = window.cursorPulses[i];
+                p.progress += p.speed;
+                
+                if (p.progress >= 1.0 && !p.ignited) {
+                    // Ignite the target star ONCE
+                    p.ignited = true;
+                    p.target.pulseTarget = 1.0;
+                    p.target.pulseEnergy = 0.5;
+                    p.target.pulseState = 1;
+                    p.target.pulseJumps = Math.floor(Math.random() * 12) + 6;
+                    p.target.pulseHue = cascadeStartHue; // Starts cascade natively
+                }
+                
+                if (p.progress >= 2.5) { // Keeps pulse alive for slow fading
+                    window.cursorPulses.splice(i, 1);
+                }
             }
         }
 

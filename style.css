@@ -83,21 +83,82 @@ body {
     transition: background-color var(--ease-slow), color var(--ease-slow);
 }
 
-/* Ambient Subtle Nebula Background */
+/* Ambient Animated Aurora & Cosmic Nebula Background */
 body::before {
     content: "";
     position: fixed;
-    inset: 0;
+    top: -30%;
+    left: -30%;
+    width: 160%;
+    height: 160%;
     pointer-events: none;
     z-index: 0;
-    opacity: 0.55;
+    opacity: 0.85;
     background-image:
-        radial-gradient(ellipse at 12% -2%, var(--glow), transparent 50%),
-        radial-gradient(ellipse at 88% 18%, rgba(110, 231, 216, 0.06), transparent 42%),
-        radial-gradient(ellipse at 50% 100%, rgba(216, 180, 110, 0.05), transparent 48%);
+        radial-gradient(ellipse 45% 35% at 18% 15%, rgba(216, 180, 110, 0.25), transparent 60%),
+        radial-gradient(ellipse 48% 38% at 82% 22%, rgba(110, 231, 216, 0.25), transparent 65%),
+        radial-gradient(ellipse 42% 42% at 75% 82%, rgba(168, 85, 247, 0.25), transparent 65%),
+        radial-gradient(ellipse 50% 40% at 22% 78%, rgba(244, 63, 94, 0.20), transparent 60%),
+        radial-gradient(circle 35% at 65% 55%, rgba(67, 206, 162, 0.20), transparent 70%),
+        radial-gradient(circle 32% at 50% 50%, rgba(216, 180, 110, 0.15), transparent 70%);
+    animation: auroraSlowDrift 25s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+[data-theme="light"] body::before {
+    opacity: 0.65;
+    background-image:
+        radial-gradient(ellipse 45% 35% at 18% 15%, rgba(146, 110, 37, 0.20), transparent 60%),
+        radial-gradient(ellipse 48% 38% at 82% 22%, rgba(13, 117, 109, 0.18), transparent 65%),
+        radial-gradient(ellipse 42% 42% at 75% 82%, rgba(147, 51, 234, 0.15), transparent 65%),
+        radial-gradient(ellipse 50% 40% at 22% 78%, rgba(225, 29, 72, 0.15), transparent 60%),
+        radial-gradient(circle 35% at 65% 55%, rgba(46, 175, 130, 0.15), transparent 70%),
+        radial-gradient(circle 32% at 50% 50%, rgba(146, 110, 37, 0.10), transparent 70%);
+}
+
+
+
+@keyframes auroraSlowDrift {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+    33% {
+        transform: translate3d(-2.5%, 3%, 0) scale(1.05) rotate(1.8deg);
+    }
+    66% {
+        transform: translate3d(3%, -2.5%, 0) scale(0.97) rotate(-1.5deg);
+    }
+    100% {
+        transform: translate3d(-1%, -1.5%, 0) scale(1.03) rotate(0.8deg);
+    }
 }
 
 a { color: inherit; text-decoration: none; }
+.inline-link {
+    color: var(--teal);
+    font-weight: 600;
+    position: relative;
+    transition: color var(--ease);
+}
+.inline-link:hover {
+    color: var(--gold);
+}
+.inline-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background: linear-gradient(90deg, var(--gold), var(--teal), #a855f7);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+.inline-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
 button, input, select, textarea { font-family: inherit; color: inherit; }
 code {
     font-family: var(--font-mono);
@@ -128,13 +189,14 @@ code {
 }
 
 .constellation-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
     pointer-events: none;
-    opacity: 0.55;
+    opacity: 0.85; /* Make it more prominent since it's the main bg now */
 }
 
 .container {
@@ -150,7 +212,7 @@ code {
     padding: 108px 0;
     position: relative;
     z-index: 1;
-    background: var(--bg);
+    background: transparent;
 }
 .hero.section { background: transparent; }
 
@@ -186,11 +248,19 @@ code {
     line-height: 1.18;
     margin-bottom: 12px;
 }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 .section-title em {
     font-style: italic;
-    background: linear-gradient(135deg, var(--gold-2), var(--gold));
+    background: linear-gradient(135deg, var(--gold-2), var(--teal), #a855f7, var(--gold));
+    background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: gradientShift 6s ease infinite;
 }
 
 .section-subtitle {
@@ -310,7 +380,7 @@ code {
     position: absolute;
     left: 0; bottom: 0;
     width: 0; height: 2px;
-    background: linear-gradient(90deg, var(--gold), var(--teal));
+    background: linear-gradient(90deg, var(--gold), var(--teal), #a855f7);
     border-radius: 2px;
     transition: width var(--ease);
 }
@@ -490,14 +560,16 @@ code {
 }
 .btn:hover { transform: translateY(-2px); }
 .btn-primary {
-    background: linear-gradient(135deg, var(--gold-2), var(--gold));
+    background: linear-gradient(135deg, var(--gold-2), var(--teal), #a855f7, var(--gold));
+    background-size: 300% 300%;
     color: #0c0b08;
-    box-shadow: 0 8px 24px var(--glow);
+    box-shadow: 0 8px 24px rgba(110, 231, 216, 0.25);
     font-weight: 700;
+    animation: gradientShift 6s ease infinite;
 }
 .btn-primary:hover {
-    box-shadow: 0 12px 30px var(--glow);
-    filter: brightness(1.06);
+    box-shadow: 0 12px 30px rgba(168, 85, 247, 0.4);
+    filter: brightness(1.1);
 }
 .btn-secondary, .btn-ghost {
     background: var(--bg-card);
@@ -540,7 +612,7 @@ code {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(216, 180, 110, 0.12), transparent 45%);
+    background: radial-gradient(420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px), rgba(216, 180, 110, 0.15), rgba(110, 231, 216, 0.05), transparent 45%);
     opacity: 0;
     transition: opacity 0.35s ease;
     pointer-events: none;
@@ -613,10 +685,12 @@ code {
 }
 .hero-title em {
     font-style: italic;
-    background: linear-gradient(135deg, var(--gold-2), var(--gold));
+    background: linear-gradient(135deg, var(--gold-2), var(--teal), #a855f7, var(--gold));
+    background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 500;
+    animation: gradientShift 6s ease infinite;
 }
 
 .hero-typewriter-container {
@@ -732,8 +806,8 @@ code {
 }
 .stat-card:hover {
     transform: translateY(-3px);
-    border-color: var(--line-strong);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    border-color: var(--gold);
+    box-shadow: 0 10px 28px rgba(216, 180, 110, 0.25);
 }
 .stat-value {
     display: block;
@@ -787,7 +861,7 @@ code {
     border-radius: var(--radius-lg);
     padding: 30px;
 }
-.now-card:hover { border-color: var(--line-strong); transform: translateY(-4px); box-shadow: var(--shadow); }
+.now-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(216, 180, 110, 0.25); }
 .now-featured { background: linear-gradient(160deg, var(--bg-card), rgba(216, 180, 110, 0.1)); border-color: var(--line-strong); }
 .now-label {
     font-family: var(--font-mono);
@@ -989,8 +1063,8 @@ code {
 }
 .project-card:hover {
     transform: translateY(-4px);
-    border-color: var(--line-strong);
-    box-shadow: var(--shadow);
+    border-color: var(--gold);
+    box-shadow: 0 12px 30px rgba(216, 180, 110, 0.25);
 }
 .project-card-header {
     display: flex;
@@ -1533,7 +1607,8 @@ code {
     z-index: 1;
     border-top: 1px solid var(--line);
     padding: 48px 0;
-    background: var(--bg-elev);
+    background: color-mix(in srgb, var(--bg-elev) 82%, transparent);
+    backdrop-filter: blur(16px);
 }
 .footer-container {
     display: flex;
@@ -1599,10 +1674,137 @@ code {
     .story-card, .contact-card-main, .project-card { padding: 24px; }
     .btn-submit { width: 100%; }
     .back-to-top-btn { display: none; }
-    .constellation-canvas { opacity: 0.25; }
+    .constellation-canvas { opacity: 0.55; }
     .toast-notification { left: 16px; right: 16px; bottom: 16px; }
     .hero-emblem-img { width: 180px; height: 180px; }
     .emblem-glow-ring { width: 190px; height: 190px; }
+}
+
+/* ==========================================================================
+   Rich Chromatic Palette, Iridescent Borders & Graphic Accents
+   ========================================================================== */
+
+/* Iridescent Multi-Hue Card Highlights */
+.project-card:hover, .essay-card:hover, .now-featured:hover, .initiative-highlight:hover {
+    border-color: rgba(216, 180, 110, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(216, 180, 110, 0.14);
+}
+
+/* Layered Substrate Blueprint Ribbons (Earthcall) */
+.stack-list li {
+    position: relative;
+    padding-left: 14px;
+    border-left: 3px solid transparent;
+    transition: all var(--ease);
+}
+.stack-list li:hover {
+    background: rgba(255, 255, 255, 0.02);
+    transform: translateX(4px);
+}
+.stack-list li:nth-child(1) { border-left-color: #f59e0b; } /* Person - Celestial Amber */
+.stack-list li:nth-child(2) { border-left-color: #a855f7; } /* Ontology - Royal Violet */
+.stack-list li:nth-child(3) { border-left-color: #06b6d4; } /* Laws - Electric Cyan */
+.stack-list li:nth-child(4) { border-left-color: #10b981; } /* OntoMath - Spring Emerald */
+.stack-list li:nth-child(5) { border-left-color: #6366f1; } /* Singularity - Deep Indigo */
+.stack-list li:nth-child(6) { border-left-color: #d4b06a; } /* Vessel - Radiant Gold */
+
+/* Color-Coded Semantic Category Badges */
+[data-category="ontology"] .essay-tag {
+    color: #c084fc;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+[data-category="narrative"] .essay-tag {
+    color: #fb7185;
+    background: rgba(244, 63, 94, 0.12);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+[data-category="reflections"] .essay-tag {
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+[data-category="robotics"] .project-role {
+    color: #2dd4bf;
+}
+[data-category="systems"] .project-role {
+    color: #f59e0b;
+}
+[data-category="tools"] .project-role {
+    color: #a78bfa;
+}
+
+/* Light Mode Semantic Badge & Role Contrast */
+[data-theme="light"] [data-category="ontology"] .essay-tag {
+    color: #7e22ce;
+    background: rgba(126, 34, 206, 0.08);
+    border-color: rgba(126, 34, 206, 0.28);
+}
+[data-theme="light"] [data-category="narrative"] .essay-tag {
+    color: #be123c;
+    background: rgba(190, 18, 60, 0.08);
+    border-color: rgba(190, 18, 60, 0.28);
+}
+[data-theme="light"] [data-category="reflections"] .essay-tag {
+    color: #047857;
+    background: rgba(4, 120, 87, 0.08);
+    border-color: rgba(4, 120, 87, 0.28);
+}
+
+[data-theme="light"] [data-category="robotics"] .project-role {
+    color: #0f766e;
+}
+[data-theme="light"] [data-category="systems"] .project-role {
+    color: #b45309;
+}
+[data-theme="light"] [data-category="tools"] .project-role {
+    color: #6d28d9;
+}
+
+/* Initiative Emblems & Heraldic Accents */
+.initiative-card:nth-child(1) .initiative-badge {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+.initiative-card:nth-child(2) .initiative-badge {
+    color: #fb7185;
+    background: rgba(251, 113, 133, 0.12);
+    border: 1px solid rgba(251, 113, 133, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+.initiative-card:nth-child(3) .initiative-badge {
+    color: #2dd4bf;
+    background: rgba(45, 212, 191, 0.12);
+    border: 1px solid rgba(45, 212, 191, 0.35);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+[data-theme="light"] .initiative-card:nth-child(1) .initiative-badge {
+    color: #b45309;
+    background: rgba(180, 83, 9, 0.08);
+    border-color: rgba(180, 83, 9, 0.28);
+}
+[data-theme="light"] .initiative-card:nth-child(2) .initiative-badge {
+    color: #be123c;
+    background: rgba(190, 18, 60, 0.08);
+    border-color: rgba(190, 18, 60, 0.28);
+}
+[data-theme="light"] .initiative-card:nth-child(3) .initiative-badge {
+    color: #0f766e;
+    background: rgba(15, 118, 110, 0.08);
+    border-color: rgba(15, 118, 110, 0.28);
 }
 
 @media (prefers-reduced-motion: reduce) {
