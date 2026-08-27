@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Drafting Studio — Dimension of Thought</title>
+    <meta name="description" content="Draft, compose, preview, and publish essays and articles in the Dimension of Thought studio.">
+    <meta name="author" content="Zachary Zhang">
+
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body class="studio-body-page">
+    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
+    <a class="skip-link" href="#studio-editor-area">Skip to editor</a>
+
+    <!-- Studio Top App Navigation Bar -->
+    <header class="studio-navbar" id="studio-navbar">
+        <div class="studio-nav-container">
+            <!-- Left: Back link & Title -->
+            <div class="studio-nav-left">
+                <a href="library.html" class="studio-back-link" title="Return to Library">
+                    <span class="studio-icon">←</span>
+                    <span>The Library</span>
+                </a>
+                <span class="studio-nav-sep">/</span>
+                <div class="studio-brand-title">
+                    <span class="studio-brand-glyph">✍️</span>
+                    <span class="studio-brand-text">Article Studio</span>
+                </div>
+            </div>
+
+            <!-- Center: Live Save Status & Word Count Metrics -->
+            <div class="studio-nav-center">
+                <div class="studio-status-pill" id="studio-save-status">
+                    <span class="status-indicator-dot"></span>
+                    <span id="save-status-text">Draft saved locally</span>
+                </div>
+                <div class="studio-metrics-pill" id="studio-metrics">
+                    <span id="metric-word-count">0 words</span>
+                    <span class="metric-dot">•</span>
+                    <span id="metric-read-time">0 min read</span>
+                </div>
+            </div>
+
+            <!-- Right: Studio Controls, View Switches & Publishing Actions -->
+            <div class="studio-nav-right">
+                <!-- View Mode Switches -->
+                <div class="studio-view-toggle" role="group" aria-label="Editor View Layout">
+                    <button type="button" class="view-btn active" id="view-split-btn" title="Split Screen (Editor + Preview)" data-view="split">
+                        <span>◫</span>
+                        <span class="view-btn-label">Split</span>
+                    </button>
+                    <button type="button" class="view-btn" id="view-editor-btn" title="Editor Only" data-view="editor">
+                        <span>✎</span>
+                        <span class="view-btn-label">Write</span>
+                    </button>
+                    <button type="button" class="view-btn" id="view-preview-btn" title="Live Preview Only" data-view="preview">
+                        <span>👁</span>
+                        <span class="view-btn-label">Preview</span>
+                    </button>
+                </div>
+
+                <!-- Drafts Drawer Button -->
+                <button type="button" class="btn btn-secondary btn-small" id="open-drafts-drawer-btn" title="Manage saved drafts and templates">
+                    <span>📑</span>
+                    <span>Drafts (<span id="drafts-count-badge">1</span>)</span>
+                </button>
+
+                <!-- Templates Dropdown Button -->
+                <button type="button" class="btn btn-secondary btn-small" id="open-templates-btn" title="Insert starter template">
+                    <span>📋</span>
+                    <span>Templates</span>
+                </button>
+
+                <!-- Theme Switcher -->
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle dark/light mode" aria-label="Toggle theme">
+                    <span id="theme-icon">☽</span>
+                </button>
+
+                <!-- Export Menu Trigger -->
+                <div class="dropdown-wrapper">
+                    <button type="button" class="btn btn-secondary btn-small" id="export-menu-btn" title="Export HTML or Markdown file">
+                        <span>📥</span>
+                        <span>Export ▾</span>
+                    </button>
+                    <div class="studio-dropdown-menu" id="export-dropdown" hidden>
+                        <button type="button" class="dropdown-item" id="export-html-btn">
+                            <span>📄</span>
+                            <span>Download Standalone Post HTML</span>
+                        </button>
+                        <button type="button" class="dropdown-item" id="export-md-btn">
+                            <span>📝</span>
+                            <span>Download Markdown (.md)</span>
+                        </button>
+                        <button type="button" class="dropdown-item" id="copy-html-body-btn">
+                            <span>📋</span>
+                            <span>Copy Formatted HTML Body</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Publish / Save to Library Button -->
+                <button type="button" class="btn btn-primary btn-small" id="publish-article-btn" title="Publish article directly to your site library">
+                    <span>🚀</span>
+                    <span>Publish to Library</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Studio Workspace Container -->
+    <main class="studio-main-workspace" id="studio-workspace">
+
+        <!-- Metadata & Article Configuration Drawer/Header -->
+        <section class="studio-meta-panel" id="studio-meta-panel">
+            <div class="studio-meta-container">
+                <div class="meta-row meta-row-primary">
+                    <div class="meta-field meta-field-title">
+                        <label for="studio-title" class="meta-label">Article Title</label>
+                        <input type="text" id="studio-title" class="studio-title-input" placeholder="Title of your essay or inquiry..." autocomplete="off">
+                    </div>
+                    <div class="meta-field meta-field-category">
+                        <label for="studio-category" class="meta-label">Category</label>
+                        <select id="studio-category" class="studio-select-input">
+                            <option value="ontology" selected>🟣 Epistemology &amp; Relational Ontology</option>
+                            <option value="narrative">🔴 Culture &amp; Narrative Ethics</option>
+                            <option value="reflections">🟢 Life Reflections &amp; Evowth</option>
+                            <option value="systems">🔵 Systems Architecture &amp; OntoMath</option>
+                            <option value="robotics">🟡 Robotics, Spatial AI &amp; Tools</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="meta-row meta-row-secondary">
+                    <div class="meta-field meta-field-subtitle">
+                        <label for="studio-subtitle" class="meta-label">Subtitle / Core Premise</label>
+                        <input type="text" id="studio-subtitle" class="studio-text-input" placeholder="A compelling one-sentence premise or thesis..." autocomplete="off">
+                    </div>
+                    <div class="meta-field meta-field-slug">
+                        <label for="studio-slug" class="meta-label">Target Slug (.html)</label>
+                        <input type="text" id="studio-slug" class="studio-text-input studio-mono-input" placeholder="my-new-essay" autocomplete="off">
+                    </div>
+                    <div class="meta-field meta-field-author">
+                        <label for="studio-author" class="meta-label">Author</label>
+                        <input type="text" id="studio-author" class="studio-text-input" value="Zachary Zhang" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="meta-row meta-row-tertiary">
+                    <div class="meta-field meta-field-excerpt">
+                        <label for="studio-excerpt" class="meta-label">Card Excerpt / Catalog Preview</label>
+                        <input type="text" id="studio-excerpt" class="studio-text-input" placeholder="Short preview summary displayed in library and home catalog cards..." autocomplete="off">
+                    </div>
+                    <div class="meta-field meta-field-tags">
+                        <label for="studio-tags" class="meta-label">Tags (comma separated)</label>
+                        <input type="text" id="studio-tags" class="studio-text-input" placeholder="Epistemology, Relational Ontology, AI" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Split Workspace Area -->
+        <div class="studio-split-layout" id="studio-split-layout">
+
+            <!-- LEFT PANE: Editor with Rich Markdown Toolbar -->
+            <div class="studio-pane studio-editor-pane" id="studio-editor-pane">
+                <!-- Formatting Toolbar -->
+                <div class="studio-toolbar" role="toolbar" aria-label="Markdown Formatting Toolbar">
+                    <div class="toolbar-group">
+                        <button type="button" class="tool-btn" data-action="bold" title="Bold (**text**)"><strong>B</strong></button>
+                        <button type="button" class="tool-btn" data-action="italic" title="Italic (*text*)"><em>I</em></button>
+                        <button type="button" class="tool-btn" data-action="strike" title="Strikethrough (~~text~~)"><s>S</s></button>
+                    </div>
+                    <div class="toolbar-sep"></div>
+                    <div class="toolbar-group">
+                        <button type="button" class="tool-btn" data-action="h2" title="Heading 2 (## Title)">H2</button>
+                        <button type="button" class="tool-btn" data-action="h3" title="Heading 3 (### Title)">H3</button>
+                        <button type="button" class="tool-btn" data-action="h4" title="Heading 4 (#### Title)">H4</button>
+                    </div>
+                    <div class="toolbar-sep"></div>
+                    <div class="toolbar-group">
+                        <button type="button" class="tool-btn" data-action="quote" title="Pull Quote (> Quote)">“ ”</button>
+                        <button type="button" class="tool-btn" data-action="dropcap" title="Illuminated Drop Cap">&lt;D&gt;</button>
+                        <button type="button" class="tool-btn" data-action="ul" title="Bullet List (- item)">• List</button>
+                        <button type="button" class="tool-btn" data-action="ol" title="Numbered List (1. item)">1. List</button>
+                    </div>
+                    <div class="toolbar-sep"></div>
+                    <div class="toolbar-group">
+                        <button type="button" class="tool-btn" data-action="code" title="Code Block (```)">Code</button>
+                        <button type="button" class="tool-btn" data-action="link" title="Hyperlink ([title](url))">Link</button>
+                        <button type="button" class="tool-btn" data-action="hr" title="Gold Horizon Divider (---)">—</button>
+                    </div>
+                    <div class="toolbar-sep"></div>
+                    <div class="toolbar-group" style="margin-left: auto; gap: 8px;">
+                        <button type="button" class="tool-btn" id="zen-mode-btn" title="Toggle Zen / Focus Mode">Zen</button>
+                        <button type="button" class="tool-btn tool-btn-danger" id="clear-editor-btn" title="Clear and Reset Draft">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Textarea Editor with Syntax Highlighting -->
+                <div class="editor-textarea-wrapper" style="position: relative;">
+                    <div id="syntax-layer" class="studio-textarea syntax-layer" aria-hidden="true"></div>
+                    <textarea id="studio-body" class="studio-textarea" placeholder="Begin articulating your thought here...&#10;&#10;Use Markdown formatting (## Headings, > Quotes, - Bullet points, ``` code blocks) or the toolbar above.&#10;&#10;Changes are automatically saved live to your browser." spellcheck="true"></textarea>
+                </div>
+            </div>
+
+            <!-- RIGHT PANE: Live Real-Time Formatted Preview -->
+            <div class="studio-pane studio-preview-pane" id="studio-preview-pane">
+                <div class="preview-scroll-container">
+                    <div class="preview-article-frame">
+                        <!-- Preview Article Header -->
+                        <header class="page-hero preview-hero">
+                            <div class="page-breadcrumb">
+                                <span>Dimension of Thought</span>
+                                <span class="page-breadcrumb-sep">/</span>
+                                <span>The Library</span>
+                                <span class="page-breadcrumb-sep">/</span>
+                                <span>Essay Preview</span>
+                            </div>
+                            <div class="essay-meta" style="margin-bottom: 14px;">
+                                <span class="essay-tag" id="prev-tag">Epistemology · Relational Ontology</span>
+                                <span class="essay-read-time" id="prev-meta-time">Today · 0 min read</span>
+                            </div>
+                            <h1 class="page-title" id="prev-title" style="font-size: clamp(2.2rem, 4.5vw, 3.4rem);">Untitled Article</h1>
+                            <p class="page-subtitle" id="prev-subtitle">A philosophical inquiry exploring the depths of truth and narrative.</p>
+                            <div class="essay-author-bar" style="margin-top: 20px;">
+                                <span>Written by <strong id="prev-author">Zachary Zhang</strong></span>
+                                <span class="essay-dot">•</span>
+                                <span>Dimension of Thought Archives</span>
+                            </div>
+                        </header>
+
+                        <!-- Preview Rendered Prose -->
+                        <article class="section preview-prose-section" style="padding-top: 36px;">
+                            <div class="essay-prose" id="prev-prose-body">
+                                <p class="lead-text">Start typing in the editor on the left to see your formatted essay live here.</p>
+                            </div>
+
+                            <!-- Preview Reflection & CTA Box -->
+                            <div class="preview-reflection-card" style="background: var(--bg-card); padding: 28px; border-radius: var(--radius-md); border: 1px solid var(--line); margin-top: 48px;">
+                                <h4 style="margin-top: 0; color: var(--gold); font-family: var(--font-serif); font-size: 1.25rem;">Reflections &amp; Dialogue</h4>
+                                <p style="font-size: 0.96rem; color: var(--muted); margin-bottom: 18px;">
+                                    Have reflections on this inquiry? Connect with Zachary Zhang or join the Dimension of Thought living dialogue.
+                                </p>
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    <span class="btn btn-primary btn-small">Discuss with Zach →</span>
+                                    <span class="btn btn-secondary btn-small">Back to All Essays</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Slide-out Drafts Manager Drawer -->
+    <div class="drafts-drawer-backdrop" id="drafts-drawer-backdrop" hidden></div>
+    <aside class="drafts-drawer" id="drafts-drawer" hidden aria-label="Saved Drafts Manager">
+        <div class="drawer-header">
+            <div class="drawer-title-group">
+                <h3>📑 Saved Drafts</h3>
+                <span class="drawer-subtitle">Stored locally in your browser</span>
+            </div>
+            <button type="button" class="control-dot close-dot" id="close-drafts-drawer-btn" title="Close drawer" aria-label="Close drawer"></button>
+        </div>
+
+        <div class="drawer-actions">
+            <button type="button" class="btn btn-primary btn-small btn-block" id="create-new-draft-btn">
+                <span>＋ Create New Blank Article</span>
+            </button>
+        </div>
+
+        <div class="drawer-list-wrapper">
+            <div class="drafts-list" id="drafts-list-container">
+                <!-- Dynamically populated draft items -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Templates Modal -->
+    <div class="modal-dialog-backdrop" id="templates-modal-backdrop" hidden>
+        <div class="modal-dialog-box" role="dialog" aria-modal="true" aria-labelledby="templates-modal-title">
+            <div class="modal-dialog-header">
+                <h3 id="templates-modal-title">📋 Choose an Article Template</h3>
+                <button type="button" class="control-dot close-dot" id="close-templates-modal-btn" title="Close" aria-label="Close"></button>
+            </div>
+            <div class="modal-dialog-body">
+                <p class="modal-lead">Select a crafted structural blueprint to kickstart your writing:</p>
+                <div class="templates-grid">
+                    <div class="template-card" data-template="ontology">
+                        <div class="template-icon">🟣</div>
+                        <h4>Philosophical &amp; Ontological Inquiry</h4>
+                        <p>Structured dialectic exploring foundational axioms, category distinctions, and relational realities.</p>
+                        <button type="button" class="btn btn-secondary btn-small btn-use-template" data-template="ontology">Use Template</button>
+                    </div>
+
+                    <div class="template-card" data-template="narrative">
+                        <div class="template-icon">🔴</div>
+                        <h4>Cultural &amp; Narrative Investigation</h4>
+                        <p>Scene setting, cultural phenomenon critique, narrative ethics, and redemptive resolution.</p>
+                        <button type="button" class="btn btn-secondary btn-small btn-use-template" data-template="narrative">Use Template</button>
+                    </div>
+
+                    <div class="template-card" data-template="evowth">
+                        <div class="template-icon">🟢</div>
+                        <h4>Life Reflections &amp; Evowth Synthesis</h4>
+                        <p>Personal journey reflection, intentional purpose vs. reactive adaptation, and practical wisdom.</p>
+                        <button type="button" class="btn btn-secondary btn-small btn-use-template" data-template="evowth">Use Template</button>
+                    </div>
+
+                    <div class="template-card" data-template="systems">
+                        <div class="template-icon">🔵</div>
+                        <h4>Systems Architecture &amp; OntoMath</h4>
+                        <p>Formal systems breakdown, rule engines, mathematical modeling, and computational substrates.</p>
+                        <button type="button" class="btn btn-secondary btn-small btn-use-template" data-template="systems">Use Template</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast-notification" role="status" aria-live="polite">
+        <span class="toast-icon">✓</span>
+        <span id="toast-message" class="toast-message">Draft saved successfully.</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

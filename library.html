@@ -25,6 +25,7 @@
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
+    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
 
     <header class="navbar" id="navbar">
         <div class="nav-container">
@@ -80,6 +81,10 @@
                 <span class="section-tag">03 // Archives &amp; Inquiries</span>
                 <h1 class="page-title">The Library &amp; Archives</h1>
                 <p class="page-subtitle">Essays, research notes, and philosophical investigations exploring the depths of truth, culture, and human narrative.</p>
+                <div style="margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="studio.html" class="btn btn-primary btn-small">✍️ Draft Article in Studio →</a>
+                    <a href="studio.html?new=true" class="btn btn-secondary btn-small">＋ New Blank Inquiry</a>
+                </div>
             </div>
         </header>
 
@@ -90,6 +95,7 @@
                     <button class="essay-filter-btn" data-filter="ontology">Ontology &amp; Philosophy</button>
                     <button class="essay-filter-btn" data-filter="narrative">Culture &amp; Narrative</button>
                     <button class="essay-filter-btn" data-filter="reflections">Life Reflections</button>
+                    <a href="studio.html" class="btn btn-secondary btn-small" style="margin-left: auto; border-color: var(--gold); color: var(--gold);">✍️ Studio</a>
                 </div>
 
                 <div class="essays-grid">
