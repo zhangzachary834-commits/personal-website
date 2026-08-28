@@ -316,6 +316,9 @@ document.addEventListener("DOMContentLoaded", () => {
             card.className = "essay-card";
             card.setAttribute("data-category", art.category || "ontology");
             card.setAttribute("data-essay-id", articleId);
+            if (art.concepts && art.concepts.length > 0) {
+                card.setAttribute("data-concepts", art.concepts.join(","));
+            }
 
             const catLabels = {
                 ontology: "Epistemology · Relational Ontology",
@@ -1485,6 +1488,7 @@ Sent via Dimension of Thought Platform`;
             html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
             html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">');
             html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
+            html = html.replace(/\[\[(.*?)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
             html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
             html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
             html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
@@ -1575,6 +1579,8 @@ Sent via Dimension of Thought Platform`;
                 syntaxHtml = syntaxHtml.replace(/\*([^*]+)\*/g, '<span class="md-italic">*$1*</span>');
                 // Links
                 syntaxHtml = syntaxHtml.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<span class="md-link">[$1]($2)</span>');
+                // Wiki Links
+                syntaxHtml = syntaxHtml.replace(/\[\[(.*?)\]\]/g, '<span style="color:var(--muted);">[[</span><span style="color:var(--gold); text-decoration:underline;">$1</span><span style="color:var(--muted);">]]</span>');
                 // Images
                 syntaxHtml = syntaxHtml.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<span class="md-link">![$1]($2)</span>');
                 // Blockquotes
@@ -1625,6 +1631,17 @@ Sent via Dimension of Thought Platform`;
             currentDraft.tags = tagsInput.value.trim();
             currentDraft.content = bodyInput.value;
             currentDraft.updatedAt = Date.now();
+
+            const concepts = [];
+            const regex = /\[\[(.*?)\]\]/g;
+            let match;
+            while ((match = regex.exec(currentDraft.content)) !== null) {
+                const c = match[1].trim();
+                if (c && !concepts.includes(c)) {
+                    concepts.push(c);
+                }
+            }
+            currentDraft.concepts = concepts;
 
             const words = currentDraft.content.replace(/<[^>]*>/g, " ").trim().split(/\s+/).length;
             currentDraft.readTime = `${Math.max(1, Math.ceil(words / 190))} min read`;
@@ -2237,4 +2254,382 @@ ${currentDraft.content}`;
         loadDraftIntoEditor(currentDraft);
     }
     initStudioEngine();
+});
+
+// =========================================================================
+// Experimental Constellation View (Force-Directed Graph)
+// =========================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("toggle-graph-view-btn");
+    const graphContainer = document.getElementById("graph-view-container");
+    const gridContainer = document.getElementById("essays-grid");
+    const canvas = document.getElementById("library-graph-canvas");
+    const tooltip = document.getElementById("graph-tooltip");
+    
+    if (!toggleBtn || !graphContainer || !gridContainer || !canvas) return;
+
+    let isGraphView = false;
+    let animationId = null;
+    let nodes = [];
+    let edges = [];
+    let hoveredNode = null;
+    const ctx = canvas.getContext("2d");
+    
+    // Category Colors
+    const colorMap = {
+        ontology: "#c084fc",
+        narrative: "#f87171",
+        reflections: "#4ade80",
+        systems: "#60a5fa",
+        robotics: "#facc15"
+    };
+
+    function initGraphData() {
+        nodes = [];
+        edges = [];
+        
+        const categoryHubs = {};
+        const conceptHubs = {};
+        const cards = document.querySelectorAll(".essay-card");
+        
+        // Create nodes for each article
+        cards.forEach(card => {
+            const titleEl = card.querySelector(".essay-title a");
+            if (!titleEl) return;
+            const title = titleEl.textContent;
+            const url = titleEl.getAttribute("href");
+            const category = card.getAttribute("data-category") || "ontology";
+            
+            const node = {
+                id: "art_" + title,
+                isHub: false,
+                isConcept: false,
+                title: title,
+                url: url,
+                category: category,
+                color: colorMap[category] || "#ffffff",
+                radius: 6,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: 0,
+                vy: 0,
+                orbitOffset: Math.random() * Math.PI * 2,
+                twinkleOffset: Math.random() * Math.PI * 2
+            };
+            nodes.push(node);
+            
+            // Create category hub if not exists
+            if (!categoryHubs[category]) {
+                const hub = {
+                    id: "hub_" + category,
+                    isHub: true,
+                    isConcept: false,
+                    title: category.charAt(0).toUpperCase() + category.slice(1),
+                    url: null,
+                    category: category,
+                    color: colorMap[category] || "#ffffff",
+                    radius: 12,
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: 0,
+                    vy: 0,
+                    orbitOffset: Math.random() * Math.PI * 2,
+                    twinkleOffset: Math.random() * Math.PI * 2
+                };
+                categoryHubs[category] = hub;
+                nodes.push(hub);
+            }
+            
+            // Edge from article to hub
+            edges.push({
+                source: node,
+                target: categoryHubs[category]
+            });
+            
+            // Process bidirectional concepts
+            const conceptsAttr = card.getAttribute("data-concepts");
+            if (conceptsAttr) {
+                const concepts = conceptsAttr.split(",").map(c => c.trim()).filter(c => c);
+                concepts.forEach(concept => {
+                    if (!conceptHubs[concept]) {
+                        const conceptNode = {
+                            id: "concept_" + concept,
+                            isHub: false,
+                            isConcept: true,
+                            title: "[[" + concept + "]]",
+                            url: null,
+                            category: "concept",
+                            color: "#e2e8f0", // Light gray/silver for concepts
+                            radius: 8,
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            vx: 0,
+                            vy: 0,
+                            orbitOffset: Math.random() * Math.PI * 2,
+                            twinkleOffset: Math.random() * Math.PI * 2
+                        };
+                        conceptHubs[concept] = conceptNode;
+                        nodes.push(conceptNode);
+                    }
+                    
+                    // Edge from article to concept
+                    edges.push({
+                        source: node,
+                        target: conceptHubs[concept]
+                    });
+                });
+            }
+        });
+    }
+
+    function resizeCanvas() {
+        const rect = graphContainer.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const time = Date.now() * 0.001;
+        
+        // Draw edges
+        edges.forEach(edge => {
+            const a = edge.source;
+            const b = edge.target;
+            const dist = Math.hypot(b.x - a.x, b.y - a.y);
+            
+            const organicFade = Math.sin(time * 3 + a.orbitOffset + b.orbitOffset) * 0.3 + 0.7;
+            let alpha = Math.max(0.05, 1 - (dist / 400)) * organicFade;
+            
+            if (hoveredNode && (a === hoveredNode || b === hoveredNode)) {
+                alpha = 0.9;
+                ctx.lineWidth = 1.6;
+                const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+                grad.addColorStop(0, a.color);
+                grad.addColorStop(1, b.color);
+                ctx.strokeStyle = grad;
+            } else {
+                ctx.lineWidth = 1.0;
+                // Add color tint from target hub if available
+                if (b.isHub) {
+                    // Extract rgb from hex color for rgba (simplification, assuming hex)
+                    // Just fallback to generic goldish/white glow
+                    ctx.strokeStyle = `rgba(216, 180, 110, ${alpha * 0.4})`;
+                } else {
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.3})`;
+                }
+            }
+            
+            const cx = (a.x + b.x) / 2 + Math.sin(time * 2 + a.orbitOffset) * 35;
+            const cy = (a.y + b.y) / 2 + Math.cos(time * 2 + b.orbitOffset) * 35;
+
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.quadraticCurveTo(cx, cy, b.x, b.y);
+            ctx.stroke();
+        });
+        
+        // Draw nodes
+        nodes.forEach(node => {
+            const blink = Math.sin(time * 4 + node.twinkleOffset) * 0.5 + 0.5;
+            const currentRadius = node.isHub ? node.radius + (Math.sin(time*2)*1.5) : node.radius * (0.6 + blink * 0.4);
+            
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, currentRadius, 0, Math.PI * 2);
+            
+            // Add slight transparency based on blink for non-hubs
+            if (node.isHub) {
+                ctx.fillStyle = node.color;
+            } else {
+                // If it's hovered, make it fully opaque
+                ctx.fillStyle = (node === hoveredNode) ? node.color : node.color + "99"; 
+            }
+            ctx.fill();
+            
+            if (node.isHub) {
+                ctx.shadowBlur = 15 + blink * 5;
+                ctx.shadowColor = node.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            } else if (node === hoveredNode) {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = node.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            if (node === hoveredNode || node.isHub) {
+                ctx.fillStyle = "rgba(247, 243, 235, 0.85)";
+                ctx.font = node.isHub ? "500 14px 'IBM Plex Mono', monospace" : "12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(node.title, node.x, node.y + node.radius + 15);
+            }
+        });
+    }
+
+    function simulate() {
+        const width = canvas.width / (window.devicePixelRatio || 1);
+        const height = canvas.height / (window.devicePixelRatio || 1);
+        const center = { x: width / 2, y: height / 2 };
+        
+        const k = 0.05; // Spring constant
+        const damping = 0.85;
+        const repulsion = 2000;
+        
+        // Spring forces
+        edges.forEach(edge => {
+            const dx = edge.target.x - edge.source.x;
+            const dy = edge.target.y - edge.source.y;
+            const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+            const targetDist = edge.source.isHub || edge.target.isHub ? 120 : 180;
+            const force = (dist - targetDist) * k;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            
+            edge.source.vx += fx;
+            edge.source.vy += fy;
+            edge.target.vx -= fx;
+            edge.target.vy -= fy;
+        });
+        
+        // Repulsion forces
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const n1 = nodes[i];
+                const n2 = nodes[j];
+                const dx = n2.x - n1.x;
+                const dy = n2.y - n1.y;
+                const distSq = dx*dx + dy*dy || 1;
+                if (distSq < 40000) {
+                    const force = repulsion / distSq;
+                    const dist = Math.sqrt(distSq);
+                    const fx = (dx / dist) * force;
+                    const fy = (dy / dist) * force;
+                    n1.vx -= fx;
+                    n1.vy -= fy;
+                    n2.vx += fx;
+                    n2.vy += fy;
+                }
+            }
+            
+            // Centering force
+            const dx = center.x - nodes[i].x;
+            const dy = center.y - nodes[i].y;
+            nodes[i].vx += dx * 0.001;
+            nodes[i].vy += dy * 0.001;
+        }
+        
+        // Apply velocity
+        nodes.forEach(node => {
+            node.x += node.vx;
+            node.y += node.vy;
+            node.vx *= damping;
+            node.vy *= damping;
+            
+            // Bounds
+            if (node.x < 20) { node.x = 20; node.vx *= -1; }
+            if (node.x > width - 20) { node.x = width - 20; node.vx *= -1; }
+            if (node.y < 20) { node.y = 20; node.vy *= -1; }
+            if (node.y > height - 20) { node.y = height - 20; node.vy *= -1; }
+        });
+    }
+
+    function loop() {
+        if (!isGraphView) return;
+        simulate();
+        draw();
+        animationId = requestAnimationFrame(loop);
+    }
+    
+    // Interactions
+    let isDragging = false;
+    let dragNode = null;
+    
+    canvas.addEventListener("mousemove", (e) => {
+        if (!isGraphView) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        if (isDragging && dragNode) {
+            dragNode.x = x;
+            dragNode.y = y;
+            dragNode.vx = 0;
+            dragNode.vy = 0;
+            return;
+        }
+        
+        hoveredNode = null;
+        let minDist = 20;
+        
+        nodes.forEach(node => {
+            const dist = Math.hypot(node.x - x, node.y - y);
+            if (dist < minDist) {
+                minDist = dist;
+                hoveredNode = node;
+            }
+        });
+        
+        if (hoveredNode) {
+            canvas.style.cursor = "pointer";
+            if (!hoveredNode.isHub) {
+                tooltip.style.display = "block";
+                tooltip.style.left = (e.clientX + 15) + "px";
+                tooltip.style.top = (e.clientY + 15) + "px";
+                tooltip.innerHTML = `<strong style="color:var(--gold);">${hoveredNode.title}</strong><br><span style="font-size:0.8rem;color:var(--muted);">${hoveredNode.category}</span>`;
+            } else {
+                tooltip.style.display = "none";
+            }
+        } else {
+            canvas.style.cursor = "default";
+            tooltip.style.display = "none";
+        }
+    });
+
+    canvas.addEventListener("mousedown", (e) => {
+        if (hoveredNode) {
+            isDragging = true;
+            dragNode = hoveredNode;
+        }
+    });
+    
+    window.addEventListener("mouseup", () => {
+        isDragging = false;
+        dragNode = null;
+    });
+    
+    canvas.addEventListener("click", () => {
+        if (hoveredNode && !hoveredNode.isHub && hoveredNode.url) {
+            window.location.href = hoveredNode.url;
+        }
+    });
+
+    toggleBtn.addEventListener("click", () => {
+        isGraphView = !isGraphView;
+        if (isGraphView) {
+            toggleBtn.textContent = "📑 Grid View";
+            toggleBtn.style.color = "var(--ink)";
+            toggleBtn.style.borderColor = "var(--line)";
+            gridContainer.style.display = "none";
+            graphContainer.style.display = "block";
+            resizeCanvas();
+            initGraphData();
+            loop();
+        } else {
+            toggleBtn.textContent = "🌌 Constellation View";
+            toggleBtn.style.color = "var(--teal)";
+            toggleBtn.style.borderColor = "var(--teal)";
+            gridContainer.style.display = "grid";
+            graphContainer.style.display = "none";
+            cancelAnimationFrame(animationId);
+            tooltip.style.display = "none";
+        }
+    });
+    
+    window.addEventListener("resize", () => {
+        if (isGraphView) resizeCanvas();
+    });
 });
