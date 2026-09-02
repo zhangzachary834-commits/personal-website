@@ -31,7 +31,7 @@ The top-left navigation bar includes an interactive, glassmorphic **Mode Switche
   * Double-click **`restart-server.command`** in Finder to terminate any previous server running strictly on port 8000 and start a fresh server.
 * **Terminal**:
   ```bash
-  cd ~/Documents/personal-website
+  cd ~/Documents/GitHub/personal-website
   python3 -m http.server 8000
   ```
   Then visit [http://localhost:8000](http://localhost:8000).
@@ -48,15 +48,27 @@ The top-left navigation bar includes an interactive, glassmorphic **Mode Switche
 
 Press `` ` `` (backtick / tilde) or click **`>_ CLI`** in the navigation bar:
 
-* `mode <personal|dimension>` — Switch site modes dynamically.
-* `earthcall` — Overview of the C++20 / WebGPU computational ontology.
-* `projects` — Selected robotics, systems, and operations projects.
-* `about` — Zachary Zhang bio and 3 core system principles.
-* `essays` — List all essays in the Library archive.
-* `read <id>` — Open an essay page (e.g. `read valley`, `read persons`, `read sadako`).
-* `manifesto` — Constitutional Manifesto & axioms.
-* `theme` — Toggle dark/light theme.
-* `clear` / `exit` — Clear or close the terminal.
+* **Systems & Architecture**:
+  * `specs` / `neofetch` — Workstation, OS, runtime substrates, robotics hardware, and toolchains.
+  * `benchmark` / `bench` — Real-time in-browser Float32 Tensor MatMul & 3D SAT collision throughput benchmark.
+  * `stack` / `arch` — Multi-tier ASCII box architecture diagram (Person to Vessel).
+  * `tree` / `ontology` — Earthcall source tree hierarchy & architectural refusals.
+  * `robotics` / `jaka` — OpenVLA-OFT, remote CUDA inference, and RealSense vision pipeline.
+  * `sat` / `physics` — C++20 Separating Axis Theorem continuous collision detection details.
+  * `skills` / `tech` — Categorized technical proficiencies matrix.
+* **Projects & Research**:
+  * `projects` — Selected systems, robotics, and operations projects.
+  * `cat <project>` — Deep-dives (`cat earthcall`, `cat robotics`, `cat sat`, `cat teacherops`, `cat bridge`).
+  * `now` — What is being built right now in present tense (2026).
+  * `cv` / `resume` — Research, education, and background CV summary.
+* **Platform & Essays**:
+  * `mode <personal|dimension>` — Switch site modes dynamically (updates terminal prompt & view).
+  * `essays` / `read <id>` — List or open essays from The Library.
+  * `draft` / `studio` / `drafts` — Open or view local article drafting studio.
+  * `manifesto` / `story` — Core philosophical texts & origin story.
+* **Shell Utilities**:
+  * `Tab` — Autocomplete command names and arguments.
+  * `history`, `matrix`, `date`, `echo`, `sudo`, `theme`, `clear`, `exit`.
 
 ---
 

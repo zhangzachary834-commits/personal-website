@@ -196,15 +196,21 @@
                     </div>
                     <div class="toolbar-sep"></div>
                     <div class="toolbar-group" style="margin-left: auto; gap: 8px;">
+                        <button type="button" class="tool-btn" id="toggle-block-mode-btn" title="Switch between Markdown and Block Editor" style="border: 1px solid var(--teal); color: var(--teal);">Blocks</button>
                         <button type="button" class="tool-btn" id="zen-mode-btn" title="Toggle Zen / Focus Mode">Zen</button>
                         <button type="button" class="tool-btn tool-btn-danger" id="clear-editor-btn" title="Clear and Reset Draft">Clear</button>
                     </div>
                 </div>
 
                 <!-- Textarea Editor with Syntax Highlighting -->
-                <div class="editor-textarea-wrapper" style="position: relative;">
+                <div class="editor-textarea-wrapper" style="position: relative; height: 100%;">
                     <div id="syntax-layer" class="studio-textarea syntax-layer" aria-hidden="true"></div>
                     <textarea id="studio-body" class="studio-textarea" placeholder="Begin articulating your thought here...&#10;&#10;Use Markdown formatting (## Headings, > Quotes, - Bullet points, ``` code blocks) or the toolbar above.&#10;&#10;Changes are automatically saved live to your browser." spellcheck="true"></textarea>
+                    
+                    <!-- Atomic Block Editor Container (Hidden by Default) -->
+                    <div id="block-editor-container" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 40px; overflow-y: auto; background: var(--bg-card); z-index: 10;">
+                        <!-- Blocks will be injected here via JS -->
+                    </div>
                 </div>
             </div>
 

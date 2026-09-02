@@ -99,14 +99,80 @@
                     <a href="studio.html" class="btn btn-secondary btn-small" style="margin-left: 8px; border-color: var(--gold); color: var(--gold);">✍️ Studio</a>
                 </div>
 
-                <div id="graph-view-container" style="display: none; height: 700px; width: 100%; position: relative; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(16px); margin-bottom: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
-                    <canvas id="library-graph-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-                    <div id="graph-tooltip" style="position: absolute; display: none; padding: 12px 16px; background: var(--bg-elev); border: 1px solid var(--gold); border-radius: var(--radius-md); pointer-events: none; max-width: 250px; z-index: 10;"></div>
+                <div id="graph-view-container" class="constellation-view-container" style="display: none;">
+                    <!-- Top HUD Toolbar -->
+                    <div class="constellation-hud-top">
+                        <div class="constellation-filter-group" id="constellation-cluster-filters">
+                            <button type="button" class="c-filter-chip active" data-cluster="all">✧ All Stars</button>
+                            <button type="button" class="c-filter-chip" data-cluster="ontology">● Ontology</button>
+                            <button type="button" class="c-filter-chip" data-cluster="narrative">● Narrative</button>
+                            <button type="button" class="c-filter-chip" data-cluster="reflections">● Reflections</button>
+                            <button type="button" class="c-filter-chip" data-cluster="concepts">◆ Concepts</button>
+                        </div>
+
+                        <div class="constellation-hud-right">
+                            <div class="constellation-search-box">
+                                <span class="c-search-icon">🔍</span>
+                                <input type="text" id="constellation-search-input" class="c-search-input" placeholder="Search constellation stars..." autocomplete="off" spellcheck="false">
+                                <button type="button" id="constellation-search-clear" class="c-search-clear" title="Clear search" style="display:none;">✕</button>
+                            </div>
+                            <div class="constellation-layout-selector" id="constellation-layout-modes">
+                                <button type="button" class="c-layout-btn active" data-layout="galaxy" title="Force-Directed Galaxy Physics">🌌 Galaxy</button>
+                                <button type="button" class="c-layout-btn" data-layout="orbital" title="Concentric Orbital System">🪐 Orbit</button>
+                                <button type="button" class="c-layout-btn" data-layout="lattice" title="Ontological Relational Web">🕸️ Web</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Graph Canvas -->
+                    <canvas id="library-graph-canvas" class="constellation-main-canvas"></canvas>
+
+                    <!-- Hover Mini Tooltip -->
+                    <div id="graph-tooltip" class="constellation-star-tooltip"></div>
+
+                    <!-- Interactive Star Inspector Card -->
+                    <div id="constellation-inspector-card" class="constellation-inspector-card" hidden>
+                        <div class="inspector-header">
+                            <div class="inspector-tags-row">
+                                <span id="inspector-cat-tag" class="inspector-cat-badge">Category</span>
+                                <span id="inspector-read-time" class="inspector-read-time">5 min read</span>
+                            </div>
+                            <button type="button" id="inspector-close-btn" class="inspector-close-btn" aria-label="Close Inspector">✕</button>
+                        </div>
+                        <h3 id="inspector-title" class="inspector-title">Essay Title</h3>
+                        <p id="inspector-subtitle" class="inspector-subtitle">Subtitle</p>
+                        <p id="inspector-excerpt" class="inspector-excerpt">Excerpt</p>
+                        <div class="inspector-concepts-section">
+                            <span class="inspector-section-label">Connected Concepts:</span>
+                            <div id="inspector-concepts-list" class="inspector-concepts-pills"></div>
+                        </div>
+                        <div class="inspector-actions">
+                            <a id="inspector-read-link" href="#" class="btn btn-small btn-primary inspector-read-btn">Read Full Essay →</a>
+                            <button type="button" id="inspector-focus-btn" class="btn btn-small btn-secondary inspector-focus-btn">Focus Star ✧</button>
+                        </div>
+                    </div>
+
+                    <!-- Bottom HUD Toolbar -->
+                    <div class="constellation-hud-bottom">
+                        <div class="constellation-stats" id="constellation-stats-readout">
+                            <span>✧ <strong id="c-stat-essays">9</strong> Essays</span>
+                            <span>● <strong id="c-stat-hubs">3</strong> Hubs</span>
+                            <span>◆ <strong id="c-stat-concepts">10</strong> Concepts</span>
+                            <span>⟷ <strong id="c-stat-synapses">28</strong> Synapses</span>
+                        </div>
+                        <div class="constellation-view-controls">
+                            <button type="button" id="c-zoom-in" class="c-zoom-btn" title="Zoom In">+</button>
+                            <button type="button" id="c-zoom-out" class="c-zoom-btn" title="Zoom Out">−</button>
+                            <button type="button" id="c-zoom-reset" class="c-zoom-btn" title="Center Galaxy">⟲ Center</button>
+                            <button type="button" id="c-toggle-particles" class="c-zoom-btn active" title="Toggle Photon Pulses">⚡ Pulses</button>
+                            <button type="button" id="c-toggle-nebulae" class="c-zoom-btn active" title="Toggle Nebulae">☁️ Nebulae</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="essays-grid" id="essays-grid">
                     <!-- Essay 1 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons">
+                    <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons" data-concepts="Person, Encounter, Epistemology, Moral Ontology">
                         <div class="essay-meta">
                             <span class="essay-tag">Epistemology · Relational Ontology</span>
                             <span class="essay-read-time">9 min read</span>
@@ -123,7 +189,7 @@
                     </article>
 
                     <!-- Essay 2 -->
-                    <article class="essay-card" data-category="reflections" data-essay-id="central-valley-ucla">
+                    <article class="essay-card" data-category="reflections" data-essay-id="central-valley-ucla" data-concepts="Central Valley, Growth, Education, Journey">
                         <div class="essay-meta">
                             <span class="essay-tag">Narrative &amp; Vocation</span>
                             <span class="essay-read-time">9 min read</span>
@@ -140,7 +206,7 @@
                     </article>
 
                     <!-- Essay 3 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="narrative-continuum">
+                    <article class="essay-card" data-category="ontology" data-essay-id="narrative-continuum" data-concepts="Continuum, Grand Story, Reality, Living Knowledge">
                         <div class="essay-meta">
                             <span class="essay-tag">Metaphysics &amp; Systems</span>
                             <span class="essay-read-time">8 min read</span>
@@ -157,24 +223,24 @@
                     </article>
 
                     <!-- Essay 4 -->
-                    <article class="essay-card" data-category="narrative" data-essay-id="justice-horror-sadako">
+                    <article class="essay-card" data-category="narrative" data-essay-id="why-sadako-needs-redemption-arc" data-concepts="Justice, Redemption, Person, Narrative Ethics">
                         <div class="essay-meta">
-                            <span class="essay-tag">Culture &amp; Narrative Ethics</span>
-                            <span class="essay-read-time">10 min read</span>
+                            <span class="essay-tag">Culture &amp; Narrative Ethics · Horror &amp; Redemption</span>
+                            <span class="essay-read-time">18 min read</span>
                         </div>
-                        <h3 class="essay-title"><a href="posts/justice-horror-sadako.html">Justice Does Not Rejoice in Horror</a></h3>
-                        <p class="essay-subtitle">Light in the Darkness: Human Tragedy and the Sadako Redemption Arc</p>
+                        <h3 class="essay-title"><a href="posts/why-sadako-needs-redemption-arc.html">Justice, Love, and Life for Sadako: Why Sadako Yamamura Needs a Redemption Arc</a></h3>
+                        <p class="essay-subtitle">Why Sadako Yamamura Needs a Redemption Arc — A Story Proposal</p>
                         <p class="essay-excerpt">
-                            Why do our stories so often leave tragedy unresolved? Analyzing the horror genre and proposing the Sadako Spec Scripts: why genuine justice refuses to delight in destruction, demanding redemption and light in the darkest wells.
+                            What would happen if you spent 30 years isolated at the bottom of a well? A comprehensive narrative case and story proposal for why Sadako Yamamura (Ringu) deserves a redemption arc, dignity, and new life in the light.
                         </p>
                         <div class="essay-card-footer">
                             <span class="essay-author">By Zachary Zhang</span>
-                            <a href="posts/justice-horror-sadako.html" class="btn btn-small btn-primary">Read Full Essay →</a>
+                            <a href="posts/why-sadako-needs-redemption-arc.html" class="btn btn-small btn-primary">Read Full Essay →</a>
                         </div>
                     </article>
 
                     <!-- Essay 5 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="personhood-consciousness">
+                    <article class="essay-card" data-category="ontology" data-essay-id="personhood-consciousness" data-concepts="Person, Moral Ontology, Dignity, Soul">
                         <div class="essay-meta">
                             <span class="essay-tag">Moral Ontology</span>
                             <span class="essay-read-time">6 min read</span>
@@ -191,7 +257,7 @@
                     </article>
 
                     <!-- Essay 6 -->
-                    <article class="essay-card" data-category="narrative" data-essay-id="music-and-culture">
+                    <article class="essay-card" data-category="narrative" data-essay-id="music-and-culture" data-concepts="Music, Experiential Story, Beauty, Continuum">
                         <div class="essay-meta">
                             <span class="essay-tag">Artistic Analysis</span>
                             <span class="essay-read-time">5 min read</span>
@@ -208,7 +274,7 @@
                     </article>
 
                     <!-- Essay 7 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="ai-training-data-discipleship">
+                    <article class="essay-card" data-category="ontology" data-essay-id="ai-training-data-discipleship" data-concepts="Discipleship, AI Ethics, Formation, Epistemology">
                         <div class="essay-meta">
                             <span class="essay-tag">Epistemology · AI &amp; Philosophy</span>
                             <span class="essay-read-time">8 min read</span>
@@ -225,7 +291,7 @@
                     </article>
 
                     <!-- Essay 8 -->
-                    <article class="essay-card" data-category="narrative" data-essay-id="art-as-the-person-kpop">
+                    <article class="essay-card" data-category="narrative" data-essay-id="art-as-the-person-kpop" data-concepts="Art, Person, Culture, Authenticity">
                         <div class="essay-meta">
                             <span class="essay-tag">Culture &amp; Ethics · Music</span>
                             <span class="essay-read-time">7 min read</span>
@@ -242,7 +308,7 @@
                     </article>
 
                     <!-- Essay 9 -->
-                    <article class="essay-card" data-category="reflections" data-essay-id="pathways-of-evowth">
+                    <article class="essay-card" data-category="reflections" data-essay-id="pathways-of-evowth" data-concepts="Evowth, Growth, Telos, Living Knowledge">
                         <div class="essay-meta">
                             <span class="essay-tag">Teleology &amp; Human Flourishing</span>
                             <span class="essay-read-time">6 min read</span>

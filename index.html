@@ -78,6 +78,10 @@
             </nav>
 
             <div class="nav-actions">
+                <button id="palette-toggle-btn" class="icon-btn" title="Open Command Palette (Cmd + K)" aria-label="Open Command Palette">
+                    <span class="cli-glyph" aria-hidden="true">⌘K</span>
+                    <span class="btn-label">Find</span>
+                </button>
                 <button id="terminal-toggle-btn" class="icon-btn" title="Open Interactive CLI (press ` )" aria-label="Open Interactive CLI">
                     <span class="cli-glyph" aria-hidden="true">&gt;_</span>
                     <span class="btn-label">CLI</span>
@@ -218,6 +222,9 @@
                     <div class="hero-cta-group">
                         <a href="#p-earthcall" class="btn btn-primary">Enter Earthcall <span aria-hidden="true">→</span></a>
                         <a href="#p-work" class="btn btn-secondary">Selected Work</a>
+                        <button class="btn btn-ghost" id="hero-resume-btn" title="Open Print-Ready Academic CV">
+                            Résumé / CV ↗
+                        </button>
                         <button class="btn btn-ghost copy-email-btn" data-email="zhangzachary834@gmail.com" title="Copy email address">
                             Copy Email
                         </button>
@@ -332,6 +339,7 @@
                             </p>
                             <div class="project-links-row">
                                 <a class="btn btn-primary" href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer">View Repository ↗</a>
+                                <button type="button" class="btn btn-secondary proj-spec-btn" data-project="earthcall">Deep-Dive Spec ↗</button>
                                 <a class="btn btn-ghost" href="https://github.com/zhangzachary834-commits/Earthcall/blob/main/docs/core/EarthcallOurverse.md" target="_blank" rel="noopener noreferrer">Read Manifesto ↗</a>
                             </div>
                         </div>
@@ -389,6 +397,37 @@
                             </article>
                         </div>
                     </div>
+                    <!-- Embedded OntoMath Law Evaluator & Live Substrate Visualizer -->
+                    <div class="ontomath-evaluator-wrapper" style="margin-top: 40px;">
+                        <div class="section-header left" style="margin-bottom: 16px;">
+                            <span class="section-tag" style="color: var(--gold);">Live Substrate // Runtime Law Evaluator</span>
+                            <h3 style="font-size: 1.45rem; color: var(--ink); margin-bottom: 6px;">OntoMath Law Network Simulation</h3>
+                            <p style="color: var(--muted); font-size: 0.95rem;">
+                                Beings are authored in-world from primitive property paths. Toggle runtime Laws to observe how state transitions propagate through Rete evaluation nodes in real time.
+                            </p>
+                        </div>
+
+                        <div class="drawer-sim-box">
+                            <div class="drawer-sim-header">
+                                <div class="drawer-sim-controls" id="ontomath-law-toggles">
+                                    <button type="button" class="drawer-sim-btn active" data-law="gravity">Law: GravitationalAttraction</button>
+                                    <button type="button" class="drawer-sim-btn active" data-law="resonance">Law: ProximityResonance</button>
+                                    <button type="button" class="drawer-sim-btn active" data-law="damping">Law: VelocityDamping</button>
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Spawn Being</button>
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset</button>
+                                </div>
+                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">● RETE NETWORK: COMPILING LAWS</span>
+                            </div>
+                            <div class="drawer-sim-canvas-wrapper">
+                                <canvas id="ontomath-canvas" class="drawer-sim-canvas" width="740" height="270"></canvas>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-family:var(--font-mono); font-size:0.8rem; color:var(--muted);">
+                                <span>Active Beings: <strong id="ontomath-being-count" style="color:var(--gold);">4 Nodes</strong></span>
+                                <span>Rete Token Evaluation: <strong style="color:var(--teal);">60 FPS (Continuous)</strong></span>
+                                <span style="color:var(--ink);">Click canvas to spawn beings · Drag nodes to test laws</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -404,11 +443,7 @@
                     <div class="project-filters" role="tablist" aria-label="Filter Projects">
                         <button class="filter-btn active" data-filter="all">All</button>
                         <button class="filter-btn" data-filter="robotics">Robotics</button>
-                        <button class="filter-btn" data-filter="systems">Systems</button>
-                        <button class="filter-btn" data-filter="tools">Tools</button>
-                    </div>
-
-                    <div class="projects-grid">
+                        <button class="filter-btn" data-filter="systems">System<div class="projects-grid">
                         <article class="project-card" data-category="robotics">
                             <div class="project-card-header">
                                 <div>
@@ -428,6 +463,9 @@
                                 <span class="tech-tag">AprilTag</span>
                                 <span class="tech-tag">JAKA SDK</span>
                             </div>
+                            <div class="proj-card-actions">
+                                <button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="robotics">Technical Spec &amp; Kinematics ↗</button>
+                            </div>
                         </article>
 
                         <article class="project-card" data-category="systems">
@@ -446,6 +484,9 @@
                                 <span class="tech-tag">Geometry</span>
                                 <span class="tech-tag">WebGPU</span>
                             </div>
+                            <div class="proj-card-actions">
+                                <button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="sat">Technical Spec &amp; Live SAT Sim ↗</button>
+                            </div>
                         </article>
 
                         <article class="project-card" data-category="tools">
@@ -454,7 +495,6 @@
                                     <h3>TeacherOps</h3>
                                     <p class="project-role">Human-in-the-Loop Operations</p>
                                 </div>
-                                <a href="https://github.com/zhangzachary834-commits/teacherops" target="_blank" rel="noopener noreferrer" class="proj-link-btn">GitHub ↗</a>
                             </div>
                             <p class="project-description">
                                 A local FastAPI + SQLite assistant for a family tutoring hub: teacher matching, parent inquiries, follow-ups, and drafted coordination messages. Automation stops where human judgment begins.
@@ -464,6 +504,34 @@
                                 <span class="tech-tag">FastAPI</span>
                                 <span class="tech-tag">SQLite</span>
                                 <span class="tech-tag">Uvicorn</span>
+                            </div>
+                            <div class="proj-card-actions">
+                                <button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="teacherops">Technical Spec ↗</button>
+                                <a href="https://github.com/zhangzachary834-commits/teacherops" target="_blank" rel="noopener noreferrer" class="proj-link-btn">GitHub ↗</a>
+                            </div>
+                        </article>
+
+                        <article class="project-card" data-category="tools">
+                            <div class="project-card-header">
+                                <div>
+                                    <h3>Sandbox-to-Terminal Bridge</h3>
+                                    <p class="project-role">Host IPC · Agent Workflows</p>
+                                </div>
+                            </div>
+                            <p class="project-description">
+                                A bidirectional IPC bridge connecting isolated AI coding sandboxes with host execution, live Google Docs synchronization, and human-gated approval security gates.
+                            </p>
+                            <div class="tech-tag-list">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">macOS IPC</span>
+                                <span class="tech-tag">Google Docs API</span>
+                                <span class="tech-tag">FastAPI</span>
+                            </div>
+                            <div class="proj-card-actions">
+                                <button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="bridge">Technical Spec ↗</button>
+                            </div>
+                        </article>
+                    </div>                 <span class="tech-tag">Uvicorn</span>
                             </div>
                         </article>
                     </div>
@@ -1000,7 +1068,104 @@
         </div>
     </main>
 
+    
+    <!-- Global Command Palette Modal (Cmd + K) -->
+    <div id="palette-modal" class="palette-modal" role="dialog" aria-modal="true" aria-label="Command Palette" hidden>
+        <div class="palette-backdrop" id="palette-backdrop"></div>
+        <div class="palette-window">
+            <div class="palette-input-line">
+                <span class="palette-search-icon" aria-hidden="true">🔍</span>
+                <input type="text" id="palette-input" class="palette-input" placeholder="Search projects, simulators, essays, specs... (e.g. 'sat', 'specs', 'cv')" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <span class="palette-kbd-badge">ESC</span>
+            </div>
+            <div class="palette-results" id="palette-results">
+                <!-- Dynamic Results Injected Here -->
+            </div>
+            <div class="palette-footer">
+                <span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span>
+                <span><kbd>Enter</kbd> select</span>
+                <span><kbd>ESC</kbd> close</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print-Ready Résumé / CV Modal -->
+    <div id="resume-modal" class="project-drawer-modal" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title" hidden>
+        <div class="project-drawer-backdrop" id="resume-backdrop"></div>
+        <div class="project-drawer-content" style="max-width: 860px;">
+            <div class="drawer-header">
+                <div>
+                    <span class="drawer-tag">Curriculum Vitae // Systems &amp; Mathematics</span>
+                    <h2 id="resume-modal-title" class="drawer-title">Zachary Zhang</h2>
+                    <p class="drawer-role">Computer Science &amp; Mathematics · Systems Architect</p>
+                </div>
+                <div class="drawer-actions">
+                    <button type="button" class="btn btn-small btn-primary" onclick="window.print()">Print / Export PDF 🖨️</button>
+                    <button type="button" id="resume-close-btn" class="drawer-close-btn" aria-label="Close CV">✕</button>
+                </div>
+            </div>
+            <div class="drawer-body cv-printable-body">
+                <div class="cv-section">
+                    <h3 class="cv-section-title">Education</h3>
+                    <p><strong>University of California, Los Angeles (UCLA)</strong> — B.S. Computer Science &amp; Mathematics</p>
+                </div>
+                <div class="cv-section">
+                    <h3 class="cv-section-title">Core Systems &amp; Research</h3>
+                    <div class="cv-entry">
+                        <h4>Earthcall Substrate (Creator &amp; Architect)</h4>
+                        <p class="cv-meta">C++20 · WebGPU (WGSL) · WebAssembly · Embedded React · Python Shared-Memory IPC</p>
+                        <p>Designed a Person-centered computational ontology ordering an attached graphics/simulation vessel. Authored Rete-style OntoMath law evaluation networks without hardcoded entity domain classes.</p>
+                    </div>
+                    <div class="cv-entry">
+                        <h4>Robotics Perception &amp; JAKA Teleoperation Pipeline</h4>
+                        <p class="cv-meta">OpenVLA-OFT (7B VLA) · PyTorch · Intel RealSense D435i · AprilTag 3 · Remote CUDA</p>
+                        <p>Constructed an end-to-end vision-language-action pipeline on remote CUDA clusters for real-time 6-DOF JAKA manipulator teleoperation with sub-100ms inference and automated AprilTag frame calibration.</p>
+                    </div>
+                    <div class="cv-entry">
+                        <h4>Continuous 3D SAT Collision Detection Engine</h4>
+                        <p class="cv-meta">Modern C++20 · Computational Geometry · Linear Algebra</p>
+                        <p>Engineered a continuous Separating Axis Theorem (SAT) collision engine evaluating face normals and edge cross-products for convex polyhedra with zero runtime heap allocations in inner loops.</p>
+                    </div>
+                    <div class="cv-entry">
+                        <h4>TeacherOps</h4>
+                        <p class="cv-meta">FastAPI · SQLite · Human-in-the-Loop Operations</p>
+                        <p>Built an operational coordination hub for family tutoring services with strict human-in-the-loop verification gates.</p>
+                    </div>
+                </div>
+                <div class="cv-section">
+                    <h3 class="cv-section-title">Technical Proficiencies</h3>
+                    <p><strong>Languages &amp; Substrates:</strong> C++20, WebGPU (WGSL), Python 3.12+, TypeScript, JavaScript, SQL, WebAssembly, CMake, Bash.</p>
+                    <p><strong>Mathematics:</strong> Linear Algebra, Convex Geometry, Multivariable Calculus, Discrete Mathematics, Rete Algorithm Networks.</p>
+                    <p><strong>Contact:</strong> zhangzachary834@gmail.com · github.com/zhangzachary834-commits · linkedin.com/in/zachary-of-zhang</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Terminal Modal -->
+    
+    <!-- Project Technical Spec Slide-Out Drawer -->
+    <div id="project-drawer-modal" class="project-drawer-modal" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+        <div class="project-drawer-backdrop" id="project-drawer-backdrop"></div>
+        <div class="project-drawer-content" id="project-drawer-content">
+            <div class="drawer-header">
+                <div class="drawer-meta">
+                    <span class="drawer-tag">02 // Deep-Dive Architecture Spec</span>
+                    <h2 id="drawer-title" class="drawer-title">Project Title</h2>
+                    <p id="drawer-role" class="drawer-role">Systems &amp; Ontology</p>
+                </div>
+                <div class="drawer-actions">
+                    <a id="drawer-github-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-primary drawer-gh-btn" style="display:none;">GitHub Repo ↗</a>
+                    <button type="button" id="drawer-close-btn" class="drawer-close-btn" title="Close Spec Sheet (ESC)" aria-label="Close specification sheet">✕</button>
+                </div>
+            </div>
+
+            <div class="drawer-body" id="drawer-body">
+                <!-- Dynamic Interactive Project Content Injected Here -->
+            </div>
+        </div>
+    </div>
+
     <div id="terminal-modal" class="terminal-modal" role="dialog" aria-modal="true" aria-labelledby="terminal-title" hidden>
         <div class="terminal-backdrop" id="terminal-backdrop"></div>
         <div class="terminal-window">
