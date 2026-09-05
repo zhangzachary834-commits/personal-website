@@ -393,10 +393,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let time = 0;
     let mousePos = { x: -1000, y: -1000, active: false };
 
+    let cachedCanvasRect = null;
+    function updateCanvasRect() {
+        if (canvas) {
+            cachedCanvasRect = canvas.getBoundingClientRect();
+        }
+    }
+
+    function getCanvasRect() {
+        if (!cachedCanvasRect && canvas) {
+            updateCanvasRect();
+        }
+        return cachedCanvasRect;
+    }
+
     function resizeConstellation() {
         if (!canvas) return;
+        updateCanvasRect();
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const rect = canvas.getBoundingClientRect();
+        const rect = cachedCanvasRect;
         canvas.width = Math.floor(rect.width * dpr);
         canvas.height = Math.floor(rect.height * dpr);
         if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -404,7 +419,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initStars() {
         if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
+        const rect = getCanvasRect();
+        if (!rect) return;
         const w = rect.width;
         const h = rect.height;
         const count = Math.min(Math.floor(w / 18), 120);
@@ -464,8 +480,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (canvas) {
         window.addEventListener("mousemove", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
+            const rect = getCanvasRect();
+            if (rect && e.clientY <= rect.bottom && e.clientY >= rect.top) {
                 mousePos.x = e.clientX - rect.left;
                 mousePos.y = e.clientY - rect.top;
                 mousePos.active = true;
@@ -475,8 +491,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.addEventListener("click", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
+            const rect = getCanvasRect();
+            if (rect && e.clientY <= rect.bottom && e.clientY >= rect.top) {
                 const mx = e.clientX - rect.left;
                 const my = e.clientY - rect.top;
 
@@ -515,7 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawConstellation() {
         if (!ctx || !canvas || reduceMotion) return;
         time += 1;
-        const rect = canvas.getBoundingClientRect();
+        const rect = getCanvasRect();
+        if (!rect) return;
         const w = rect.width;
         const h = rect.height;
 
@@ -883,6 +900,7 @@ document.addEventListener("DOMContentLoaded", () => {
             resizeConstellation();
             initStars();
         });
+        window.addEventListener("scroll", updateCanvasRect, { passive: true });
     }
 
     // -------------------------------------------------------------------------
