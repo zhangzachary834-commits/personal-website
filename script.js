@@ -6,6 +6,16 @@
  * ============================================================================
  */
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const htmlElement = document.documentElement;
     const themeToggleBtn = document.getElementById("theme-toggle-btn");
@@ -330,19 +340,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 systems: "Systems Architecture & OntoMath",
                 robotics: "Robotics & Spatial AI"
             };
-            const catLabel = catLabels[art.category] || "Original Inquiry";
-            const readTime = art.readTime || "5 min read";
-            const author = art.author || "Zachary Zhang";
-            const previewUrl = "posts/" + (art.slug || "article") + ".html";
+            const catLabel = escapeHtml(catLabels[art.category] || "Original Inquiry");
+            const readTime = escapeHtml(art.readTime || "5 min read");
+            const author = escapeHtml(art.author || "Zachary Zhang");
+            const safeSlug = encodeURIComponent(art.slug || "article");
+            const previewUrl = escapeHtml("posts/" + safeSlug + ".html");
+
+            const safeTitle = escapeHtml(art.title || "Untitled Essay");
+            const safeSubtitle = escapeHtml(art.subtitle || "");
+            const rawExcerpt = art.excerpt || (art.content ? art.content.slice(0, 180) + "..." : "Read the complete drafted inquiry.");
+            const safeExcerpt = escapeHtml(rawExcerpt);
 
             card.innerHTML = `
                 <div class="essay-meta">
                     <span class="essay-tag">${catLabel}</span>
                     <span class="essay-read-time">${readTime}</span>
                 </div>
-                <h3 class="essay-title"><a href="${previewUrl}">${art.title || "Untitled Essay"}</a></h3>
-                <p class="essay-subtitle">${art.subtitle || ""}</p>
-                <p class="essay-excerpt">${art.excerpt || (art.content ? art.content.slice(0, 180) + "..." : "Read the complete drafted inquiry.")}</p>
+                <h3 class="essay-title"><a href="${previewUrl}">${safeTitle}</a></h3>
+                <p class="essay-subtitle">${safeSubtitle}</p>
+                <p class="essay-excerpt">${safeExcerpt}</p>
                 <div class="essay-card-footer">
                     <span class="essay-author">By ${author}</span>
                     <div style="display:flex;gap:8px;align-items:center;">
