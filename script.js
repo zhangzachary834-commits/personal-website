@@ -6,6 +6,16 @@
  * ============================================================================
  */
 
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const htmlElement = document.documentElement;
     const themeToggleBtn = document.getElementById("theme-toggle-btn");
@@ -1880,10 +1890,6 @@ Sent via Dimension of Thought Platform`;
             return formattedBlocks.join(NL + NL);
         }
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
         function updateLivePreview() {
             const title = titleInput.value.trim() || "Untitled Article";
             const subtitle = subtitleInput.value.trim() || "A philosophical inquiry into the depths of truth and narrative.";
@@ -3287,12 +3293,15 @@ ${currentDraft.content}`;
                 tooltip.style.display = "block";
                 tooltip.style.left = (pos.canvasX + 15) + "px";
                 tooltip.style.top = (pos.canvasY - 15) + "px";
+                const catText = escapeHtml(catNames[hoveredNode.category] || hoveredNode.category);
+                const titleText = escapeHtml(hoveredNode.title);
+                const subText = hoveredNode.subtitle ? escapeHtml(hoveredNode.subtitle) : "";
                 tooltip.innerHTML = `
                     <div style="font-size:0.72rem;color:${hoveredNode.color};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${catNames[hoveredNode.category] || hoveredNode.category}
+                        ${catText}
                     </div>
-                    <strong style="color:var(--gold);font-size:0.95rem;">${hoveredNode.title}</strong>
-                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${hoveredNode.subtitle}</div>` : ""}
+                    <strong style="color:var(--gold);font-size:0.95rem;">${titleText}</strong>
+                    ${subText ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${subText}</div>` : ""}
                 `;
             } else {
                 canvas.style.cursor = isDraggingCanvas ? "grabbing" : "grab";
