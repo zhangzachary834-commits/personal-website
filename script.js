@@ -392,13 +392,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let nebulae = [];
     let time = 0;
     let mousePos = { x: -1000, y: -1000, active: false };
+    let canvasWidth = 0;
+    let canvasHeight = 0;
 
     function resizeConstellation() {
         if (!canvas) return;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const rect = canvas.getBoundingClientRect();
-        canvas.width = Math.floor(rect.width * dpr);
-        canvas.height = Math.floor(rect.height * dpr);
+        canvasWidth = rect.width;
+        canvasHeight = rect.height;
+        canvas.width = Math.floor(canvasWidth * dpr);
+        canvas.height = Math.floor(canvasHeight * dpr);
         if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
@@ -515,9 +519,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawConstellation() {
         if (!ctx || !canvas || reduceMotion) return;
         time += 1;
-        const rect = canvas.getBoundingClientRect();
-        const w = rect.width;
-        const h = rect.height;
+        const w = canvasWidth;
+        const h = canvasHeight;
 
         ctx.clearRect(0, 0, w, h);
 
