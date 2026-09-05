@@ -273,29 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // -------------------------------------------------------------------------
-    // Essay Category Filtering (The Library Page)
-    // -------------------------------------------------------------------------
-    function initEssayFilters() {
-        const essayFilterBtns = document.querySelectorAll(".essay-filter-btn");
-
-        essayFilterBtns.forEach((btn) => {
-            btn.addEventListener("click", () => {
-                essayFilterBtns.forEach((b) => b.classList.remove("active"));
-                btn.classList.add("active");
-                const filter = btn.getAttribute("data-filter");
-
-                const cards = document.querySelectorAll(".essay-card");
-                cards.forEach((card) => {
-                    const category = card.getAttribute("data-category");
-                    const matches = filter === "all" || category === filter;
-                    card.style.display = matches ? "flex" : "none";
-                });
-            });
-        });
-    }
-    initEssayFilters();
-
-    // -------------------------------------------------------------------------
     // Dynamic Custom Published Articles Loader
     // -------------------------------------------------------------------------
     function initDynamicCustomArticles() {
@@ -357,6 +334,29 @@ document.addEventListener("DOMContentLoaded", () => {
         initCardSpotlights();
     }
     initDynamicCustomArticles();
+
+    // -------------------------------------------------------------------------
+    // Essay Category Filtering (The Library Page)
+    // -------------------------------------------------------------------------
+    function initEssayFilters() {
+        const essayFilterBtns = document.querySelectorAll(".essay-filter-btn");
+        const cards = document.querySelectorAll(".essay-card");
+
+        essayFilterBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                essayFilterBtns.forEach((b) => b.classList.remove("active"));
+                btn.classList.add("active");
+                const filter = btn.getAttribute("data-filter");
+
+                cards.forEach((card) => {
+                    const category = card.getAttribute("data-category");
+                    const matches = filter === "all" || category === filter;
+                    card.style.display = matches ? "flex" : "none";
+                });
+            });
+        });
+    }
+    initEssayFilters();
 
     // -------------------------------------------------------------------------
     // Interactive Card Spotlight Hover Tracker
