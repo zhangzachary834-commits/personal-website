@@ -2190,11 +2190,11 @@ Sent via Dimension of Thought Platform`;
 
                 card.innerHTML = `
                     <div class="draft-title-row">
-                        <span class="draft-card-title">${d.title || "Untitled Draft"}</span>
+                        <span class="draft-card-title">${escapeHtml(d.title || "Untitled Draft")}</span>
                         ${d.isPublished ? '<span class="badge" style="background:var(--teal);color:#07080d;font-weight:700;">Published</span>' : '<span class="badge">Draft</span>'}
                     </div>
                     <div class="draft-meta-row">
-                        <span>${d.category || "ontology"}</span>
+                        <span>${escapeHtml(d.category || "ontology")}</span>
                         <span>${updatedTime}</span>
                     </div>
                     <div class="draft-actions-row">
