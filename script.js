@@ -44,6 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const vNavPersonal = document.getElementById("v-nav-personal");
     const vNavDimension = document.getElementById("v-nav-dimension");
 
+    const navPersonalLinks = navPersonal ? navPersonal.querySelectorAll(".nav-link") : [];
+    const navDimensionLinks = navDimension ? navDimension.querySelectorAll(".nav-link") : [];
+    const vNavPersonalLinks = vNavPersonal ? vNavPersonal.querySelectorAll(".v-nav-link") : [];
+    const vNavDimensionLinks = vNavDimension ? vNavDimension.querySelectorAll(".v-nav-link") : [];
+
     // Determine initial mode from URL param (?mode=...), or localStorage, default to 'personal'
     
 
@@ -228,17 +233,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        const activeVNav = isPersonal ? vNavPersonal : vNavDimension;
-        if (activeVNav) {
-            activeVNav.querySelectorAll(".v-nav-link").forEach((link) => {
+        const activeVNavLinks = isPersonal ? vNavPersonalLinks : vNavDimensionLinks;
+        if (activeVNavLinks) {
+            activeVNavLinks.forEach((link) => {
                 const target = link.getAttribute("data-target");
                 link.classList.toggle("active", target === currentId);
             });
         }
 
-        const activeNavMenu = isPersonal ? navPersonal : navDimension;
-        if (activeNavMenu) {
-            activeNavMenu.querySelectorAll(".nav-link").forEach((link) => {
+        const activeNavLinks = isPersonal ? navPersonalLinks : navDimensionLinks;
+        if (activeNavLinks) {
+            activeNavLinks.forEach((link) => {
                 const href = link.getAttribute("href");
                 if (href && href.startsWith("#")) {
                     link.classList.toggle("active", href === `#${currentId}`);
