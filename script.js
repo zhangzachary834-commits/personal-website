@@ -2661,12 +2661,21 @@ ${currentDraft.content}`;
             concept: "Ontological Concept"
         };
 
+        let cachedCanvasRect = null;
+
+        function updateCanvasRect() {
+            if (canvas) {
+                cachedCanvasRect = canvas.getBoundingClientRect();
+            }
+        }
+
         function resizeCanvas() {
             const rect = graphContainer.getBoundingClientRect();
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = Math.floor(rect.width * dpr);
             canvas.height = Math.floor(rect.height * dpr);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            updateCanvasRect();
         }
 
         function initBackgroundElements() {
@@ -3233,7 +3242,10 @@ ${currentDraft.content}`;
         let lastMousePos = { x: 0, y: 0 };
 
         function getTransformedMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
+            if (!cachedCanvasRect) {
+                updateCanvasRect();
+            }
+            const rect = cachedCanvasRect || canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const canvasX = (clientX - rect.left) * (canvas.width / (rect.width * (window.devicePixelRatio || 1)));
@@ -3526,6 +3538,9 @@ ${currentDraft.content}`;
         window.addEventListener("resize", () => {
             if (isGraphView) resizeCanvas();
         });
+        window.addEventListener("scroll", () => {
+            if (isGraphView) updateCanvasRect();
+        }, { passive: true });
     }
 
 
