@@ -203,6 +203,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    let cachedPersonalSections = null;
+    let cachedDimensionSections = null;
+
     function handleScroll() {
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -219,7 +222,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const activeContainer = isPersonal ? personalView : dimensionView;
         if (!activeContainer) return;
 
-        const sections = activeContainer.querySelectorAll("section[id]");
+        if (isPersonal) {
+            if (!cachedPersonalSections) {
+                cachedPersonalSections = personalView.querySelectorAll("section[id]");
+            }
+        } else {
+            if (!cachedDimensionSections) {
+                cachedDimensionSections = dimensionView.querySelectorAll("section[id]");
+            }
+        }
+        const sections = isPersonal ? cachedPersonalSections : cachedDimensionSections;
         let currentId = isPersonal ? "p-home" : "d-home";
 
         sections.forEach((sec) => {
