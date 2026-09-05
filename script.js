@@ -2626,6 +2626,32 @@ ${currentDraft.content}`;
         let hoveredNode = null;
         let selectedNode = null;
         let isolatedNode = null;
+        let lastTooltipNode = null;
+        let tooltipCat = null;
+        let tooltipTitle = null;
+        let tooltipSub = null;
+
+        if (tooltip) {
+            tooltip.innerHTML = "";
+            tooltipCat = document.createElement("div");
+            tooltipCat.style.fontSize = "0.72rem";
+            tooltipCat.style.textTransform = "uppercase";
+            tooltipCat.style.fontWeight = "600";
+            tooltipCat.style.marginBottom = "2px";
+
+            tooltipTitle = document.createElement("strong");
+            tooltipTitle.style.color = "var(--gold)";
+            tooltipTitle.style.fontSize = "0.95rem";
+
+            tooltipSub = document.createElement("div");
+            tooltipSub.style.fontSize = "0.78rem";
+            tooltipSub.style.color = "var(--muted)";
+            tooltipSub.style.marginTop = "2px";
+
+            tooltip.appendChild(tooltipCat);
+            tooltip.appendChild(tooltipTitle);
+            tooltip.appendChild(tooltipSub);
+        }
         let activeCluster = "all";
         let layoutMode = "galaxy"; // 'galaxy', 'orbital', 'lattice'
         let searchQuery = "";
@@ -3287,16 +3313,28 @@ ${currentDraft.content}`;
                 tooltip.style.display = "block";
                 tooltip.style.left = (pos.canvasX + 15) + "px";
                 tooltip.style.top = (pos.canvasY - 15) + "px";
-                tooltip.innerHTML = `
-                    <div style="font-size:0.72rem;color:${hoveredNode.color};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${catNames[hoveredNode.category] || hoveredNode.category}
-                    </div>
-                    <strong style="color:var(--gold);font-size:0.95rem;">${hoveredNode.title}</strong>
-                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${hoveredNode.subtitle}</div>` : ""}
-                `;
+                if (lastTooltipNode !== hoveredNode) {
+                    lastTooltipNode = hoveredNode;
+                    if (tooltipCat) {
+                        tooltipCat.style.color = hoveredNode.color;
+                        tooltipCat.textContent = catNames[hoveredNode.category] || hoveredNode.category;
+                    }
+                    if (tooltipTitle) {
+                        tooltipTitle.textContent = hoveredNode.title;
+                    }
+                    if (tooltipSub) {
+                        if (hoveredNode.subtitle) {
+                            tooltipSub.textContent = hoveredNode.subtitle;
+                            tooltipSub.style.display = "block";
+                        } else {
+                            tooltipSub.style.display = "none";
+                        }
+                    }
+                }
             } else {
                 canvas.style.cursor = isDraggingCanvas ? "grabbing" : "grab";
                 tooltip.style.display = "none";
+                lastTooltipNode = null;
             }
         });
 
