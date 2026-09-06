@@ -512,43 +512,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function drawConstellation() {
-        if (!ctx || !canvas || reduceMotion) return;
-        time += 1;
-        const rect = canvas.getBoundingClientRect();
-        const w = rect.width;
-        const h = rect.height;
-
-        ctx.clearRect(0, 0, w, h);
-
-        const isDark = htmlElement.getAttribute("data-theme") !== "light";
-        const goldColor = isDark ? "rgba(216, 180, 110," : "rgba(242, 133, 41,";
-        const tealColor = isDark ? "rgba(110, 231, 216," : "rgba(14, 153, 204,";
-        const purpleColor = isDark ? "rgba(168, 85, 247," : "rgba(224, 61, 137,";
-        const labelColor = isDark ? "rgba(247, 243, 235, 0.6)" : "rgba(24, 21, 16, 0.6)";
-
-        const cascadeStartHue = isDark ? 170 : 195;
-        const cascadeHueShift = isDark ? 8 : 10;
-        const cascadeSat = isDark ? 85 : 90;
-        const cascadeLit = isDark ? 65 : 52;
-
+    function renderNebulae(w, h, palette, isDark) {
         ctx.globalCompositeOperation = isDark ? "screen" : "source-over";
+        const maxAlpha = isDark ? 0.12 : 0.20; // Slightly stronger in Light Mode to compensate for source-over
         for (const n of nebulae) {
             n.x += n.vx;
             n.y += n.vy;
             if (n.x < -n.r || n.x > w + n.r) n.vx *= -1;
             if (n.y < -n.r || n.y > h + n.r) n.vy *= -1;
 
-            const baseColor = n.colorIndex === 0 ? goldColor : (n.colorIndex === 1 ? tealColor : purpleColor);
+            const baseColor = n.colorIndex === 0 ? palette.gold : (n.colorIndex === 1 ? palette.teal : palette.purple);
             const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-            const maxAlpha = isDark ? 0.12 : 0.20; // Slightly stronger in Light Mode to compensate for source-over
             grad.addColorStop(0, `${baseColor} ${maxAlpha})`);
             grad.addColorStop(1, `${baseColor} 0)`);
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
         }
         ctx.globalCompositeOperation = "source-over";
+    }
 
+    function renderBackgroundStars(w, h, palette) {
         for (const s of bgStars) {
             s.x += s.vx;
             s.y += s.vy;
@@ -558,14 +541,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (s.y > h + 10) s.y = -10;
 
             const blink = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.5 + 0.5;
-            const colorStr = s.colorIndex === 0 ? goldColor : (s.colorIndex === 1 ? tealColor : purpleColor);
+            const colorStr = s.colorIndex === 0 ? palette.gold : (s.colorIndex === 1 ? palette.teal : palette.purple);
 
             ctx.fillStyle = `${colorStr} ${0.1 + blink * 0.25})`;
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.radius * (0.5 + blink * 0.5), 0, Math.PI * 2);
             ctx.fill();
         }
+    }
 
+    function triggerRandomPulse(cascadeStartHue, cascadeHueShift) {
         if (Math.random() < 0.003 && stars.length > 0) {
             const randStar = stars[Math.floor(Math.random() * stars.length)];
             if (randStar.pulseState === 0) {
@@ -590,7 +575,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
+    }
 
+    function updateParticlePositions(w, h) {
         for (const s of stars) {
             if (s.pulseState === 1) {
                 s.pulseEnergy += 0.04;
@@ -624,7 +611,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
+    }
 
+    function renderConnections(w, palette, cascadeParams) {
+        const { cascadeHueShift, cascadeSat, cascadeLit } = cascadeParams;
         for (let i = 0; i < stars.length; i++) {
             for (let j = i + 1; j < stars.length; j++) {
                 const a = stars[i];
@@ -700,7 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             ctx.strokeStyle = grad;
                             ctx.lineWidth = 1.6;
                         } else {
-                            ctx.strokeStyle = `${goldColor} ${alpha})`;
+                            ctx.strokeStyle = `${palette.gold} ${alpha})`;
                             ctx.lineWidth = 1.0;
                         }
 
@@ -715,104 +705,110 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
+    }
 
-        if (mousePos.active && w > 600) {
-            let activeTethers = [];
-            for (const s of stars) {
-                const dist = Math.hypot(s.x - mousePos.x, s.y - mousePos.y);
-                if (dist < 130) {
-                    activeTethers.push({ target: s, dist: dist, alphaMultiplier: 1.0 });
-                }
+    function renderMouseTethers(w, palette, cascadeParams) {
+        if (!mousePos.active || w <= 600) return;
+
+        const { cascadeStartHue, cascadeSat, cascadeLit } = cascadeParams;
+        let activeTethers = [];
+        for (const s of stars) {
+            const dist = Math.hypot(s.x - mousePos.x, s.y - mousePos.y);
+            if (dist < 130) {
+                activeTethers.push({ target: s, dist: dist, alphaMultiplier: 1.0 });
             }
-            if (window.extraTethers) {
-                for (let i = window.extraTethers.length - 1; i >= 0; i--) {
-                    let et = window.extraTethers[i];
-                    et.life -= 0.015;
-                    if (et.life <= 0) {
-                        window.extraTethers.splice(i, 1);
-                    } else {
-                        const dist = Math.hypot(et.target.x - mousePos.x, et.target.y - mousePos.y);
-                        if (dist >= 130) {
-                            activeTethers.push({ target: et.target, dist: dist, alphaMultiplier: et.life });
-                        }
-                    }
-                }
-            }
-
-            for (const t of activeTethers) {
-                const s = t.target;
-                const dist = t.dist;
-
-                let baseAlpha = 0;
-                let baseThickness = 1.0;
-                if (t.alphaMultiplier === 1.0 && dist < 130) {
-                    baseAlpha = (1 - dist / 130) * 0.6;
-                    baseThickness = 1.0 + (1 - dist / 130) * 1.5;
+        }
+        if (window.extraTethers) {
+            for (let i = window.extraTethers.length - 1; i >= 0; i--) {
+                let et = window.extraTethers[i];
+                et.life -= 0.015;
+                if (et.life <= 0) {
+                    window.extraTethers.splice(i, 1);
                 } else {
-                    baseAlpha = 0.4 * t.alphaMultiplier;
-                    baseThickness = 1.0 + t.alphaMultiplier;
-                }
-
-                const starColorMatch = s.isTeal ? tealColor : (s.isPurple ? purpleColor : goldColor);
-
-                const normalGrad = ctx.createLinearGradient(mousePos.x, mousePos.y, s.x, s.y);
-                normalGrad.addColorStop(0, `hsla(${cascadeStartHue}, ${cascadeSat}%, ${cascadeLit}%, 0)`);
-                normalGrad.addColorStop(0.3, `hsla(${cascadeStartHue}, ${cascadeSat}%, ${cascadeLit}%, ${baseAlpha * 0.3})`);
-                normalGrad.addColorStop(1, `${starColorMatch} ${baseAlpha})`);
-
-                ctx.strokeStyle = normalGrad;
-                ctx.beginPath();
-                ctx.moveTo(mousePos.x, mousePos.y);
-                ctx.lineTo(s.x, s.y);
-
-                ctx.lineWidth = baseThickness * 3.0;
-                ctx.globalAlpha = 0.3;
-                ctx.stroke();
-
-                ctx.lineWidth = baseThickness * 0.8;
-                ctx.globalAlpha = 1.0;
-                ctx.stroke();
-
-                let activePulse = window.cursorPulses ? window.cursorPulses.find(p => p.target === s) : null;
-                if (activePulse) {
-                    let cp = activePulse.progress;
-                    let fade = cp > 1.0 ? Math.max(0, 1.0 - (cp - 1.0) / 1.5) : 1.0;
-
-                    if (fade > 0) {
-                        const pulseBaseAlpha = Math.min(1.0, baseAlpha + 0.3);
-                        const pulseGrad = ctx.createLinearGradient(mousePos.x, mousePos.y, s.x, s.y);
-                        const safeStop = (offset, color) => pulseGrad.addColorStop(Math.max(0, Math.min(1, offset)), color);
-
-                        safeStop(0, `hsla(180, 100%, 70%, 0)`);
-                        safeStop(cp - 0.45, `hsla(180, 100%, 70%, ${pulseBaseAlpha * 0.4})`);
-                        safeStop(cp - 0.15, `hsla(220, 100%, 75%, ${Math.min(1.0, pulseBaseAlpha * 1.5)})`);
-                        safeStop(cp + 0.05, `hsla(260, 100%, 85%, 1)`);
-                        safeStop(cp + 0.35, `hsla(280, 100%, 70%, ${pulseBaseAlpha * 0.4})`);
-                        safeStop(1, `hsla(280, 100%, 70%, 0)`);
-
-                        ctx.strokeStyle = pulseGrad;
-                        ctx.beginPath();
-                        ctx.moveTo(mousePos.x, mousePos.y);
-                        ctx.lineTo(s.x, s.y);
-
-                        let thicknessBulge = Math.sin(Math.min(1, cp) * Math.PI) * 3.0;
-                        ctx.lineWidth = baseThickness * 3.0 + thicknessBulge;
-                        ctx.globalAlpha = 0.3 * fade;
-                        ctx.stroke();
-
-                        ctx.lineWidth = baseThickness * 0.8 + (thicknessBulge * 0.4);
-                        ctx.globalAlpha = 1.0 * fade;
-                        ctx.stroke();
-                        ctx.globalAlpha = 1.0;
+                    const dist = Math.hypot(et.target.x - mousePos.x, et.target.y - mousePos.y);
+                    if (dist >= 130) {
+                        activeTethers.push({ target: et.target, dist: dist, alphaMultiplier: et.life });
                     }
                 }
             }
         }
 
+        for (const t of activeTethers) {
+            const s = t.target;
+            const dist = t.dist;
+
+            let baseAlpha = 0;
+            let baseThickness = 1.0;
+            if (t.alphaMultiplier === 1.0 && dist < 130) {
+                baseAlpha = (1 - dist / 130) * 0.6;
+                baseThickness = 1.0 + (1 - dist / 130) * 1.5;
+            } else {
+                baseAlpha = 0.4 * t.alphaMultiplier;
+                baseThickness = 1.0 + t.alphaMultiplier;
+            }
+
+            const starColorMatch = s.isTeal ? palette.teal : (s.isPurple ? palette.purple : palette.gold);
+
+            const normalGrad = ctx.createLinearGradient(mousePos.x, mousePos.y, s.x, s.y);
+            normalGrad.addColorStop(0, `hsla(${cascadeStartHue}, ${cascadeSat}%, ${cascadeLit}%, 0)`);
+            normalGrad.addColorStop(0.3, `hsla(${cascadeStartHue}, ${cascadeSat}%, ${cascadeLit}%, ${baseAlpha * 0.3})`);
+            normalGrad.addColorStop(1, `${starColorMatch} ${baseAlpha})`);
+
+            ctx.strokeStyle = normalGrad;
+            ctx.beginPath();
+            ctx.moveTo(mousePos.x, mousePos.y);
+            ctx.lineTo(s.x, s.y);
+
+            ctx.lineWidth = baseThickness * 3.0;
+            ctx.globalAlpha = 0.3;
+            ctx.stroke();
+
+            ctx.lineWidth = baseThickness * 0.8;
+            ctx.globalAlpha = 1.0;
+            ctx.stroke();
+
+            let activePulse = window.cursorPulses ? window.cursorPulses.find(p => p.target === s) : null;
+            if (activePulse) {
+                let cp = activePulse.progress;
+                let fade = cp > 1.0 ? Math.max(0, 1.0 - (cp - 1.0) / 1.5) : 1.0;
+
+                if (fade > 0) {
+                    const pulseBaseAlpha = Math.min(1.0, baseAlpha + 0.3);
+                    const pulseGrad = ctx.createLinearGradient(mousePos.x, mousePos.y, s.x, s.y);
+                    const safeStop = (offset, color) => pulseGrad.addColorStop(Math.max(0, Math.min(1, offset)), color);
+
+                    safeStop(0, `hsla(180, 100%, 70%, 0)`);
+                    safeStop(cp - 0.45, `hsla(180, 100%, 70%, ${pulseBaseAlpha * 0.4})`);
+                    safeStop(cp - 0.15, `hsla(220, 100%, 75%, ${Math.min(1.0, pulseBaseAlpha * 1.5)})`);
+                    safeStop(cp + 0.05, `hsla(260, 100%, 85%, 1)`);
+                    safeStop(cp + 0.35, `hsla(280, 100%, 70%, ${pulseBaseAlpha * 0.4})`);
+                    safeStop(1, `hsla(280, 100%, 70%, 0)`);
+
+                    ctx.strokeStyle = pulseGrad;
+                    ctx.beginPath();
+                    ctx.moveTo(mousePos.x, mousePos.y);
+                    ctx.lineTo(s.x, s.y);
+
+                    let thicknessBulge = Math.sin(Math.min(1, cp) * Math.PI) * 3.0;
+                    ctx.lineWidth = baseThickness * 3.0 + thicknessBulge;
+                    ctx.globalAlpha = 0.3 * fade;
+                    ctx.stroke();
+
+                    ctx.lineWidth = baseThickness * 0.8 + (thicknessBulge * 0.4);
+                    ctx.globalAlpha = 1.0 * fade;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+        }
+    }
+
+    function renderForegroundStars(w, palette, cascadeParams) {
+        const { cascadeSat, cascadeLit, labelColor } = cascadeParams;
         ctx.font = "11px 'IBM Plex Mono', monospace";
         for (const s of stars) {
             const blink = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.5 + 0.5;
-            const colorStr = s.isTeal ? tealColor : (s.isPurple ? purpleColor : goldColor);
+            const colorStr = s.isTeal ? palette.teal : (s.isPurple ? palette.purple : palette.gold);
 
             let starAlpha = 0.3 + blink * 0.7;
             let starRadius = s.radius * (0.5 + blink * 0.5);
@@ -837,40 +833,76 @@ document.addEventListener("DOMContentLoaded", () => {
                 ctx.fillText(s.label, s.x + 8, s.y - 8);
             }
         }
+    }
 
-        if (window.cursorPulses) {
-            for (let i = window.cursorPulses.length - 1; i >= 0; i--) {
-                let p = window.cursorPulses[i];
-                p.progress += p.speed;
+    function updateCursorPulses(cascadeStartHue, cascadeHueShift) {
+        if (!window.cursorPulses) return;
 
-                if (p.progress >= 1.0 && !p.ignited) {
-                    p.ignited = true;
-                    p.target.pulseTarget = 1.0;
-                    p.target.pulseEnergy = 0.5;
-                    p.target.pulseState = 1;
-                    p.target.pulseJumps = Math.floor(Math.random() * 12) + 6;
-                    p.target.pulseHue = cascadeStartHue;
-                    
-                    const redChance = 0.15 + Math.sin(time * 0.001) * 0.10;
-                    if (Math.random() < redChance) {
-                        p.target.redJumpsLeft = Math.floor(Math.random() * 2) + 2;
-                        const goReverse = Math.random() < 0.5;
-                        const distToRed = goReverse ? -cascadeStartHue : (360 - cascadeStartHue);
-                        p.target.pulseShift = distToRed / p.target.redJumpsLeft;
-                    } else {
-                        p.target.redJumpsLeft = 0;
-                        const isRainbow = Math.random() < 0.1;
-                        let shift = isRainbow ? 25 : cascadeHueShift;
-                        const isReverse = isRainbow ? (Math.random() < 0.5) : (Math.random() < 0.15);
-                        p.target.pulseShift = isReverse ? -shift : shift;
-                    }
-                }
+        for (let i = window.cursorPulses.length - 1; i >= 0; i--) {
+            let p = window.cursorPulses[i];
+            p.progress += p.speed;
 
-                if (p.progress >= 2.5) {
-                    window.cursorPulses.splice(i, 1);
+            if (p.progress >= 1.0 && !p.ignited) {
+                p.ignited = true;
+                p.target.pulseTarget = 1.0;
+                p.target.pulseEnergy = 0.5;
+                p.target.pulseState = 1;
+                p.target.pulseJumps = Math.floor(Math.random() * 12) + 6;
+                p.target.pulseHue = cascadeStartHue;
+
+                const redChance = 0.15 + Math.sin(time * 0.001) * 0.10;
+                if (Math.random() < redChance) {
+                    p.target.redJumpsLeft = Math.floor(Math.random() * 2) + 2;
+                    const goReverse = Math.random() < 0.5;
+                    const distToRed = goReverse ? -cascadeStartHue : (360 - cascadeStartHue);
+                    p.target.pulseShift = distToRed / p.target.redJumpsLeft;
+                } else {
+                    p.target.redJumpsLeft = 0;
+                    const isRainbow = Math.random() < 0.1;
+                    let shift = isRainbow ? 25 : cascadeHueShift;
+                    const isReverse = isRainbow ? (Math.random() < 0.5) : (Math.random() < 0.15);
+                    p.target.pulseShift = isReverse ? -shift : shift;
                 }
             }
+
+            if (p.progress >= 2.5) {
+                window.cursorPulses.splice(i, 1);
+            }
         }
+    }
+
+    function drawConstellation() {
+        if (!ctx || !canvas || reduceMotion) return;
+        time += 1;
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const isDark = htmlElement.getAttribute("data-theme") !== "light";
+        const palette = {
+            gold: isDark ? "rgba(216, 180, 110," : "rgba(242, 133, 41,",
+            teal: isDark ? "rgba(110, 231, 216," : "rgba(14, 153, 204,",
+            purple: isDark ? "rgba(168, 85, 247," : "rgba(224, 61, 137,"
+        };
+
+        const cascadeParams = {
+            cascadeStartHue: isDark ? 170 : 195,
+            cascadeHueShift: isDark ? 8 : 10,
+            cascadeSat: isDark ? 85 : 90,
+            cascadeLit: isDark ? 65 : 52,
+            labelColor: isDark ? "rgba(247, 243, 235, 0.6)" : "rgba(24, 21, 16, 0.6)"
+        };
+
+        renderNebulae(w, h, palette, isDark);
+        renderBackgroundStars(w, h, palette);
+        triggerRandomPulse(cascadeParams.cascadeStartHue, cascadeParams.cascadeHueShift);
+        updateParticlePositions(w, h);
+        renderConnections(w, palette, cascadeParams);
+        renderMouseTethers(w, palette, cascadeParams);
+        renderForegroundStars(w, palette, cascadeParams);
+        updateCursorPulses(cascadeParams.cascadeStartHue, cascadeParams.cascadeHueShift);
 
         requestAnimationFrame(drawConstellation);
     }
