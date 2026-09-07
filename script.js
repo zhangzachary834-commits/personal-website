@@ -6,6 +6,19 @@
  * ============================================================================
  */
 
+function slugify(text) {
+    return (text || "")
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-") || "my-essay";
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = { slugify };
+}
+
+if (typeof document !== "undefined") {
 document.addEventListener("DOMContentLoaded", () => {
     const htmlElement = document.documentElement;
     const themeToggleBtn = document.getElementById("theme-toggle-btn");
@@ -1821,13 +1834,6 @@ Sent via Dimension of Thought Platform`;
             };
         }
 
-        function slugify(text) {
-            return (text || "")
-                .toLowerCase()
-                .replace(/[^\w\s-]/g, "")
-                .trim()
-                .replace(/\s+/g, "-") || "my-essay";
-        }
 
         function loadDraftIntoEditor(draft) {
             currentDraft = draft;
@@ -5182,3 +5188,4 @@ class VesselEngine {
 
     initLibraryConstellation();
 });
+}
