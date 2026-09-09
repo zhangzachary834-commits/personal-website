@@ -3224,29 +3224,76 @@ ${currentDraft.content}`;
                 edge.target.vy -= fy;
             });
 
-            // Repulsion between all node pairs
+            // Repulsion between node pairs using Spatial Grid Binning
+            const CELL_SIZE = 220; // Slightly larger than sqrt(48000)
+            const grid = new Map();
+
+            // 1. Assign nodes to grid cells
             for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const n1 = nodes[i];
-                    const n2 = nodes[j];
-                    const dx = n2.x - n1.x;
-                    const dy = n2.y - n1.y;
-                    const distSq = dx * dx + dy * dy || 1;
-                    if (distSq < 48000) {
-                        const force = repulsion / distSq;
-                        const dist = Math.sqrt(distSq);
-                        const fx = (dx / dist) * force;
-                        const fy = (dy / dist) * force;
-                        n1.vx -= fx; n1.vy -= fy;
-                        n2.vx += fx; n2.vy += fy;
+                const node = nodes[i];
+                const cx = Math.floor(node.x / CELL_SIZE);
+                const cy = Math.floor(node.y / CELL_SIZE);
+                const key = cx + ',' + cy;
+
+                let cell = grid.get(key);
+                if (!cell) {
+                    cell = [];
+                    grid.set(key, cell);
+                }
+                cell.push(node);
+
+                // Centering gravity pull (done here to save an extra loop over nodes)
+                const gdx = center.x - node.x;
+                const gdy = center.y - node.y;
+                node.vx += gdx * 0.0012;
+                node.vy += gdy * 0.0012;
+            }
+
+            // 2. Calculate repulsion for nodes in the same or neighboring cells
+            for (const [key, cellNodes] of grid.entries()) {
+                const commaIndex = key.indexOf(',');
+                const cx = parseInt(key.substring(0, commaIndex));
+                const cy = parseInt(key.substring(commaIndex + 1));
+
+                // We check the current cell and 4 neighbors to avoid double-counting
+                const neighbors = [
+                    [cx, cy],
+                    [cx + 1, cy],
+                    [cx - 1, cy + 1],
+                    [cx, cy + 1],
+                    [cx + 1, cy + 1]
+                ];
+
+                for (let i = 0; i < cellNodes.length; i++) {
+                    const n1 = cellNodes[i];
+
+                    for (let nIdx = 0; nIdx < neighbors.length; nIdx++) {
+                        const nx = neighbors[nIdx][0];
+                        const ny = neighbors[nIdx][1];
+                        const neighborKey = nx + ',' + ny;
+                        const neighborNodes = grid.get(neighborKey);
+
+                        if (neighborNodes) {
+                            const isSameCell = (nx === cx && ny === cy);
+                            const startIndex = isSameCell ? i + 1 : 0;
+
+                            for (let j = startIndex; j < neighborNodes.length; j++) {
+                                const n2 = neighborNodes[j];
+                                const dx = n2.x - n1.x;
+                                const dy = n2.y - n1.y;
+                                const distSq = dx * dx + dy * dy || 1;
+                                if (distSq < 48000) {
+                                    const force = repulsion / distSq;
+                                    const dist = Math.sqrt(distSq);
+                                    const fx = (dx / dist) * force;
+                                    const fy = (dy / dist) * force;
+                                    n1.vx -= fx; n1.vy -= fy;
+                                    n2.vx += fx; n2.vy += fy;
+                                }
+                            }
+                        }
                     }
                 }
-
-                // Centering gravity pull
-                const dx = center.x - nodes[i].x;
-                const dy = center.y - nodes[i].y;
-                nodes[i].vx += dx * 0.0012;
-                nodes[i].vy += dy * 0.0012;
             }
 
             // Apply velocities & boundaries
