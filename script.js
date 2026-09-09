@@ -5047,8 +5047,10 @@ class VesselEngine {
         ];
 
         let draggedNode = null;
+        let edgesToDraw = [];
 
         function updatePhysics() {
+            edgesToDraw = [];
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
                     const a = nodes[i];
@@ -5073,6 +5075,10 @@ class VesselEngine {
                         a.vy -= (dy / dist) * rep;
                         b.vx += (dx / dist) * rep;
                         b.vy += (dy / dist) * rep;
+                    }
+
+                    if (dist < 220) {
+                        edgesToDraw.push({ a, b, dist });
                     }
                 }
             }
@@ -5108,27 +5114,25 @@ class VesselEngine {
             }
 
             // Law connection edges
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const a = nodes[i];
-                    const b = nodes[j];
-                    const dist = Math.hypot(b.x - a.x, b.y - a.y);
-                    if (dist < 220) {
-                        const alpha = (1 - dist / 220) * 0.45;
-                        ctx.strokeStyle = `rgba(110, 231, 216, ${alpha})`;
-                        ctx.lineWidth = 1.2;
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.stroke();
+            for (let i = 0; i < edgesToDraw.length; i++) {
+                const edge = edgesToDraw[i];
+                const a = edge.a;
+                const b = edge.b;
+                const dist = edge.dist;
 
-                        // Midpoint property badge
-                        const mx = (a.x + b.x) / 2;
-                        const my = (a.y + b.y) / 2;
-                        ctx.fillStyle = `rgba(216, 180, 110, ${alpha * 0.7})`;
-                        ctx.fillRect(mx - 2, my - 2, 4, 4);
-                    }
-                }
+                const alpha = (1 - dist / 220) * 0.45;
+                ctx.strokeStyle = `rgba(110, 231, 216, ${alpha})`;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+
+                // Midpoint property badge
+                const mx = (a.x + b.x) / 2;
+                const my = (a.y + b.y) / 2;
+                ctx.fillStyle = `rgba(216, 180, 110, ${alpha * 0.7})`;
+                ctx.fillRect(mx - 2, my - 2, 4, 4);
             }
 
             // Draw Being Nodes
