@@ -6,6 +6,76 @@
  * ============================================================================
  */
 
+function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+function parseMarkdown(md) {
+            if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
+
+            const NL = String.fromCharCode(10);
+            let html = md;
+            html = html.replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, "___DROPCAP_$1___");
+            html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+                return "<pre><code>" + escapeHtml(code.trim()) + "</code></pre>";
+            });
+            html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+            html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
+            html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
+            html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
+            html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
+            html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
+            html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
+            html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+            html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+            html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">');
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
+            html = html.replace(/\[\[(.*?)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
+            html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
+            html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
+            html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
+
+            const rawBlocks = html.split(NL + NL);
+            const formattedBlocks = rawBlocks.map((block) => {
+                block = block.trim();
+                if (!block) return "";
+                if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
+
+                if (block.startsWith("|")) {
+                    const rows = block.split(NL).filter(line => line.trim().startsWith("|"));
+                    let tableHTML = "<table style='width:100%; border-collapse:collapse; margin:20px 0; font-size:0.95em;'>";
+                    rows.forEach((row, idx) => {
+                        if (row.match(/^\|[\s-:|]+\|$/)) return;
+                        const cells = row.split("|").slice(1, -1).map(c => c.trim());
+                        tableHTML += "<tr>";
+                        cells.forEach(cell => {
+                            const tag = idx === 0 ? "th" : "td";
+                            const style = idx === 0 ? "border-bottom:2px solid var(--line-strong); padding:12px 8px; text-align:left; font-weight:600;" : "border-bottom:1px solid var(--line); padding:12px 8px;";
+                            tableHTML += `<${tag} style="${style}">${cell}</${tag}>`;
+                        });
+                        tableHTML += "</tr>";
+                    });
+                    tableHTML += "</table>";
+                    return tableHTML;
+                }
+
+                if (block.startsWith("- ") || block.startsWith("* ")) {
+                    const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
+                    return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
+                }
+
+                if (/^\d+\.\s+/.test(block)) {
+                    const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
+                    return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
+                }
+
+                return "<p>" + block.split(NL).join("<br>") + "</p>";
+            });
+
+            return formattedBlocks.join(NL + NL);
+        }
+
 function slugify(text) {
     return (text || "")
         .toLowerCase()
@@ -15,7 +85,7 @@ function slugify(text) {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { slugify };
+    module.exports = { slugify, parseMarkdown, escapeHtml };
 }
 
 if (typeof document !== "undefined") {
@@ -1850,76 +1920,6 @@ Sent via Dimension of Thought Platform`;
 
             updateLivePreview();
             renderDraftsList();
-        }
-
-        function parseMarkdown(md) {
-            if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
-
-            const NL = String.fromCharCode(10);
-            let html = md;
-            html = html.replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, "___DROPCAP_$1___");
-            html = html.replace(new RegExp("```([a-z]*)" + NL + "([\s\S]*?)```", "g"), (match, lang, code) => {
-                return "<pre><code>" + escapeHtml(code.trim()) + "</code></pre>";
-            });
-            html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-            html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
-            html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
-            html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
-            html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
-            html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
-            html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
-            html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-            html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-            html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">');
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
-            html = html.replace(/\[\[(.*?)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
-            html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
-            html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
-            html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
-
-            const rawBlocks = html.split(NL + NL);
-            const formattedBlocks = rawBlocks.map((block) => {
-                block = block.trim();
-                if (!block) return "";
-                if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
-
-                if (block.startsWith("|")) {
-                    const rows = block.split(NL).filter(line => line.trim().startsWith("|"));
-                    let tableHTML = "<table style='width:100%; border-collapse:collapse; margin:20px 0; font-size:0.95em;'>";
-                    rows.forEach((row, idx) => {
-                        if (row.match(/^\|[\s-:|]+\|$/)) return;
-                        const cells = row.split("|").slice(1, -1).map(c => c.trim());
-                        tableHTML += "<tr>";
-                        cells.forEach(cell => {
-                            const tag = idx === 0 ? "th" : "td";
-                            const style = idx === 0 ? "border-bottom:2px solid var(--line-strong); padding:12px 8px; text-align:left; font-weight:600;" : "border-bottom:1px solid var(--line); padding:12px 8px;";
-                            tableHTML += `<${tag} style="${style}">${cell}</${tag}>`;
-                        });
-                        tableHTML += "</tr>";
-                    });
-                    tableHTML += "</table>";
-                    return tableHTML;
-                }
-
-                if (block.startsWith("- ") || block.startsWith("* ")) {
-                    const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
-                    return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
-                }
-
-                if (/^\d+\.\s+/.test(block)) {
-                    const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
-                    return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
-                }
-
-                return "<p>" + block.split(NL).join("<br>") + "</p>";
-            });
-
-            return formattedBlocks.join(NL + NL);
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         function updateLivePreview() {
