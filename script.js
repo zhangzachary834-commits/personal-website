@@ -14,8 +14,15 @@ function slugify(text) {
         .replace(/\s+/g, "-") || "my-essay";
 }
 
+function escapeHtml(str) {
+    if (str === null || str === undefined) {
+        return "";
+    }
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { slugify };
+    module.exports = { slugify, escapeHtml };
 }
 
 if (typeof document !== "undefined") {
@@ -1916,10 +1923,6 @@ Sent via Dimension of Thought Platform`;
             });
 
             return formattedBlocks.join(NL + NL);
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         function updateLivePreview() {
