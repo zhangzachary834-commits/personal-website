@@ -5055,10 +5055,11 @@ class VesselEngine {
                     const b = nodes[j];
                     const dx = b.x - a.x;
                     const dy = b.y - a.y;
-                    const dist = Math.hypot(dx, dy) || 1;
+                    const distSq = dx * dx + dy * dy;
+                    const dist = Math.sqrt(distSq) || 1;
 
-                    if (activeLaws.gravity && dist > 20) {
-                        const force = ((a.mass * b.mass) / (dist * dist)) * 0.09;
+                    if (activeLaws.gravity && distSq > 400) {
+                        const force = ((a.mass * b.mass) / distSq) * 0.09;
                         const fx = (dx / dist) * force;
                         const fy = (dy / dist) * force;
                         a.vx += fx / a.mass;
@@ -5067,12 +5068,14 @@ class VesselEngine {
                         b.vy -= fy / b.mass;
                     }
 
-                    if (activeLaws.resonance && dist < 140) {
+                    if (activeLaws.resonance && distSq < 19600) {
                         const rep = (140 - dist) * 0.0035 * (a.charge * b.charge);
-                        a.vx -= (dx / dist) * rep;
-                        a.vy -= (dy / dist) * rep;
-                        b.vx += (dx / dist) * rep;
-                        b.vy += (dy / dist) * rep;
+                        const rx = (dx / dist) * rep;
+                        const ry = (dy / dist) * rep;
+                        a.vx -= rx;
+                        a.vy -= ry;
+                        b.vx += rx;
+                        b.vy += ry;
                     }
                 }
             }
