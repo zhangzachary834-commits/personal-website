@@ -628,14 +628,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderConnections(w, palette, cascadeParams) {
         const { cascadeHueShift, cascadeSat, cascadeLit } = cascadeParams;
-        for (let i = 0; i < stars.length; i++) {
-            for (let j = i + 1; j < stars.length; j++) {
-                const a = stars[i];
-                const b = stars[j];
-                const dist = Math.hypot(a.x - b.x, a.y - b.y);
-                const maxDist = w > 768 ? 160 : 100;
+        const maxDist = w > 768 ? 160 : 100;
 
-                if (dist < maxDist) {
+        const cellSize = maxDist;
+        const grid = new Map();
+
+        for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            const col = Math.floor(s.x / cellSize);
+            const row = Math.floor(s.y / cellSize);
+            const key = `${col},${row}`;
+
+            if (!grid.has(key)) {
+                grid.set(key, []);
+            }
+            grid.get(key).push(i);
+        }
+
+        for (let i = 0; i < stars.length; i++) {
+            const a = stars[i];
+            const col = Math.floor(a.x / cellSize);
+            const row = Math.floor(a.y / cellSize);
+
+            for (let dc = -1; dc <= 1; dc++) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    const key = `${col + dc},${row + dr}`;
+                    const cellStars = grid.get(key);
+
+                    if (cellStars) {
+                        for (let k = 0; k < cellStars.length; k++) {
+                            const j = cellStars[k];
+                            if (j > i) {
+                                const b = stars[j];
+                                const dist = Math.hypot(a.x - b.x, a.y - b.y);
+
+                                if (dist < maxDist) {
                     let cascadeAlpha = 0;
 
                     if (a.pulseState !== 0 || b.pulseState !== 0) {
@@ -714,6 +741,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         ctx.moveTo(a.x, a.y);
                         ctx.quadraticCurveTo(cx, cy, b.x, b.y);
                         ctx.stroke();
+                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
