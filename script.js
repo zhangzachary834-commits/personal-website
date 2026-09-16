@@ -601,7 +601,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!window.cursorPulses) window.cursorPulses = [];
                 if (!window.extraTethers) window.extraTethers = [];
 
-                let hoverStars = stars.filter(s => Math.hypot(s.x - mx, s.y - my) < 130);
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                let hoverStars = stars.filter(s => {
+                    const dx = s.x - mx;
+                    const dy = s.y - my;
+                    return dx * dx + dy * dy < 16900; // 130^2
+                });
                 const rand = Math.random();
                 let numStrands = 1;
                 if (rand > 0.4) numStrands = 2;
@@ -610,8 +615,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (rand > 0.97) numStrands = 5;
 
                 let potentialNew = stars.filter(s => {
-                    let d = Math.hypot(s.x - mx, s.y - my);
-                    return d >= 130 && d < 380;
+                    // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                    const dx = s.x - mx;
+                    const dy = s.y - my;
+                    const dSq = dx * dx + dy * dy;
+                    return dSq >= 16900 && dSq < 144400; // 130^2 and 380^2
                 }).sort(() => Math.random() - 0.5).slice(0, numStrands);
 
                 for (let s of potentialNew) {
@@ -721,8 +729,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (mousePos.active) {
                 const dx = s.x - mousePos.x;
                 const dy = s.y - mousePos.y;
-                const dist = Math.hypot(dx, dy);
-                if (dist < 120 && dist > 1) {
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const distSq = dx * dx + dy * dy;
+                if (distSq < 14400 && distSq > 1) { // 120^2
+                    const dist = Math.sqrt(distSq);
                     const force = (120 - dist) / 120 * 0.5;
                     s.x += (dx / dist) * force;
                     s.y += (dy / dist) * force;
@@ -737,10 +747,15 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let j = i + 1; j < stars.length; j++) {
                 const a = stars[i];
                 const b = stars[j];
-                const dist = Math.hypot(a.x - b.x, a.y - b.y);
                 const maxDist = w > 768 ? 160 : 100;
 
-                if (dist < maxDist) {
+                // Optimize: Early exit using squared distance to avoid Math.sqrt in O(n^2) loop
+                const dx = a.x - b.x;
+                const dy = a.y - b.y;
+                const distSq = dx * dx + dy * dy;
+
+                if (distSq < maxDist * maxDist) {
+                    const dist = Math.sqrt(distSq);
                     let cascadeAlpha = 0;
 
                     if (a.pulseState !== 0 || b.pulseState !== 0) {
@@ -831,9 +846,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const { cascadeStartHue, cascadeSat, cascadeLit } = cascadeParams;
         let activeTethers = [];
         for (const s of stars) {
-            const dist = Math.hypot(s.x - mousePos.x, s.y - mousePos.y);
-            if (dist < 130) {
-                activeTethers.push({ target: s, dist: dist, alphaMultiplier: 1.0 });
+            // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+            const dx = s.x - mousePos.x;
+            const dy = s.y - mousePos.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < 16900) { // 130^2
+                activeTethers.push({ target: s, dist: Math.sqrt(distSq), alphaMultiplier: 1.0 });
             }
         }
         if (window.extraTethers) {
@@ -843,9 +861,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (et.life <= 0) {
                     window.extraTethers.splice(i, 1);
                 } else {
-                    const dist = Math.hypot(et.target.x - mousePos.x, et.target.y - mousePos.y);
-                    if (dist >= 130) {
-                        activeTethers.push({ target: et.target, dist: dist, alphaMultiplier: et.life });
+                    // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                    const dx = et.target.x - mousePos.x;
+                    const dy = et.target.y - mousePos.y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq >= 16900) { // 130^2
+                        activeTethers.push({ target: et.target, dist: Math.sqrt(distSq), alphaMultiplier: et.life });
                     }
                 }
             }
@@ -3022,7 +3043,10 @@ ${currentDraft.content}`;
 
                 if (!isFiltered || !isIsolated) return;
 
-                const dist = Math.hypot(b.x - a.x, b.y - a.y);
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
                 const organicFade = Math.sin(time * 2.5 + a.orbitOffset + b.orbitOffset) * 0.25 + 0.75;
                 let alpha = Math.max(0.06, 1 - (dist / 480)) * organicFade;
 
@@ -3218,7 +3242,8 @@ ${currentDraft.content}`;
                 edges.forEach(edge => {
                     const dx = edge.target.x - edge.source.x;
                     const dy = edge.target.y - edge.source.y;
-                    const dist = Math.hypot(dx, dy) || 1;
+                    // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
                     const targetDist = edge.isConceptEdge ? 130 : 160;
                     const force = (dist - targetDist) * k;
                     const fx = (dx / dist) * force;
@@ -3247,7 +3272,8 @@ ${currentDraft.content}`;
             edges.forEach(edge => {
                 const dx = edge.target.x - edge.source.x;
                 const dy = edge.target.y - edge.source.y;
-                const dist = Math.hypot(dx, dy) || 1;
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
                 const targetDist = edge.source.isHub || edge.target.isHub ? 130 : (edge.isConceptEdge ? 160 : 190);
                 const force = (dist - targetDist) * k;
                 const fx = (dx / dist) * force;
@@ -3360,8 +3386,13 @@ ${currentDraft.content}`;
 
             nodes.forEach(node => {
                 if (!matchesActiveFilter(node)) return;
-                const dist = Math.hypot(node.x - pos.worldX, node.y - pos.worldY);
-                if (dist < node.radius + 8 && dist < minDist) {
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const dx = node.x - pos.worldX;
+                const dy = node.y - pos.worldY;
+                const distSq = dx * dx + dy * dy;
+                const threshold = node.radius + 8;
+                if (distSq < threshold * threshold && distSq < minDist * minDist) {
+                    const dist = Math.sqrt(distSq);
                     minDist = dist;
                     hoveredNode = node;
                 }
@@ -3960,8 +3991,10 @@ ${currentDraft.content}`;
                             const p2 = verts[(i + 1) % verts.length];
                             const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
                             const normal = { x: -edge.y, y: edge.x };
-                            const len = Math.hypot(normal.x, normal.y);
-                            if (len > 0.0001) {
+                            // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                            const lenSq = normal.x * normal.x + normal.y * normal.y;
+                            if (lenSq > 0.00000001) {
+                                const len = Math.sqrt(lenSq);
                                 axes.push({ x: normal.x / len, y: normal.y / len });
                             }
                         }
@@ -4100,7 +4133,10 @@ ${currentDraft.content}`;
                         const x = (clientX - rect.left) * (canvas.width / rect.width);
                         const y = (clientY - rect.top) * (canvas.height / rect.height);
 
-                        if (Math.hypot(x - posA.x, y - posA.y) < 70) {
+                        // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                        const dx = x - posA.x;
+                        const dy = y - posA.y;
+                        if (dx * dx + dy * dy < 4900) { // 70^2
                             isDragging = true;
                             dragOffset.x = x - posA.x;
                             dragOffset.y = y - posA.y;
@@ -5195,7 +5231,13 @@ class VesselEngine {
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) * (canvas.width / rect.width);
             const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            draggedNode = nodes.find(n => Math.hypot(n.x - x, n.y - y) < n.mass + 8);
+            // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+            draggedNode = nodes.find(n => {
+                const dx = n.x - x;
+                const dy = n.y - y;
+                const threshold = n.mass + 8;
+                return dx * dx + dy * dy < threshold * threshold;
+            });
         });
 
         window.addEventListener("mousemove", (e) => {

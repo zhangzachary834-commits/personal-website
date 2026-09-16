@@ -1,4 +1,3 @@
-## 2024-05-24 - Duplicate DOM Event Listeners & Thrashing
-
-**Learning:** This vanilla JS architecture is susceptible to layout thrashing and compounding event listeners because initialization functions (`initCardSpotlights()`) are sometimes called multiple times dynamically (e.g., when adding new custom articles). Furthermore, scroll handlers routinely query the DOM using `querySelectorAll` causing high CPU load.
-**Action:** Always add an idempotency guard (like checking for a custom `_hasListener` property) before binding events in dynamic init functions, and aggressively cache static NodeLists accessed in high-frequency event handlers like `scroll`.
+## 2026-08-15 - Canvas Animation Loop Distance Calculation Optimization
+**Learning:** `Math.hypot(dx, dy)` is significantly slower in JS engine execution than `Math.sqrt(dx * dx + dy * dy)` due to internal argument handling and overflow protections. In high-frequency rendering and physics loops (like `drawConstellation` and `renderConnections` in `script.js`), this causes a measurable performance bottleneck. Furthermore, when comparing against thresholds, using squared distances (`distSq < threshold * threshold`) entirely avoids the `Math.sqrt()` call.
+**Action:** When performing 2D distance calculations in hot loops, always prefer `Math.sqrt(dx * dx + dy * dy)` over `Math.hypot`. Whenever possible, use squared distance comparisons to skip the square root operation entirely.
