@@ -252,6 +252,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollProgressBar = document.getElementById("scroll-progress");
     const backToTopBtn = document.getElementById("back-to-top");
 
+    // Cache elements for handleScroll
+    let cachedPersonalSections = null;
+    let cachedDimensionSections = null;
+    let cachedPersonalVNavLinks = null;
+    let cachedDimensionVNavLinks = null;
+    let cachedPersonalNavLinks = null;
+    let cachedDimensionNavLinks = null;
+
     // Set initial mode on page load
     setSiteMode(savedMode);
 
@@ -302,7 +310,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const activeContainer = isPersonal ? personalView : dimensionView;
         if (!activeContainer) return;
 
-        const sections = activeContainer.querySelectorAll("section[id]");
+        let sections;
+        if (isPersonal) {
+            if (!cachedPersonalSections) cachedPersonalSections = activeContainer.querySelectorAll("section[id]");
+            sections = cachedPersonalSections;
+        } else {
+            if (!cachedDimensionSections) cachedDimensionSections = activeContainer.querySelectorAll("section[id]");
+            sections = cachedDimensionSections;
+        }
+
         let currentId = isPersonal ? "p-home" : "d-home";
 
         sections.forEach((sec) => {
@@ -313,7 +329,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const activeVNav = isPersonal ? vNavPersonal : vNavDimension;
         if (activeVNav) {
-            activeVNav.querySelectorAll(".v-nav-link").forEach((link) => {
+            let vNavLinks;
+            if (isPersonal) {
+                if (!cachedPersonalVNavLinks) cachedPersonalVNavLinks = activeVNav.querySelectorAll(".v-nav-link");
+                vNavLinks = cachedPersonalVNavLinks;
+            } else {
+                if (!cachedDimensionVNavLinks) cachedDimensionVNavLinks = activeVNav.querySelectorAll(".v-nav-link");
+                vNavLinks = cachedDimensionVNavLinks;
+            }
+            vNavLinks.forEach((link) => {
                 const target = link.getAttribute("data-target");
                 link.classList.toggle("active", target === currentId);
             });
@@ -321,7 +345,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const activeNavMenu = isPersonal ? navPersonal : navDimension;
         if (activeNavMenu) {
-            activeNavMenu.querySelectorAll(".nav-link").forEach((link) => {
+            let navLinks;
+            if (isPersonal) {
+                if (!cachedPersonalNavLinks) cachedPersonalNavLinks = activeNavMenu.querySelectorAll(".nav-link");
+                navLinks = cachedPersonalNavLinks;
+            } else {
+                if (!cachedDimensionNavLinks) cachedDimensionNavLinks = activeNavMenu.querySelectorAll(".nav-link");
+                navLinks = cachedDimensionNavLinks;
+            }
+            navLinks.forEach((link) => {
                 const href = link.getAttribute("href");
                 if (href && href.startsWith("#")) {
                     link.classList.toggle("active", href === `#${currentId}`);
@@ -450,6 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         interactiveCards.forEach((card) => {
+            if (card._hasSpotlight) return;
+            card._hasSpotlight = true;
+
             card.addEventListener("mousemove", (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
