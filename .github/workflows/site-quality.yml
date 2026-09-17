@@ -1,0 +1,28 @@
+name: Site quality
+
+on:
+  push:
+    branches:
+      - main
+      - 'sol/**'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verify generated metadata is synchronized
+        run: |
+          npm run sync-metadata
+          git diff --exit-code
+      - run: npm run audit
