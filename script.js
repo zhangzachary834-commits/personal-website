@@ -1100,7 +1100,7 @@ Message:
 ${message}
 
 ---
-Sent via zacharyzhang.dev`;
+Sent via Dimension of Thought`;
             window.location.href = `mailto:zhangzachary834@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
         });
     }
@@ -2424,7 +2424,7 @@ Sent via Dimension of Thought Platform`;
     <title>${escapeHtml(draft.title)} — Dimension of Thought</title>
     <meta name="description" content="${escapeHtml(draft.subtitle || draft.excerpt || "")}">
     <meta name="author" content="${escapeHtml(draft.author || "Zachary Zhang")}">
-    <link rel="canonical" href="https://zhangzachary834-commits.github.io/posts/${draft.slug}.html">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/${draft.slug}.html">
 
     <meta property="og:type" content="article">
     <meta property="og:title" content="${escapeHtml(draft.title)} — Dimension of Thought">
