@@ -5,7 +5,7 @@
     "audit": "node scripts/audit-site.js",
     "check": "npm test && npm run audit"
   },
-  "devDependencies": {
+  "dependencies": {
     "jsdom": "^30.0.1"
   }
 }
