@@ -3512,3 +3512,177 @@ body.zen-mode .studio-editor-pane {
     border-color: rgba(216, 180, 110, 0.3);
     background: rgba(216, 180, 110, 0.1);
 }
+
+
+/* ==========================================================================
+   Personal Portfolio — Evidence-Dense Engineering Presentation
+   ========================================================================== */
+
+.hero-opportunity-note {
+    max-width: 760px;
+    margin: -12px 0 28px;
+    padding: 12px 16px;
+    border-left: 2px solid var(--teal);
+    background: linear-gradient(90deg, rgba(110, 231, 216, 0.08), transparent);
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.6;
+}
+.hero-opportunity-note strong { color: var(--ink); }
+
+.compact-header { margin-bottom: 32px; }
+.subsection-title {
+    font-size: clamp(1.8rem, 3.4vw, 2.45rem);
+}
+
+.portfolio-snapshot-section {
+    padding-top: 42px;
+    padding-bottom: 96px;
+}
+.portfolio-snapshot-grid,
+.evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+.portfolio-snapshot-card,
+.evidence-card,
+.depth-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: linear-gradient(160deg, var(--bg-card), color-mix(in srgb, var(--bg-elev) 86%, transparent));
+    backdrop-filter: blur(16px);
+    border-radius: var(--radius-lg);
+    padding: 26px;
+    transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease);
+}
+.portfolio-snapshot-card:hover,
+.evidence-card:hover,
+.depth-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--line-strong);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28), 0 0 22px var(--glow);
+}
+.snapshot-index,
+.evidence-label,
+.depth-kicker,
+.project-eyebrow {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+}
+.portfolio-snapshot-card h3,
+.evidence-card h4,
+.depth-card h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 10px;
+}
+.portfolio-snapshot-card h3 { font-size: 1.28rem; }
+.evidence-card h4 { font-size: 1.22rem; }
+.depth-card h3 { font-size: 1.34rem; }
+.portfolio-snapshot-card p,
+.evidence-card p,
+.depth-card p {
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.65;
+}
+.snapshot-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 18px;
+}
+.snapshot-tags span {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--teal);
+    border: 1px solid color-mix(in srgb, var(--teal) 32%, transparent);
+    background: color-mix(in srgb, var(--teal) 8%, transparent);
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
+.earthcall-evidence {
+    margin: 66px 0 52px;
+    padding: 34px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(145deg, rgba(216, 180, 110, 0.06), rgba(110, 231, 216, 0.035)),
+        var(--bg-card);
+}
+.evidence-card {
+    border-radius: var(--radius-md);
+    padding: 22px;
+    background: color-mix(in srgb, var(--bg-elev) 86%, transparent);
+}
+
+.project-card-featured {
+    grid-column: span 2;
+    background:
+        linear-gradient(145deg, rgba(216, 180, 110, 0.09), rgba(110, 231, 216, 0.035)),
+        var(--bg-card);
+    border-color: var(--line-strong);
+}
+.project-card-featured .project-description {
+    max-width: 780px;
+    font-size: 1.01rem;
+}
+.project-eyebrow { margin-bottom: 5px; }
+[data-category~="creative"] .project-role { color: #fb7185; }
+[data-category~="systems"] .project-role { color: #f59e0b; }
+[data-category~="robotics"] .project-role { color: #2dd4bf; }
+[data-category~="tools"] .project-role { color: #a78bfa; }
+
+.engineering-depth-section {
+    padding-top: 72px;
+    border-top: 1px solid var(--line);
+}
+.depth-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+.depth-card {
+    min-height: 230px;
+    padding: 30px;
+}
+.depth-card:nth-child(1) { border-top: 2px solid #f59e0b; }
+.depth-card:nth-child(2) { border-top: 2px solid #2dd4bf; }
+.depth-card:nth-child(3) { border-top: 2px solid #a78bfa; }
+.depth-card:nth-child(4) { border-top: 2px solid #60a5fa; }
+
+[data-theme="light"] [data-category~="creative"] .project-role { color: #be123c; }
+[data-theme="light"] [data-category~="systems"] .project-role { color: #b45309; }
+[data-theme="light"] [data-category~="robotics"] .project-role { color: #0f766e; }
+[data-theme="light"] [data-category~="tools"] .project-role { color: #6d28d9; }
+
+@media (max-width: 1100px) {
+    .portfolio-snapshot-grid,
+    .evidence-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .project-card-featured { grid-column: span 2; }
+}
+
+@media (max-width: 768px) {
+    .portfolio-snapshot-section { padding-top: 20px; }
+    .portfolio-snapshot-grid,
+    .evidence-grid,
+    .depth-grid {
+        grid-template-columns: 1fr;
+    }
+    .project-card-featured { grid-column: span 1; }
+    .earthcall-evidence { padding: 22px; }
+    .hero-opportunity-note { margin-top: -6px; }
+}
