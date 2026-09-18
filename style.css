@@ -3686,3 +3686,32 @@ body.zen-mode .studio-editor-pane {
     .earthcall-evidence { padding: 22px; }
     .hero-opportunity-note { margin-top: -6px; }
 }
+
+.portfolio-snapshot-card::before,
+.evidence-card::before,
+.depth-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+        420px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+        rgba(216, 180, 110, 0.14),
+        rgba(110, 231, 216, 0.045),
+        transparent 46%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+.portfolio-snapshot-card:hover::before,
+.evidence-card:hover::before,
+.depth-card:hover::before { opacity: 1; }
+
+.portfolio-snapshot-card > *,
+.evidence-card > *,
+.depth-card > * {
+    position: relative;
+    z-index: 2;
+}
