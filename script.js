@@ -229,11 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setupTypewriter("p-typewriter-text", [
-        "Person-centered ontology architect",
-        "Computer Science & Mathematics",
-        "Creator of Earthcall (C++20 · WebGPU · OntoMath)",
-        "Robotics VLA & Spatial Perception",
-        "One Person. Many First Movers."
+        "Creator of Earthcall — C++20 · WebGPU · runtime Laws",
+        "Systems engineering from architecture to GPU",
+        "Robotics VLA · RGB-D perception · manipulator control",
+        "Geometry, graphics, identity, persistence, and tools",
+        "One human architect. Many AI collaborators."
     ]);
 
     setupTypewriter("d-typewriter-text", [
@@ -380,8 +380,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const filter = btn.getAttribute("data-filter");
 
             projectCards.forEach((card) => {
-                const category = card.getAttribute("data-category");
-                const matches = filter === "all" || category === filter;
+                const categories = (card.getAttribute("data-category") || "")
+                    .split(/\s+/)
+                    .filter(Boolean);
+                const matches = filter === "all" || categories.includes(filter);
                 card.style.display = matches ? "flex" : "none";
             });
         });
@@ -478,7 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     function initCardSpotlights() {
         const interactiveCards = document.querySelectorAll(
-            ".stat-card, .now-card, .project-card, .pillar-card, .skill-category-card, .story-card, .manifesto-card, .essay-card, .initiative-card, .contact-item-card, .draft-item-card, .template-card"
+            ".stat-card, .now-card, .project-card, .portfolio-snapshot-card, .evidence-card, .depth-card, .pillar-card, .skill-category-card, .story-card, .manifesto-card, .essay-card, .initiative-card, .contact-item-card, .draft-item-card, .template-card"
         );
 
         interactiveCards.forEach((card) => {
