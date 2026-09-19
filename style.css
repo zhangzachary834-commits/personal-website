@@ -3715,3 +3715,227 @@ body.zen-mode .studio-editor-pane {
     position: relative;
     z-index: 2;
 }
+
+
+/* ==========================================================================
+   Earthcall Law Execution Explorer
+   ========================================================================== */
+.ontomath-evaluator-wrapper {
+    margin-top: 52px;
+}
+.ontology-law-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.ontology-demo-toolbar {
+    align-items: flex-start;
+    gap: 16px;
+}
+.ontology-demo-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.8fr);
+    gap: 18px;
+    align-items: stretch;
+}
+.ontology-canvas-panel {
+    min-height: 390px;
+}
+.ontology-canvas-panel .drawer-sim-canvas {
+    width: 100%;
+    height: auto;
+    min-height: 360px;
+}
+.ontology-canvas-hint {
+    margin-top: 8px;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+}
+.ontology-being-inspector {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.ontology-inspector-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+}
+.ontology-inspector-heading strong {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+}
+.ontology-inspector-heading code {
+    color: var(--teal);
+    font-size: 0.75rem;
+}
+.ontology-property-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.ontology-property-list > div {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+}
+.ontology-property-list dt {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+}
+.ontology-property-list dd {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--gold);
+    text-align: right;
+}
+.ontology-slider-label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+.ontology-signal-slider {
+    width: 100%;
+    accent-color: var(--gold);
+}
+.ontology-signal-slider:disabled {
+    opacity: 0.35;
+}
+.ontology-inspector-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.ontology-inspector-note {
+    margin-top: auto;
+    color: var(--dim);
+    font-size: 0.78rem;
+    line-height: 1.55;
+}
+.ontology-trace-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+.ontology-trace-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+    min-height: 135px;
+}
+.ontology-trace-card span {
+    display: block;
+    margin-bottom: 7px;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+.ontology-trace-card strong {
+    display: block;
+    margin-bottom: 7px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: var(--ink);
+}
+.ontology-trace-card p {
+    color: var(--dim);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+.ontology-event-log-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: rgba(5, 6, 9, 0.6);
+    overflow: hidden;
+}
+[data-theme="light"] .ontology-event-log-wrap {
+    background: rgba(255,255,255,0.6);
+}
+.ontology-event-log-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+}
+.ontology-event-log {
+    list-style: none;
+    margin: 0;
+    padding: 10px 14px;
+    min-height: 110px;
+    max-height: 190px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ontology-event-log-item {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.45;
+    color: var(--muted);
+}
+.ontology-event-log-item.change { color: #38bdf8; }
+.ontology-event-log-item.write { color: #d8b46e; }
+.ontology-event-log-item.event { color: #c084fc; }
+.ontology-law-source {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.ontology-law-source > div {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+}
+.ontology-law-source code {
+    display: block;
+    margin-top: 5px;
+    white-space: normal;
+    color: var(--ink);
+    font-size: 0.74rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+    .ontology-demo-layout,
+    .ontology-law-source {
+        grid-template-columns: 1fr;
+    }
+    .ontology-trace-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 640px) {
+    .ontology-trace-grid {
+        grid-template-columns: 1fr;
+    }
+    .ontology-demo-toolbar {
+        align-items: stretch;
+    }
+    .ontology-canvas-panel .drawer-sim-canvas {
+        min-height: 300px;
+    }
+}
