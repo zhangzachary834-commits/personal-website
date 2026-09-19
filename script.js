@@ -366,6 +366,11 @@ document.addEventListener("DOMContentLoaded", () => {
             card.className = "essay-card";
             card.setAttribute("data-category", art.category || "ontology");
             card.setAttribute("data-essay-id", articleId);
+            card.setAttribute("data-status", art.thoughtStatus || "Working Thesis");
+            card.setAttribute("data-confidence", art.confidence || "Open to Revision");
+            card.setAttribute("data-questions", art.questions || "");
+            card.setAttribute("data-sources", art.sources || "");
+            card.setAttribute("data-relations", art.relations || "");
             if (art.concepts && art.concepts.length > 0) {
                 card.setAttribute("data-concepts", art.concepts.join(","));
             }
@@ -404,6 +409,30 @@ document.addEventListener("DOMContentLoaded", () => {
         initCardSpotlights();
     }
     initDynamicCustomArticles();
+
+    function initLivingEssayMetadata() {
+        document.querySelectorAll(".essay-card").forEach((card) => {
+            if (card.querySelector(".living-essay-meta")) return;
+            const status = card.getAttribute("data-status") || "Working Thesis";
+            const confidence = card.getAttribute("data-confidence") || "Open to Revision";
+            const row = document.createElement("div");
+            row.className = "living-essay-meta";
+
+            const statusEl = document.createElement("span");
+            statusEl.className = "living-status-badge";
+            statusEl.textContent = status;
+
+            const confidenceEl = document.createElement("span");
+            confidenceEl.className = "confidence-badge";
+            confidenceEl.textContent = confidence;
+
+            row.append(statusEl, confidenceEl);
+            const title = card.querySelector(".essay-title");
+            if (title) title.insertAdjacentElement("afterend", row);
+        });
+    }
+    initLivingEssayMetadata();
+
 
     // -------------------------------------------------------------------------
     // Interactive Card Spotlight Hover Tracker
@@ -1752,6 +1781,11 @@ Sent via Dimension of Thought Platform`;
         const authorInput = document.getElementById("studio-author");
         const excerptInput = document.getElementById("studio-excerpt");
         const tagsInput = document.getElementById("studio-tags");
+        const thoughtStatusInput = document.getElementById("studio-thought-status");
+        const confidenceInput = document.getElementById("studio-confidence");
+        const questionsInput = document.getElementById("studio-questions");
+        const sourcesInput = document.getElementById("studio-sources");
+        const relationsInput = document.getElementById("studio-relations");
         const bodyInput = document.getElementById("studio-body");
 
         // Preview Elements
@@ -1912,6 +1946,11 @@ Sent via Dimension of Thought Platform`;
                 readTime: "1 min read",
                 excerpt: "",
                 tags: "",
+                thoughtStatus: "Working Thesis",
+                confidence: "Open to Revision",
+                questions: "",
+                sources: "",
+                relations: "",
                 content: "",
                 updatedAt: Date.now(),
                 isPublished: false
@@ -1930,6 +1969,11 @@ Sent via Dimension of Thought Platform`;
             authorInput.value = draft.author || "Zachary Zhang";
             excerptInput.value = draft.excerpt || "";
             tagsInput.value = draft.tags || "";
+            if (thoughtStatusInput) thoughtStatusInput.value = draft.thoughtStatus || "Working Thesis";
+            if (confidenceInput) confidenceInput.value = draft.confidence || "Open to Revision";
+            if (questionsInput) questionsInput.value = draft.questions || "";
+            if (sourcesInput) sourcesInput.value = draft.sources || "";
+            if (relationsInput) relationsInput.value = draft.relations || "";
             bodyInput.value = draft.content || "";
 
             updateLivePreview();
@@ -2028,6 +2072,11 @@ Sent via Dimension of Thought Platform`;
             currentDraft.author = authorInput.value.trim() || "Zachary Zhang";
             currentDraft.excerpt = excerptInput.value.trim();
             currentDraft.tags = tagsInput.value.trim();
+            currentDraft.thoughtStatus = thoughtStatusInput ? thoughtStatusInput.value : "Working Thesis";
+            currentDraft.confidence = confidenceInput ? confidenceInput.value : "Open to Revision";
+            currentDraft.questions = questionsInput ? questionsInput.value.trim() : "";
+            currentDraft.sources = sourcesInput ? sourcesInput.value.trim() : "";
+            currentDraft.relations = relationsInput ? relationsInput.value.trim() : "";
             currentDraft.content = bodyInput.value;
             currentDraft.updatedAt = Date.now();
 
@@ -2527,6 +2576,11 @@ category: "${currentDraft.category}"
 author: "${currentDraft.author}"
 date: "${currentDraft.date}"
 tags: "${currentDraft.tags}"
+thought_status: "${currentDraft.thoughtStatus || "Working Thesis"}"
+confidence: "${currentDraft.confidence || "Open to Revision"}"
+questions: "${currentDraft.questions || ""}"
+sources: "${currentDraft.sources || ""}"
+relations: "${currentDraft.relations || ""}"
 ---
 
 ${currentDraft.content}`;
@@ -2615,7 +2669,7 @@ ${currentDraft.content}`;
             });
         }
 
-        [titleInput, subtitleInput, categoryInput, slugInput, authorInput, excerptInput, tagsInput, bodyInput].forEach((el) => {
+        [titleInput, subtitleInput, categoryInput, slugInput, authorInput, excerptInput, tagsInput, thoughtStatusInput, confidenceInput, questionsInput, sourcesInput, relationsInput, bodyInput].forEach((el) => {
             if (el) {
                 el.addEventListener("input", () => {
                     if (el === titleInput && !slugInput.dataset.manual) {
