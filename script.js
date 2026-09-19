@@ -3372,10 +3372,10 @@ ${currentDraft.content}`;
                     ctx.shadowBlur = 8;
                     ctx.shadowColor = a.color;
                 } else {
-                    ctx.lineWidth = edge.isConceptEdge ? 0.9 : 1.2;
-                    ctx.strokeStyle = edge.isConceptEdge
-                        ? `rgba(148, 163, 184, ${alpha * 0.35})`
-                        : `rgba(216, 180, 110, ${alpha * 0.45})`;
+                    const edgeStyle = EDGE_STYLE[edge.relation] || EDGE_STYLE["develops"];
+                    ctx.lineWidth = edge.relation === "questions" ? 1.1 : 1.2;
+                    ctx.setLineDash(edgeStyle.dash || []);
+                    ctx.strokeStyle = edgeStyle.color + (alpha * 0.55) + ")";
                 }
 
                 // Curved bezier synapse
@@ -3386,6 +3386,7 @@ ${currentDraft.content}`;
                 ctx.moveTo(a.x, a.y);
                 ctx.quadraticCurveTo(cx, cy, b.x, b.y);
                 ctx.stroke();
+                ctx.setLineDash([]);
                 ctx.restore();
 
                 // Save curve control point for particles
@@ -3465,25 +3466,38 @@ ${currentDraft.content}`;
 
                 const alphaHex = (!isSearched && searchQuery) ? "44" : "ff";
 
-                if (node.isConcept) {
-                    // Draw diamond star for concepts
+                if (node.kind === "concept") {
                     ctx.fillStyle = isHovered ? "#38bdf8" : (node.color + alphaHex);
                     ctx.strokeStyle = isHovered ? "#fff" : "rgba(226, 232, 240, 0.6)";
                     ctx.lineWidth = 1.5;
                     drawDiamond(ctx, node.x, node.y, currentRadius);
                     ctx.fill();
                     ctx.stroke();
+                } else if (node.kind === "source") {
+                    ctx.fillStyle = node.color + alphaHex;
+                    ctx.strokeStyle = "rgba(255,255,255,0.55)";
+                    ctx.lineWidth = 1.2;
+                    ctx.fillRect(node.x - currentRadius, node.y - currentRadius, currentRadius * 2, currentRadius * 2);
+                    ctx.strokeRect(node.x - currentRadius, node.y - currentRadius, currentRadius * 2, currentRadius * 2);
                 } else {
-                    // Circular star for articles and category hubs
                     ctx.beginPath();
                     ctx.arc(node.x, node.y, currentRadius, 0, Math.PI * 2);
                     ctx.fillStyle = node.isHub ? node.color : (node.color + alphaHex);
                     ctx.fill();
 
-                    if (node.isHub) {
-                        ctx.strokeStyle = "#fff";
-                        ctx.lineWidth = 2;
+                    if (node.isHub || node.kind === "question") {
+                        ctx.strokeStyle = node.kind === "question" ? "#fb7185" : "#fff";
+                        ctx.lineWidth = node.kind === "question" ? 1.6 : 2;
                         ctx.stroke();
+                    }
+
+                    if (node.kind === "question") {
+                        ctx.fillStyle = "#fff";
+                        ctx.font = "700 10px 'IBM Plex Mono', monospace";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("?", node.x, node.y + 0.5);
+                        ctx.textBaseline = "alphabetic";
                     }
                 }
                 ctx.shadowBlur = 0;
@@ -3496,7 +3510,7 @@ ${currentDraft.content}`;
                         : (node.isHub ? "rgba(247, 243, 235, 0.95)" : "rgba(247, 243, 235, 0.8)");
                     ctx.font = node.isHub
                         ? "600 13px 'IBM Plex Mono', monospace"
-                        : (node.isConcept ? "500 11px 'IBM Plex Mono', monospace" : "500 12px 'Source Sans 3', sans-serif");
+                        : (node.kind === "concept" ? "500 11px 'IBM Plex Mono', monospace" : "500 12px 'Source Sans 3', sans-serif");
                     ctx.textAlign = "center";
                     ctx.fillText(node.title, node.x, node.y + currentRadius + 14);
                 }
@@ -3514,7 +3528,10 @@ ${currentDraft.content}`;
 
         function matchesActiveFilter(node) {
             if (activeCluster === "all") return true;
-            if (activeCluster === "concepts") return node.isConcept;
+            if (activeCluster === "concepts") return node.kind === "concept";
+            if (activeCluster === "questions") return node.kind === "question";
+            if (activeCluster === "sources") return node.kind === "source";
+            if (activeCluster === "creative") return node.kind === "creative" || node.kind === "technical";
             return node.category === activeCluster;
         }
 
@@ -3553,7 +3570,7 @@ ${currentDraft.content}`;
                     const dy = edge.target.y - edge.source.y;
                     // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
                     const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                    const targetDist = edge.isConceptEdge ? 130 : 160;
+                    const targetDist = (edge.source.kind === "concept" || edge.target.kind === "concept") ? 130 : 160;
                     const force = (dist - targetDist) * k;
                     const fx = (dx / dist) * force;
                     const fy = (dy / dist) * force;
@@ -3583,7 +3600,7 @@ ${currentDraft.content}`;
                 const dy = edge.target.y - edge.source.y;
                 // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
                 const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                const targetDist = edge.source.isHub || edge.target.isHub ? 130 : (edge.isConceptEdge ? 160 : 190);
+                const targetDist = edge.source.isHub || edge.target.isHub ? 130 : ((edge.source.kind === "concept" || edge.target.kind === "concept") ? 160 : 190);
                 const force = (dist - targetDist) * k;
                 const fx = (dx / dist) * force;
                 const fy = (dy / dist) * force;
@@ -3746,12 +3763,15 @@ ${currentDraft.content}`;
                 tooltip.style.display = "block";
                 tooltip.style.left = (pos.canvasX + 15) + "px";
                 tooltip.style.top = (pos.canvasY - 15) + "px";
+                const tooltipKind = escapeHtml(catNames[hoveredNode.category] || hoveredNode.kind || hoveredNode.category || "Node");
+                const tooltipTitle = escapeHtml(hoveredNode.title || "Untitled");
+                const tooltipSubtitle = hoveredNode.subtitle ? escapeHtml(hoveredNode.subtitle) : "";
                 tooltip.innerHTML = `
                     <div style="font-size:0.72rem;color:${hoveredNode.color};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${catNames[hoveredNode.category] || hoveredNode.category}
+                        ${tooltipKind}
                     </div>
-                    <strong style="color:var(--gold);font-size:0.95rem;">${hoveredNode.title}</strong>
-                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${hoveredNode.subtitle}</div>` : ""}
+                    <strong style="color:var(--gold);font-size:0.95rem;">${tooltipTitle}</strong>
+                    ${tooltipSubtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${tooltipSubtitle}</div>` : ""}
                 `;
             } else {
                 canvas.style.cursor = isDraggingCanvas ? "grabbing" : "grab";
@@ -3843,13 +3863,20 @@ ${currentDraft.content}`;
             const conceptsContainer = document.getElementById("inspector-concepts-list");
             const readLink = document.getElementById("inspector-read-link");
             const focusBtn = document.getElementById("inspector-focus-btn");
+            const typeEl = document.getElementById("inspector-node-type");
+            const statusEl = document.getElementById("inspector-thought-status");
+            const confidenceEl = document.getElementById("inspector-confidence");
+            const relationsEl = document.getElementById("inspector-relationships-list");
 
             if (catTag) {
                 catTag.textContent = catNames[node.category] || node.category;
                 catTag.style.color = node.color;
                 catTag.style.borderColor = node.color;
             }
-            if (readTimeEl) readTimeEl.textContent = node.readTime || "Celestial Node";
+            if (readTimeEl) readTimeEl.textContent = node.readTime || "Semantic Node";
+            if (typeEl) typeEl.textContent = (node.kind || "node").replace(/\b\w/g, char => char.toUpperCase());
+            if (statusEl) statusEl.textContent = node.status || (node.kind === "essay" ? "Working Thesis" : "Living Node");
+            if (confidenceEl) confidenceEl.textContent = node.confidence || (node.kind === "question" ? "Unresolved" : "Open to Revision");
             if (titleEl) titleEl.textContent = node.title;
             if (subEl) subEl.textContent = node.subtitle || "";
             if (excerptEl) excerptEl.textContent = node.excerpt || "Interactive node in the celestial knowledge network.";
@@ -3862,13 +3889,45 @@ ${currentDraft.content}`;
                         pill.className = "inspector-concept-tag";
                         pill.textContent = "[[" + c + "]]";
                         pill.addEventListener("click", () => {
-                            const conceptNode = nodes.find(n => n.title === "[[" + c + "]]");
+                            const conceptNode = nodes.find(n => n.kind === "concept" && (n.rawTitle === c || n.title === "[[" + c + "]]"));
                             if (conceptNode) selectStarNode(conceptNode);
                         });
                         conceptsContainer.appendChild(pill);
                     });
                 } else {
                     conceptsContainer.innerHTML = '<span style="font-size:0.76rem;color:var(--muted);">No linked concepts</span>';
+                }
+            }
+
+            if (relationsEl) {
+                relationsEl.innerHTML = "";
+                const linked = edges.filter(edge => edge.source === node || edge.target === node).slice(0, 8);
+
+                if (!linked.length) {
+                    const empty = document.createElement("span");
+                    empty.className = "inspector-relationship-empty";
+                    empty.textContent = "No typed relationships recorded.";
+                    relationsEl.appendChild(empty);
+                } else {
+                    linked.forEach(edge => {
+                        const other = edge.source === node ? edge.target : edge.source;
+                        const row = document.createElement("button");
+                        row.type = "button";
+                        row.className = "inspector-relationship-row";
+
+                        const relation = document.createElement("strong");
+                        relation.textContent = edge.relation || "related";
+
+                        const target = document.createElement("span");
+                        target.textContent = other.rawTitle || other.title;
+
+                        const reason = document.createElement("small");
+                        reason.textContent = edge.reason || "Relationship explicitly recorded in the semantic graph.";
+
+                        row.append(relation, target, reason);
+                        row.addEventListener("click", () => selectStarNode(other));
+                        relationsEl.appendChild(row);
+                    });
                 }
             }
 
