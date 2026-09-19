@@ -1,103 +1,133 @@
-const fs = require('fs');
-let nodes = [];
-for (let i = 0; i < 5000; i++) {
-    nodes.push({ x: Math.random() * 5000, y: Math.random() * 5000, vx: 0, vy: 0 });
-}
-const repulsion = 2400;
+const { performance } = require('perf_hooks');
 
-// BASELINE
-let start = performance.now();
-for (let k = 0; k < 60; k++) {
+// Mock canvas and ctx
+const canvas = { width: 800, height: 600 };
+const ctx = {
+    clearRect: () => {},
+    beginPath: () => {},
+    moveTo: () => {},
+    lineTo: () => {},
+    stroke: () => {},
+    fillRect: () => {},
+    arc: () => {},
+    fill: () => {},
+    fillText: () => {}
+};
+
+let nodes = [];
+for (let i = 0; i < 500; i++) {
+    nodes.push({
+        x: Math.random() * 800,
+        y: Math.random() * 600,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 1.5,
+        mass: Math.floor(Math.random() * 8) + 10,
+        charge: Math.random() > 0.5 ? 1.0 : -1.0,
+        name: `Being:${i}`
+    });
+}
+
+const activeLaws = { gravity: true, resonance: true, damping: true };
+let draggedNode = null;
+
+function updatePhysics() {
     for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-            const n1 = nodes[i];
-            const n2 = nodes[j];
-            const dx = n2.x - n1.x;
-            const dy = n2.y - n1.y;
-            const distSq = dx * dx + dy * dy || 1;
-            if (distSq < 48000) {
-                const force = repulsion / distSq;
-                const dist = Math.sqrt(distSq);
+            const a = nodes[i];
+            const b = nodes[j];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const dist = Math.hypot(dx, dy) || 1;
+
+            if (activeLaws.gravity && dist > 20) {
+                const force = ((a.mass * b.mass) / (dist * dist)) * 0.09;
                 const fx = (dx / dist) * force;
                 const fy = (dy / dist) * force;
-                n1.vx -= fx; n1.vy -= fy;
-                n2.vx += fx; n2.vy += fy;
+                a.vx += fx / a.mass;
+                a.vy += fy / a.mass;
+                b.vx -= fx / b.mass;
+                b.vy -= fy / b.mass;
+            }
+
+            if (activeLaws.resonance && dist < 140) {
+                const rep = (140 - dist) * 0.0035 * (a.charge * b.charge);
+                a.vx -= (dx / dist) * rep;
+                a.vy -= (dy / dist) * rep;
+                b.vx += (dx / dist) * rep;
+                b.vy += (dy / dist) * rep;
             }
         }
     }
+
+    nodes.forEach(n => {
+        if (n === draggedNode) return;
+        if (activeLaws.damping) {
+            n.vx *= 0.985;
+            n.vy *= 0.985;
+        }
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 35) { n.x = 35; n.vx *= -0.7; }
+        if (n.x > canvas.width - 35) { n.x = canvas.width - 35; n.vx *= -0.7; }
+        if (n.y < 35) { n.y = 35; n.vy *= -0.7; }
+        if (n.y > canvas.height - 35) { n.y = canvas.height - 35; n.vy *= -0.7; }
+    });
 }
-let end = performance.now();
-const baselineTime = end - start;
-console.log('Baseline 60 frames:', baselineTime.toFixed(2), 'ms');
 
-nodes.forEach(n => { n.vx = 0; n.vy = 0; });
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    updatePhysics();
 
-// OPTIMIZED
-start = performance.now();
-for (let k = 0; k < 60; k++) {
-    const CELL_SIZE = 220; // Slightly larger than sqrt(48000) ~ 219.09
-    const grid = new Map();
+    for (let x = 0; x < canvas.width; x += 30) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 30) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
 
     for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-        const cx = Math.floor(node.x / CELL_SIZE);
-        const cy = Math.floor(node.y / CELL_SIZE);
-        const key = cx + ',' + cy;
-        let cell = grid.get(key);
-        if (!cell) {
-            cell = [];
-            grid.set(key, cell);
-        }
-        cell.push(node);
-    }
+        for (let j = i + 1; j < nodes.length; j++) {
+            const a = nodes[i];
+            const b = nodes[j];
+            const dist = Math.hypot(b.x - a.x, b.y - a.y);
+            if (dist < 220) {
+                const alpha = (1 - dist / 220) * 0.45;
+                ctx.strokeStyle = `rgba(110, 231, 216, ${alpha})`;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
 
-    for (const [key, cellNodes] of grid.entries()) {
-        const commaIndex = key.indexOf(',');
-        const cx = parseInt(key.substring(0, commaIndex));
-        const cy = parseInt(key.substring(commaIndex + 1));
-
-        // Check against same cell and 4 neighboring cells to avoid double counting
-        const neighbors = [
-            [cx, cy],
-            [cx + 1, cy],
-            [cx - 1, cy + 1],
-            [cx, cy + 1],
-            [cx + 1, cy + 1]
-        ];
-
-        for (let i = 0; i < cellNodes.length; i++) {
-            const n1 = cellNodes[i];
-
-            for (let nIdx = 0; nIdx < neighbors.length; nIdx++) {
-                const nx = neighbors[nIdx][0];
-                const ny = neighbors[nIdx][1];
-                const neighborKey = nx + ',' + ny;
-                const neighborNodes = grid.get(neighborKey);
-
-                if (neighborNodes) {
-                    const isSameCell = (nx === cx && ny === cy);
-                    const startIndex = isSameCell ? i + 1 : 0;
-
-                    for (let j = startIndex; j < neighborNodes.length; j++) {
-                        const n2 = neighborNodes[j];
-                        const dx = n2.x - n1.x;
-                        const dy = n2.y - n1.y;
-                        const distSq = dx * dx + dy * dy || 1;
-                        if (distSq < 48000) {
-                            const force = repulsion / distSq;
-                            const dist = Math.sqrt(distSq);
-                            const fx = (dx / dist) * force;
-                            const fy = (dy / dist) * force;
-                            n1.vx -= fx; n1.vy -= fy;
-                            n2.vx += fx; n2.vy += fy;
-                        }
-                    }
-                }
+                const mx = (a.x + b.x) / 2;
+                const my = (a.y + b.y) / 2;
+                ctx.fillStyle = `rgba(216, 180, 110, ${alpha * 0.7})`;
+                ctx.fillRect(mx - 2, my - 2, 4, 4);
             }
         }
     }
+
+    nodes.forEach(n => {
+        ctx.fillStyle = n.charge > 0 ? "rgba(216, 180, 110, 0.3)" : "rgba(110, 231, 216, 0.3)";
+        ctx.strokeStyle = n.charge > 0 ? "#d8b46e" : "#6ee7d8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.mass, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#fff";
+        ctx.font = "10px monospace";
+        ctx.fillText(n.name, n.x - 28, n.y - n.mass - 4);
+    });
 }
-end = performance.now();
-const optimizedTime = end - start;
-console.log('Optimized 60 frames:', optimizedTime.toFixed(2), 'ms');
-console.log('Speedup:', (baselineTime / optimizedTime).toFixed(2) + 'x');
+
+// Warmup
+for (let i = 0; i < 10; i++) draw();
+
+const start = performance.now();
+for (let i = 0; i < 50; i++) draw();
+const end = performance.now();
+
+console.log(`Baseline time: ${(end - start).toFixed(2)} ms for 50 frames with 500 nodes`);
