@@ -88,6 +88,111 @@
             </div>
         </header>
 
+
+        <section class="section semantic-library-section" id="semantic-concept-explorer">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">Semantic Explorer // Concepts · Questions · Sources · Works</span>
+                    <h2 class="section-title">Navigate the worldview, not just the archive.</h2>
+                    <p class="section-subtitle">
+                        Essays are one node type among many. Concepts gather related work, questions preserve uncertainty,
+                        sources expose intellectual lineage, and typed relationships explain why the graph contains an edge at all.
+                    </p>
+                </div>
+
+                <div class="semantic-library-grid">
+                    <div class="concept-directory-panel">
+                        <div class="semantic-panel-heading">
+                            <span class="semantic-kicker">Concept Pages</span>
+                            <h3>Enter through an idea.</h3>
+                            <p>Each concept has a canonical URL and resolves its connected essays, questions, sources, and creative/technical expressions from the same semantic graph.</p>
+                        </div>
+                        <div class="concept-directory" id="semantic-concept-directory">
+                            <a href="library.html?concept=Person#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Person"><span>Person</span><small>relation · dignity · agency</small></a>
+                            <a href="library.html?concept=Identity#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Identity"><span>Identity</span><small>continuity · persistence · memory</small></a>
+                            <a href="library.html?concept=Narrative#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Narrative"><span>Narrative</span><small>story · culture · meaning</small></a>
+                            <a href="library.html?concept=Dignity#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Dignity"><span>Dignity</span><small>personhood · ethics · justice</small></a>
+                            <a href="library.html?concept=Relation#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Relation"><span>Relation</span><small>knowledge · community · ontology</small></a>
+                            <a href="library.html?concept=Human%20Agency#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Human Agency"><span>Human Agency</span><small>authority · tools · AI</small></a>
+                            <a href="library.html?concept=Redemption#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Redemption"><span>Redemption</span><small>justice · story · restoration</small></a>
+                            <a href="library.html?concept=Living%20Knowledge#semantic-concept-explorer" class="concept-directory-card" data-semantic-concept="Living Knowledge"><span>Living Knowledge</span><small>truth · action · flourishing</small></a>
+                        </div>
+                    </div>
+
+                    <aside class="semantic-concept-detail" id="semantic-concept-detail" aria-live="polite">
+                        <span class="semantic-kicker" id="semantic-detail-kind">Concept</span>
+                        <h3 id="semantic-detail-title">Select a concept</h3>
+                        <p id="semantic-detail-definition">Choose any concept page to see why it exists in the graph and which parts of the archive give it meaning.</p>
+                        <div class="semantic-detail-block">
+                            <span>Connected work</span>
+                            <div id="semantic-detail-works" class="semantic-detail-pills"></div>
+                        </div>
+                        <div class="semantic-detail-block">
+                            <span>Open questions</span>
+                            <div id="semantic-detail-questions" class="semantic-detail-list"></div>
+                        </div>
+                        <div class="semantic-detail-block">
+                            <span>Source lineage</span>
+                            <div id="semantic-detail-sources" class="semantic-detail-list"></div>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="question-dialogue-grid">
+                    <div class="question-vault">
+                        <div class="semantic-panel-heading">
+                            <span class="semantic-kicker">Question Nodes</span>
+                            <h3>Uncertainty belongs in the map.</h3>
+                        </div>
+                        <div class="question-node-grid">
+                            <button type="button" class="question-node-card" data-semantic-question="What makes identity persist through radical change?"><span>?</span><strong>What makes identity persist through radical change?</strong><small>Identity · Memory · Persistence</small></button>
+                            <button type="button" class="question-node-card" data-semantic-question="Can a computational system represent a Person without reducing the Person to function?"><span>?</span><strong>Can computation represent a Person without reducing the Person to function?</strong><small>Person · Dignity · Earthcall</small></button>
+                            <button type="button" class="question-node-card" data-semantic-question="When does a story owe a character redemption rather than mere consequence?"><span>?</span><strong>When does a story owe a character redemption rather than mere consequence?</strong><small>Narrative · Justice · Redemption</small></button>
+                            <button type="button" class="question-node-card" data-semantic-question="How should AI amplify thought without becoming its author?"><span>?</span><strong>How should AI amplify thought without becoming its author?</strong><small>Human Agency · Tools · AI</small></button>
+                        </div>
+                    </div>
+
+                    <div class="dialogue-mode-card">
+                        <span class="semantic-kicker">Dialogue Mode</span>
+                        <h3>Where do two ideas meet?</h3>
+                        <p>This does not generate a random philosophical answer. It retrieves authored edges, shared essays, and explicit bridge notes already present in the semantic model.</p>
+                        <div class="dialogue-select-row">
+                            <label>Concept A
+                                <select id="semantic-dialogue-a" class="studio-select-input">
+                                    <option>Person</option><option>Identity</option><option>Narrative</option><option>Dignity</option><option>Relation</option><option>Human Agency</option><option>Redemption</option><option>Living Knowledge</option>
+                                </select>
+                            </label>
+                            <span class="dialogue-times">×</span>
+                            <label>Concept B
+                                <select id="semantic-dialogue-b" class="studio-select-input">
+                                    <option>Identity</option><option>Person</option><option>Narrative</option><option>Dignity</option><option>Relation</option><option>Human Agency</option><option>Redemption</option><option>Living Knowledge</option>
+                                </select>
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-small" id="semantic-dialogue-run">Trace Relationship →</button>
+                        <div id="semantic-dialogue-result" class="semantic-dialogue-result">
+                            Choose two concepts to reveal the authored bridge between them.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="semantic-edge-legend">
+                    <span class="semantic-kicker">Edge Vocabulary</span>
+                    <div><b data-edge="supports">supports</b><b data-edge="questions">questions</b><b data-edge="contrasts">contrasts with</b><b data-edge="derived">derived from</b><b data-edge="expressed">expressed in</b><b data-edge="implements">implemented by</b></div>
+                    <p>A line is never just “these two nodes are near each other.” Every semantic edge has a type and a reason.</p>
+                </div>
+
+                <div class="library-thought-trails">
+                    <span class="semantic-kicker">Curated Thought Trails</span>
+                    <div class="library-trail-grid">
+                        <a href="library.html?trail=personhood#graph-view-container"><strong>Personhood → Dignity → Earthcall</strong><span>Follow how a philosophical claim becomes a software constraint.</span></a>
+                        <a href="library.html?trail=narrative#graph-view-container"><strong>Narrative → Justice → Redemption</strong><span>Follow an ethical conviction into creative work.</span></a>
+                        <a href="library.html?trail=identity#graph-view-container"><strong>Identity → Persistence → Continuity</strong><span>Follow one question through metaphysics, serialization, and story.</span></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="section">
             <div class="container">
                 <div class="essay-filter-bar">
@@ -108,6 +213,9 @@
                             <button type="button" class="c-filter-chip" data-cluster="narrative">● Narrative</button>
                             <button type="button" class="c-filter-chip" data-cluster="reflections">● Reflections</button>
                             <button type="button" class="c-filter-chip" data-cluster="concepts">◆ Concepts</button>
+                            <button type="button" class="c-filter-chip" data-cluster="questions">? Questions</button>
+                            <button type="button" class="c-filter-chip" data-cluster="sources">▤ Sources</button>
+                            <button type="button" class="c-filter-chip" data-cluster="creative">✦ Creative / Technical</button>
                         </div>
 
                         <div class="constellation-hud-right">
@@ -135,6 +243,7 @@
                         <div class="inspector-header">
                             <div class="inspector-tags-row">
                                 <span id="inspector-cat-tag" class="inspector-cat-badge">Category</span>
+                                <span id="inspector-node-type" class="inspector-cat-badge semantic-type-badge">Essay</span>
                                 <span id="inspector-read-time" class="inspector-read-time">5 min read</span>
                             </div>
                             <button type="button" id="inspector-close-btn" class="inspector-close-btn" aria-label="Close Inspector">✕</button>
@@ -142,9 +251,17 @@
                         <h3 id="inspector-title" class="inspector-title">Essay Title</h3>
                         <p id="inspector-subtitle" class="inspector-subtitle">Subtitle</p>
                         <p id="inspector-excerpt" class="inspector-excerpt">Excerpt</p>
+                        <div class="inspector-epistemic-row">
+                            <span id="inspector-thought-status" class="living-status-badge">Working Thesis</span>
+                            <span id="inspector-confidence" class="confidence-badge">Open to Revision</span>
+                        </div>
                         <div class="inspector-concepts-section">
                             <span class="inspector-section-label">Connected Concepts:</span>
                             <div id="inspector-concepts-list" class="inspector-concepts-pills"></div>
+                        </div>
+                        <div class="inspector-concepts-section">
+                            <span class="inspector-section-label">Why is this connected?</span>
+                            <div id="inspector-relationships-list" class="inspector-relationship-list"></div>
                         </div>
                         <div class="inspector-actions">
                             <a id="inspector-read-link" href="#" class="btn btn-small btn-primary inspector-read-btn">Read Full Essay →</a>
@@ -158,7 +275,9 @@
                             <span>✧ <strong id="c-stat-essays">9</strong> Essays</span>
                             <span>● <strong id="c-stat-hubs">3</strong> Hubs</span>
                             <span>◆ <strong id="c-stat-concepts">10</strong> Concepts</span>
-                            <span>⟷ <strong id="c-stat-synapses">28</strong> Synapses</span>
+                            <span>? <strong id="c-stat-questions">4</strong> Questions</span>
+                            <span>▤ <strong id="c-stat-sources">4</strong> Sources</span>
+                            <span>⟷ <strong id="c-stat-synapses">28</strong> Typed Edges</span>
                         </div>
                         <div class="constellation-view-controls">
                             <button type="button" id="c-zoom-in" class="c-zoom-btn" title="Zoom In">+</button>
@@ -172,7 +291,7 @@
 
                 <div class="essays-grid" id="essays-grid">
                     <!-- Essay 1 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons" data-concepts="Person, Encounter, Epistemology, Moral Ontology">
+                    <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons" data-concepts="Person, Encounter, Epistemology, Moral Ontology" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Epistemology · Relational Ontology</span>
                             <span class="essay-read-time">9 min read</span>
@@ -189,7 +308,7 @@
                     </article>
 
                     <!-- Essay 2 -->
-                    <article class="essay-card" data-category="reflections" data-essay-id="central-valley-ucla" data-concepts="Central Valley, Growth, Education, Journey">
+                    <article class="essay-card" data-category="reflections" data-essay-id="central-valley-ucla" data-concepts="Central Valley, Growth, Education, Journey" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Narrative &amp; Vocation</span>
                             <span class="essay-read-time">9 min read</span>
@@ -206,7 +325,7 @@
                     </article>
 
                     <!-- Essay 3 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="narrative-continuum" data-concepts="Continuum, Grand Story, Reality, Living Knowledge">
+                    <article class="essay-card" data-category="ontology" data-essay-id="narrative-continuum" data-concepts="Continuum, Grand Story, Reality, Living Knowledge" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Metaphysics &amp; Systems</span>
                             <span class="essay-read-time">8 min read</span>
@@ -223,7 +342,7 @@
                     </article>
 
                     <!-- Essay 4 -->
-                    <article class="essay-card" data-category="narrative" data-essay-id="why-sadako-needs-redemption-arc" data-concepts="Justice, Redemption, Person, Narrative Ethics">
+                    <article class="essay-card" data-category="narrative" data-essay-id="why-sadako-needs-redemption-arc" data-concepts="Justice, Redemption, Person, Narrative Ethics" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Culture &amp; Narrative Ethics · Horror &amp; Redemption</span>
                             <span class="essay-read-time">18 min read</span>
@@ -240,7 +359,7 @@
                     </article>
 
                     <!-- Essay 5 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="personhood-consciousness" data-concepts="Person, Moral Ontology, Dignity, Soul">
+                    <article class="essay-card" data-category="ontology" data-essay-id="personhood-consciousness" data-concepts="Person, Moral Ontology, Dignity, Soul" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Moral Ontology</span>
                             <span class="essay-read-time">6 min read</span>
@@ -257,7 +376,7 @@
                     </article>
 
                     <!-- Essay 6 -->
-                    <article class="essay-card" data-category="narrative" data-essay-id="music-and-culture" data-concepts="Music, Experiential Story, Beauty, Continuum">
+                    <article class="essay-card" data-category="narrative" data-essay-id="music-and-culture" data-concepts="Music, Experiential Story, Beauty, Continuum" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Artistic Analysis</span>
                             <span class="essay-read-time">5 min read</span>
@@ -274,7 +393,7 @@
                     </article>
 
                     <!-- Essay 7 -->
-                    <article class="essay-card" data-category="ontology" data-essay-id="ai-training-data-discipleship" data-concepts="Discipleship, AI Ethics, Formation, Epistemology">
+                    <article class="essay-card" data-category="ontology" data-essay-id="ai-training-data-discipleship" data-concepts="Discipleship, AI Ethics, Formation, Epistemology" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Epistemology · AI &amp; Philosophy</span>
                             <span class="essay-read-time">8 min read</span>
@@ -291,7 +410,7 @@
                     </article>
 
                     <!-- Essay 8 -->
-                    <article class="essay-card" data-category="narrative" data-essay-id="art-as-the-person-kpop" data-concepts="Art, Person, Culture, Authenticity">
+                    <article class="essay-card" data-category="narrative" data-essay-id="art-as-the-person-kpop" data-concepts="Art, Person, Culture, Authenticity" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Culture &amp; Ethics · Music</span>
                             <span class="essay-read-time">7 min read</span>
@@ -308,7 +427,7 @@
                     </article>
 
                     <!-- Essay 9 -->
-                    <article class="essay-card" data-category="reflections" data-essay-id="pathways-of-evowth" data-concepts="Evowth, Growth, Telos, Living Knowledge">
+                    <article class="essay-card" data-category="reflections" data-essay-id="pathways-of-evowth" data-concepts="Evowth, Growth, Telos, Living Knowledge" data-status="Working Thesis" data-confidence="Open to Revision">
                         <div class="essay-meta">
                             <span class="essay-tag">Teleology &amp; Human Flourishing</span>
                             <span class="essay-read-time">6 min read</span>
