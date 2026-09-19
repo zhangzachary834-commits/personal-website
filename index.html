@@ -442,34 +442,128 @@
                             </article>
                         </div>
                     </div>
-                    <!-- Embedded OntoMath Law Evaluator & Live Substrate Visualizer -->
-                    <div class="ontomath-evaluator-wrapper" style="margin-top: 40px;">
-                        <div class="section-header left" style="margin-bottom: 16px;">
-                            <span class="section-tag" style="color: var(--gold);">Live Substrate // Runtime Law Evaluator</span>
-                            <h3 style="font-size: 1.45rem; color: var(--ink); margin-bottom: 6px;">OntoMath Law Network Simulation</h3>
-                            <p style="color: var(--muted); font-size: 0.95rem;">
-                                Beings are authored in-world from primitive property paths. Toggle runtime Laws to observe how state transitions propagate through Rete evaluation nodes in real time.
+                    <!-- Earthcall Law Execution Explorer -->
+                    <div class="ontomath-evaluator-wrapper">
+                        <div class="section-header left compact-header">
+                            <span class="section-tag">Live Architecture // PropertyPath → Rete → Law</span>
+                            <h3 class="subsection-title">Earthcall Law Execution Explorer</h3>
+                            <p class="section-subtitle">
+                                This is a browser visualization of Earthcall’s actual execution semantics, not a fake physics toy:
+                                authored properties become facts; Rete tests serializable conditions; Laws activate by
+                                <code>WhileTrue</code> or <code>OnBecomeTrue</code>; ActionModels write back through PropertyPaths.
                             </p>
                         </div>
 
-                        <div class="drawer-sim-box">
-                            <div class="drawer-sim-header">
+                        <div class="drawer-sim-box ontology-law-demo">
+                            <div class="drawer-sim-header ontology-demo-toolbar">
                                 <div class="drawer-sim-controls" id="ontomath-law-toggles">
-                                    <button type="button" class="drawer-sim-btn active" data-law="gravity">Law: GravitationalAttraction</button>
-                                    <button type="button" class="drawer-sim-btn active" data-law="resonance">Law: ProximityResonance</button>
-                                    <button type="button" class="drawer-sim-btn active" data-law="damping">Law: VelocityDamping</button>
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Spawn Being</button>
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset</button>
+                                    <button type="button" class="drawer-sim-btn active" data-law="map">
+                                        WhileTrue: Map emission
+                                    </button>
+                                    <button type="button" class="drawer-sim-btn active" data-law="onset">
+                                        OnBecomeTrue: Publish event
+                                    </button>
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Author Object</button>
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset World</button>
                                 </div>
-                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">● RETE NETWORK: COMPILING LAWS</span>
+                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">
+                                    ● RETE: COMPILED
+                                </span>
                             </div>
-                            <div class="drawer-sim-canvas-wrapper">
-                                <canvas id="ontomath-canvas" class="drawer-sim-canvas" width="740" height="270"></canvas>
+
+                            <div class="ontology-demo-layout">
+                                <div class="drawer-sim-canvas-wrapper ontology-canvas-panel">
+                                    <canvas id="ontomath-canvas" class="drawer-sim-canvas" width="820" height="360"
+                                        aria-label="Interactive diagram of Earthcall beings, Rete conditions, Laws, and PropertyPath writes"></canvas>
+                                    <p class="ontology-canvas-hint">
+                                        Click a being to inspect it. Nothing moves randomly: every visual change below is caused by an explicit property write or Law.
+                                    </p>
+                                </div>
+
+                                <aside class="ontology-being-inspector" aria-label="Selected being inspector">
+                                    <div class="ontology-inspector-heading">
+                                        <span class="evidence-label">Selected Singular</span>
+                                        <strong id="ontomath-selected-label">Object A</strong>
+                                        <code id="ontomath-selected-id">object-a</code>
+                                    </div>
+
+                                    <dl class="ontology-property-list">
+                                        <div>
+                                            <dt>signal.level</dt>
+                                            <dd id="ontomath-signal-value">0.82</dd>
+                                        </div>
+                                        <div>
+                                            <dt>material.emission</dt>
+                                            <dd id="ontomath-emission-value">0.87</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Vocabulary</dt>
+                                            <dd id="ontomath-vocabulary-state">registered</dd>
+                                        </div>
+                                    </dl>
+
+                                    <label class="ontology-slider-label" for="ontomath-signal-slider">
+                                        Write <code>signal.level</code> through PropertyPath
+                                    </label>
+                                    <input id="ontomath-signal-slider" class="ontology-signal-slider"
+                                        type="range" min="0" max="1" step="0.01" value="0.82">
+
+                                    <div class="ontology-inspector-actions">
+                                        <button type="button" class="drawer-sim-btn" id="ontomath-author-property-btn">
+                                            Author signal.level
+                                        </button>
+                                        <button type="button" class="drawer-sim-btn" id="ontomath-remove-property-btn">
+                                            Remove property
+                                        </button>
+                                    </div>
+
+                                    <p class="ontology-inspector-note">
+                                        Objects are generic beings here — there is no <code>Beacon</code> C++ class.
+                                        The Law only knows the authored vocabulary it can read.
+                                    </p>
+                                </aside>
                             </div>
-                            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-family:var(--font-mono); font-size:0.8rem; color:var(--muted);">
-                                <span>Active Beings: <strong id="ontomath-being-count" style="color:var(--gold);">4 Nodes</strong></span>
-                                <span>Rete Token Evaluation: <strong style="color:var(--teal);">60 FPS (Continuous)</strong></span>
-                                <span style="color:var(--ink);">Click canvas to spawn beings · Drag nodes to test laws</span>
+
+                            <div class="ontology-trace-grid" aria-live="polite">
+                                <article class="ontology-trace-card">
+                                    <span>1 · Change Feed</span>
+                                    <strong id="ontomath-last-change">object-a.signal.level ← 0.82</strong>
+                                    <p>PropertyPath announces the owner + base property that changed.</p>
+                                </article>
+                                <article class="ontology-trace-card">
+                                    <span>2 · Prophetic Relevance</span>
+                                    <strong id="ontomath-prophetic">READ DEMAND: signal.level → hear</strong>
+                                    <p>If no authored condition can read the path, the hot Rete scan is skipped.</p>
+                                </article>
+                                <article class="ontology-trace-card">
+                                    <span>3 · Rete Match</span>
+                                    <strong id="ontomath-rete-trace">α exists ✓ · α ≥ 0.60 ✓ · β ALL ✓</strong>
+                                    <p>Conditions are facts over the selected subject — not hidden C++ behavior.</p>
+                                </article>
+                                <article class="ontology-trace-card">
+                                    <span>4 · ActionModel</span>
+                                    <strong id="ontomath-action-trace">Map emission := 0.25 + 0.75x</strong>
+                                    <p>The Law writes a registered PropertyPath; the resulting write becomes another fact change.</p>
+                                </article>
+                            </div>
+
+                            <div class="ontology-event-log-wrap">
+                                <div class="ontology-event-log-heading">
+                                    <span>Execution trace</span>
+                                    <span>Active beings: <strong id="ontomath-being-count">3</strong></span>
+                                </div>
+                                <ol id="ontomath-event-log" class="ontology-event-log"></ol>
+                            </div>
+
+                            <div class="ontology-law-source">
+                                <div>
+                                    <span class="evidence-label">Law A · WhileTrue · Everyone</span>
+                                    <code>if signal.level ≥ 0.60 → Map material.emission := 0.25 + 0.75 × signal.level</code>
+                                </div>
+                                <div>
+                                    <span class="evidence-label">Law B · OnBecomeTrue · Everyone</span>
+                                    <code>if signal.level ≥ 0.60 → Publish("signal-awakened")</code>
+                                </div>
                             </div>
                         </div>
                     </div>
