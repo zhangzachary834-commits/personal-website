@@ -458,56 +458,56 @@
                                 <span class="atlas-status implemented">Implemented + verified</span>
                                 <h4>Prophetic Rete</h4>
                                 <p>Ahead-of-time analysis extracts Law read demands and write effects so irrelevant property changes can skip dirty-fact scanning. The analysis is deliberately allowed to be too broad, never too narrow; stale, incomplete, and foreign cases fail open.</p>
-                                <div class="atlas-proof"><code>evalRange()</code><span>·</span><code>propheticHears()</code><span>·</span><code>prophetic_rete_test §F</code></div>
+                                <div class="atlas-proof"><code>evalRange()</code><span>·</span><code>propheticHears()</code><span>·</span><code>prophetic_rete_test §F</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/PROPHETIC_RETE.md" target="_blank" rel="noopener noreferrer">Architecture doc ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status frontier">Built in tiers · measured</span>
                                 <h4>Formation Rete</h4>
                                 <p>An ontological relevance layer over standard Rete: sweep remains the sound floor, vocabulary indexing narrows candidates, bounded relation traversal discovers routes, and a Slow Adapter incrementally learns retained roads without making discovery part of every frame.</p>
-                                <div class="atlas-proof"><code>breadthFirstRoutes</code><span>·</span><code>SlowAdapter</code><span>·</span><code>_vocabularyIndex</code></div>
+                                <div class="atlas-proof"><code>breadthFirstRoutes</code><span>·</span><code>SlowAdapter</code><span>·</span><code>_vocabularyIndex</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/FORMATION_RETE.md" target="_blank" rel="noopener noreferrer">Architecture doc ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status implemented">Identity-stable persistence</span>
                                 <h4>Zones, Homes &amp; Save Identity</h4>
                                 <p>Zones persist by identity under <code>saves/zones/&lt;id&gt;/zone.json</code> instead of being copied blindly into every world save. Sessions reference Zones; load preserves non-active work; Zones can be forked and structurally diffed.</p>
-                                <div class="atlas-proof"><code>persistZone</code><span>·</span><code>forkZone</code><span>·</span><code>diffZones</code></div>
+                                <div class="atlas-proof"><code>persistZone</code><span>·</span><code>forkZone</code><span>·</span><code>diffZones</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Per_Zone_serialization_pathway/Per_Zone_serialization_pathway.md" target="_blank" rel="noopener noreferrer">Persistence record ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status implemented">GPU + mathematical substrate</span>
                                 <h4>Geometry, SDFs &amp; WebGPU</h4>
                                 <p>Authored geometry spans meshes and implicit fields, with OntoMath expressions feeding SDF evaluation, marching-tetrahedra mesh generation, WGSL/WebGPU rendering, and collision infrastructure. Geometry cost is treated as an architectural budget, not a cosmetic afterthought.</p>
-                                <div class="atlas-proof"><code>SdfPrim::Expr</code><span>·</span><code>WGSL</code><span>·</span><code>WebGPU</code></div>
+                                <div class="atlas-proof"><code>SdfPrim::Expr</code><span>·</span><code>WGSL</code><span>·</span><code>WebGPU</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Field_tessellation_blocks_startup_for_104_s_and_the/Field_tessellation_blocks_startup_for_104_s_and_the.md" target="_blank" rel="noopener noreferrer">Performance case ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status implemented">Person-facing authoring</span>
                                 <h4>Laws as Runtime Programs</h4>
                                 <p>Laws carry serializable Condition and Action model trees, activation semantics, scope, registered PropertyPaths, and authored mathematical transforms. The long-term goal is to move behavior out of privileged engine exceptions and into things a Person can inspect and author.</p>
-                                <div class="atlas-proof"><code>ConditionModel</code><span>·</span><code>ActionModel</code><span>·</span><code>PropertyPath</code></div>
+                                <div class="atlas-proof"><code>ConditionModel</code><span>·</span><code>ActionModel</code><span>·</span><code>PropertyPath</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/INTERACTION_AS_LAW.md" target="_blank" rel="noopener noreferrer">Law framework ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status implemented">Independent compute clock</span>
                                 <h4>Adaptive Compute / Slow Adapter</h4>
                                 <p>The expensive relevance learner does not get to own the render loop. Its independent clock performs bounded IMPROVE and REVISIT work over time, allowing expensive discovery to accumulate without turning every frame into a graph search.</p>
-                                <div class="atlas-proof"><code>step()</code><span>·</span><code>IMPROVE</code><span>·</span><code>REVISIT</code></div>
+                                <div class="atlas-proof"><code>step()</code><span>·</span><code>IMPROVE</code><span>·</span><code>REVISIT</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Analysis/SLOW_ADAPTER_CLOCK_COUPLING_AND_ADAPTIVE_COMPUTE_ANALYSIS_2026-09-17.md" target="_blank" rel="noopener noreferrer">Compute analysis ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status implemented">Foreign channels</span>
                                 <h4>Python, Web &amp; MCP Bridges</h4>
                                 <p>Earthcall already bridges the C++ vessel to Python, web surfaces, and an MCP tool layer. The MCP surface can query state, author Laws, write properties, and create SDF fields; authorization hardening remains an explicit tracked gap rather than something the portfolio hides.</p>
-                                <div class="atlas-proof"><code>CppBridge</code><span>·</span><code>Socket.IO</code><span>·</span><code>17 MCP tools</code></div>
+                                <div class="atlas-proof"><code>CppBridge</code><span>·</span><code>Socket.IO</code><span>·</span><code>17 MCP tools</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Model_Context_Protocol_MCP_Server_Bridge/Model_Context_Protocol_MCP_Server_Bridge.md" target="_blank" rel="noopener noreferrer">MCP field test ↗</a></div>
                             </article>
 
                             <article class="earthcall-atlas-card">
                                 <span class="atlas-status principle">Governance is architecture</span>
                                 <h4>First Movers &amp; Human Authority</h4>
                                 <p>Earthcall distinguishes a human Person from the mechanisms that act in the world. First-Mover channels can be enabled or set down, authored state carries provenance, and external-agent authority is treated as a systems problem rather than assumed trust.</p>
-                                <div class="atlas-proof"><code>Person</code><span>·</span><code>First Mover</code><span>·</span><code>TransferPolicy</code></div>
+                                <div class="atlas-proof"><code>Person</code><span>·</span><code>First Mover</code><span>·</span><code>TransferPolicy</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/FIRST_MOVER_AUTHORING.md" target="_blank" rel="noopener noreferrer">Authorship doctrine ↗</a></div>
                             </article>
                         </div>
                     </div>
@@ -576,6 +576,39 @@
                             <div><span>Behavior</span><strong>Legal moves · Capture · Check · Promotion</strong></div>
                             <span class="proof-arrow">↓</span>
                             <div class="proof-result"><span>Result</span><strong>No chess-specific C++ domain class</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="earthcall-frontier">
+                        <div class="section-header left compact-header">
+                            <span class="section-tag">Earthcall // Current Frontier</span>
+                            <h3 class="section-title subsection-title">The hard parts I am still pushing on.</h3>
+                            <p class="section-subtitle">
+                                I do not treat unfinished architecture as a marketing secret. These are active edges where the substrate
+                                is implemented enough to expose the next problem clearly.
+                            </p>
+                        </div>
+                        <div class="earthcall-frontier-grid">
+                            <article>
+                                <span class="frontier-state active">Active</span>
+                                <h4>Formation Rete relevance</h4>
+                                <p>Turn relation/category structure into faster candidate routing without ever letting an optimization make a valid Law go deaf. Sweep remains the sound floor.</p>
+                            </article>
+                            <article>
+                                <span class="frontier-state active">Active</span>
+                                <h4>Second-nature Law authoring</h4>
+                                <p>Make authoring Laws feel like manipulating the world itself rather than filling in a compiler form: direct targets, visible conditions, rehearsal, and native persistence.</p>
+                            </article>
+                            <article>
+                                <span class="frontier-state guarded">Governance gap tracked</span>
+                                <h4>External-agent authority</h4>
+                                <p>MCP and other foreign channels are mechanically powerful; the next requirement is enforcing Person-authored First-Mover scope instead of trusting the caller by default.</p>
+                            </article>
+                            <article>
+                                <span class="frontier-state active">Active</span>
+                                <h4>Zone-native composition</h4>
+                                <p>Continue replacing conglomerate world saves with independent, identity-stable Zones whose dependencies can be closed, loaded, forked, diffed, and shared safely.</p>
+                            </article>
                         </div>
                     </div>
 
