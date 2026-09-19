@@ -5091,195 +5091,362 @@ class VesselEngine {
     }
 
     // -------------------------------------------------------------------------
-    // Embedded OntoMath Law Evaluator Canvas Simulation
+    // Earthcall Law Execution Explorer
     // -------------------------------------------------------------------------
     function initOntoMathEvaluator() {
         const canvas = document.getElementById("ontomath-canvas");
         if (!canvas) return;
+
         const ctx = canvas.getContext("2d");
         const countBadge = document.getElementById("ontomath-being-count");
-        const spawnBtn = document.getElementById("ontomath-spawn-btn");
         const resetBtn = document.getElementById("ontomath-reset-btn");
+        const authorBtn = document.getElementById("ontomath-author-property-btn");
+        const removeBtn = document.getElementById("ontomath-remove-property-btn");
+        const spawnBtn = document.getElementById("ontomath-spawn-btn");
+        const slider = document.getElementById("ontomath-signal-slider");
         const lawButtons = document.querySelectorAll("#ontomath-law-toggles [data-law]");
 
-        const activeLaws = { gravity: true, resonance: true, damping: true };
+        const selectedLabel = document.getElementById("ontomath-selected-label");
+        const selectedId = document.getElementById("ontomath-selected-id");
+        const signalValue = document.getElementById("ontomath-signal-value");
+        const emissionValue = document.getElementById("ontomath-emission-value");
+        const vocabularyState = document.getElementById("ontomath-vocabulary-state");
+        const lastChange = document.getElementById("ontomath-last-change");
+        const propheticTrace = document.getElementById("ontomath-prophetic");
+        const reteTrace = document.getElementById("ontomath-rete-trace");
+        const actionTrace = document.getElementById("ontomath-action-trace");
+        const statusBadge = document.getElementById("ontomath-status-badge");
+        const eventLog = document.getElementById("ontomath-event-log");
+
+        const activeLaws = { map: true, onset: true };
+        const threshold = 0.60;
+        let serial = 4;
+        let selected = 0;
+
+        const seedWorld = () => ([
+            { id: "object-a", label: "Object A", x: 130, y: 100, signal: 0.82, emission: 0, hasSignal: true, lastAbove: false },
+            { id: "object-b", label: "Object B", x: 130, y: 210, signal: 0.31, emission: 0, hasSignal: true, lastAbove: false },
+            { id: "object-c", label: "Object C", x: 130, y: 320, signal: null, emission: 0, hasSignal: false, lastAbove: false }
+        ]);
+
+        let beings = seedWorld();
+
+        function log(message, kind = "info") {
+            if (!eventLog) return;
+            const item = document.createElement("li");
+            item.className = "ontology-event-log-item " + kind;
+            item.textContent = message;
+            eventLog.prepend(item);
+            while (eventLog.children.length > 7) eventLog.removeChild(eventLog.lastChild);
+        }
+
+        function selectedBeing() {
+            return beings[selected] || beings[0];
+        }
+
+        function mapEmission(x) {
+            return Math.max(0, Math.min(1, 0.25 + 0.75 * x));
+        }
+
+        function evaluateBeing(being, cause = "tick") {
+            if (!being.hasSignal) {
+                being.lastAbove = false;
+                if (being === selectedBeing()) {
+                    if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → path absent";
+                    if (reteTrace) reteTrace.textContent = "α exists ✕ · no token reaches β";
+                    if (actionTrace) actionTrace.textContent = "No ActionModel branch reached";
+                }
+                return;
+            }
+
+            const above = being.signal >= threshold;
+
+            if (being === selectedBeing()) {
+                if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → hear";
+                if (reteTrace) reteTrace.textContent =
+                    "α exists ✓ · α ≥ 0.60 " + (above ? "✓" : "✕") + " · β ALL " + (above ? "✓" : "✕");
+            }
+
+            if (activeLaws.map && above) {
+                const next = mapEmission(being.signal);
+                if (Math.abs(next - being.emission) > 0.0001) {
+                    being.emission = next;
+                    if (being === selectedBeing() && actionTrace) {
+                        actionTrace.textContent = "Map material.emission := " + next.toFixed(2);
+                    }
+                    log(
+                        "Law A / WhileTrue / " + being.id +
+                        " → material.emission := " + next.toFixed(2) +
+                        " (cause: " + cause + ")",
+                        "write"
+                    );
+                } else if (being === selectedBeing() && actionTrace) {
+                    actionTrace.textContent = "Map emission already satisfied (" + next.toFixed(2) + ")";
+                }
+            } else if (being === selectedBeing() && actionTrace) {
+                actionTrace.textContent = activeLaws.map
+                    ? "Condition false → Map not reached"
+                    : "Law A disabled";
+            }
+
+            if (activeLaws.onset && above && !being.lastAbove) {
+                log('Law B / OnBecomeTrue / ' + being.id + ' → Publish("signal-awakened")', "event");
+            }
+            being.lastAbove = above;
+        }
+
+        function evaluateWorld(cause = "tick") {
+            beings.forEach(b => evaluateBeing(b, cause));
+            renderInspector();
+            draw();
+        }
+
+        function announcePropertyWrite(being, value) {
+            if (lastChange) lastChange.textContent = being.id + ".signal.level ← " + value.toFixed(2);
+            if (statusBadge) statusBadge.textContent = "● RETE: DIRTY FACT → EVALUATED";
+            log("PropertyPath::setValue(" + being.id + ".signal.level, " + value.toFixed(2) + ")", "change");
+            evaluateBeing(being, "PropertyPath write");
+            renderInspector();
+            draw();
+            setTimeout(() => {
+                if (statusBadge) statusBadge.textContent = "● RETE: COMPILED";
+            }, 650);
+        }
+
+        function renderInspector() {
+            const b = selectedBeing();
+            if (!b) return;
+            if (selectedLabel) selectedLabel.textContent = b.label;
+            if (selectedId) selectedId.textContent = b.id;
+            if (signalValue) signalValue.textContent = b.hasSignal ? b.signal.toFixed(2) : "—";
+            if (emissionValue) emissionValue.textContent = b.emission.toFixed(2);
+            if (vocabularyState) vocabularyState.textContent = b.hasSignal ? "signal.level registered" : "signal.level absent";
+            if (slider) {
+                slider.disabled = !b.hasSignal;
+                slider.value = b.hasSignal ? String(b.signal) : "0";
+            }
+
+            if (!b.hasSignal) {
+                if (lastChange) lastChange.textContent = b.id + ".signal.level does not exist";
+                if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → path absent";
+                if (reteTrace) reteTrace.textContent = "α exists ✕ · no token reaches β";
+                if (actionTrace) actionTrace.textContent = "No ActionModel branch reached";
+            } else {
+                const above = b.signal >= threshold;
+                if (lastChange) lastChange.textContent = b.id + ".signal.level = " + b.signal.toFixed(2);
+                if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → hear";
+                if (reteTrace) reteTrace.textContent =
+                    "α exists ✓ · α ≥ 0.60 " + (above ? "✓" : "✕") + " · β ALL " + (above ? "✓" : "✕");
+                if (actionTrace) actionTrace.textContent = activeLaws.map
+                    ? (above ? "Map emission := " + mapEmission(b.signal).toFixed(2) : "Condition false → Map not reached")
+                    : "Law A disabled";
+            }
+            if (countBadge) countBadge.textContent = String(beings.length);
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - 8 * Math.cos(angle - Math.PI / 6), y2 - 8 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+
+            if (label) {
+                ctx.font = "10px 'IBM Plex Mono', monospace";
+                ctx.fillStyle = "rgba(168,160,146,0.95)";
+                ctx.fillText(label, (x1 + x2) / 2 - 24, (y1 + y2) / 2 - 6);
+            }
+        }
+
+        function drawRoundedBox(x, y, w, h, stroke, fill, title, sub) {
+            const r = 12;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+
+            ctx.fillStyle = "#f7f3eb";
+            ctx.font = "600 11px 'IBM Plex Mono', monospace";
+            ctx.fillText(title, x + 12, y + 21);
+            ctx.fillStyle = "rgba(168,160,146,0.95)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText(sub, x + 12, y + 40);
+        }
+
+        function draw() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "rgba(255,255,255,0.035)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            ctx.fillStyle = "rgba(216,180,110,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("WORLD / SINGULARS", 24, 22);
+            ctx.fillStyle = "rgba(110,231,216,0.9)";
+            ctx.fillText("RETE / CONDITIONS", 310, 22);
+            ctx.fillStyle = "rgba(168,85,247,0.95)";
+            ctx.fillText("LAW / ACTION", 580, 22);
+
+            beings.forEach((b, i) => {
+                const isSelected = i === selected;
+                const stroke = isSelected ? "#d8b46e" : "rgba(110,231,216,0.75)";
+                const fill = isSelected ? "rgba(216,180,110,0.12)" : "rgba(15,17,26,0.9)";
+                drawRoundedBox(
+                    b.x - 88, b.y - 30, 176, 60, stroke, fill,
+                    b.label + " · " + b.id,
+                    b.hasSignal ? "signal.level = " + b.signal.toFixed(2) : "signal.level = <absent>"
+                );
+                ctx.fillStyle = b.emission > 0.01 ? "rgba(216,180,110," + (0.22 + b.emission * 0.45) + ")" : "rgba(255,255,255,0.035)";
+                ctx.beginPath();
+                ctx.arc(b.x - 72, b.y + 16, 5 + b.emission * 7, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            const reteY = 84;
+            drawRoundedBox(300, reteY - 28, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)",
+                "α: Property exists", "signal.level is registered");
+            drawRoundedBox(300, reteY + 76, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)",
+                "α: Comparison", "signal.level ≥ 0.60");
+            drawRoundedBox(330, reteY + 180, 150, 54, "#d8b46e", "rgba(216,180,110,0.07)",
+                "β: ALL", "exists ∧ threshold");
+
+            drawRoundedBox(570, 82, 218, 68, activeLaws.map ? "#a855f7" : "#6d665b",
+                "rgba(168,85,247,0.07)", "Law A · WhileTrue", "Map material.emission");
+            drawRoundedBox(570, 210, 218, 68, activeLaws.onset ? "#a855f7" : "#6d665b",
+                "rgba(168,85,247,0.07)", "Law B · OnBecomeTrue", 'Publish "signal-awakened"');
+
+            drawArrow(220, 104, 300, 84, "rgba(110,231,216,0.8)", "fact");
+            drawArrow(220, 210, 300, 188, "rgba(110,231,216,0.8)", "fact");
+            drawArrow(405, 114, 405, 160, "rgba(216,180,110,0.8)", "token");
+            drawArrow(405, 218, 405, 264, "rgba(216,180,110,0.8)", "token");
+            drawArrow(480, 290, 570, 116, "rgba(168,85,247,0.78)", "activate");
+            drawArrow(480, 290, 570, 244, "rgba(168,85,247,0.78)", "edge");
+
+            ctx.fillStyle = "rgba(168,160,146,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("PropertyPath write feeds the same change graph again", 535, 330);
+        }
+
+        canvas.addEventListener("click", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            const hit = beings.findIndex(b => (
+                x >= b.x - 90 && x <= b.x + 90 &&
+                y >= b.y - 34 && y <= b.y + 34
+            ));
+            if (hit >= 0) {
+                selected = hit;
+                renderInspector();
+                draw();
+            }
+        });
 
         lawButtons.forEach(btn => {
             btn.addEventListener("click", () => {
                 const law = btn.getAttribute("data-law");
                 activeLaws[law] = !activeLaws[law];
                 btn.classList.toggle("active", activeLaws[law]);
+                log("Law " + law + " " + (activeLaws[law] ? "enabled" : "disabled"), "info");
+                evaluateWorld("law toggle");
             });
         });
 
-        let nodes = [
-            { x: 180, y: 120, vx: 0.6, vy: -0.3, mass: 12, charge: 1.0, name: "Being:Alpha" },
-            { x: 320, y: 160, vx: -0.4, vy: 0.5, mass: 16, charge: -1.0, name: "Being:Beta" },
-            { x: 500, y: 100, vx: 0.3, vy: -0.4, mass: 14, charge: 1.0, name: "Being:Gamma" },
-            { x: 420, y: 200, vx: -0.5, vy: -0.2, mass: 11, charge: -0.5, name: "Being:Delta" }
-        ];
-
-        let draggedNode = null;
-        let edgesToDraw = [];
-
-        function updatePhysics() {
-            edgesToDraw = [];
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const a = nodes[i];
-                    const b = nodes[j];
-                    const dx = b.x - a.x;
-                    const dy = b.y - a.y;
-                    const distSq = dx * dx + dy * dy;
-                    const dist = Math.sqrt(distSq) || 1;
-
-                    if (activeLaws.gravity && distSq > 400) {
-                        const force = ((a.mass * b.mass) / distSq) * 0.09;
-                        const fx = (dx / dist) * force;
-                        const fy = (dy / dist) * force;
-                        a.vx += fx / a.mass;
-                        a.vy += fy / a.mass;
-                        b.vx -= fx / b.mass;
-                        b.vy -= fy / b.mass;
-                    }
-
-                    if (activeLaws.resonance && distSq < 19600) {
-                        const rep = (140 - dist) * 0.0035 * (a.charge * b.charge);
-                        const rx = (dx / dist) * rep;
-                        const ry = (dy / dist) * rep;
-                        a.vx -= rx;
-                        a.vy -= ry;
-                        b.vx += rx;
-                        b.vy += ry;
-                    }
-
-                    if (dist < 220) {
-                        edgesToDraw.push({ a, b, dist });
-                    }
-                }
-            }
-
-            nodes.forEach(n => {
-                if (n === draggedNode) return;
-                if (activeLaws.damping) {
-                    n.vx *= 0.985;
-                    n.vy *= 0.985;
-                }
-                n.x += n.vx;
-                n.y += n.vy;
-
-                if (n.x < 35) { n.x = 35; n.vx *= -0.7; }
-                if (n.x > canvas.width - 35) { n.x = canvas.width - 35; n.vx *= -0.7; }
-                if (n.y < 35) { n.y = 35; n.vy *= -0.7; }
-                if (n.y > canvas.height - 35) { n.y = canvas.height - 35; n.vy *= -0.7; }
+        if (slider) {
+            slider.addEventListener("input", () => {
+                const b = selectedBeing();
+                if (!b || !b.hasSignal) return;
+                b.signal = Number(slider.value);
+                announcePropertyWrite(b, b.signal);
             });
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            updatePhysics();
-
-            // Background subtle grid
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 30) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += 30) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-
-            // Law connection edges
-            for (let i = 0; i < edgesToDraw.length; i++) {
-                const edge = edgesToDraw[i];
-                const a = edge.a;
-                const b = edge.b;
-                const dist = edge.dist;
-
-                const alpha = (1 - dist / 220) * 0.45;
-                ctx.strokeStyle = `rgba(110, 231, 216, ${alpha})`;
-                ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.stroke();
-
-                // Midpoint property badge
-                const mx = (a.x + b.x) / 2;
-                const my = (a.y + b.y) / 2;
-                ctx.fillStyle = `rgba(216, 180, 110, ${alpha * 0.7})`;
-                ctx.fillRect(mx - 2, my - 2, 4, 4);
-            }
-
-            // Draw Being Nodes
-            nodes.forEach(n => {
-                ctx.fillStyle = n.charge > 0 ? "rgba(216, 180, 110, 0.3)" : "rgba(110, 231, 216, 0.3)";
-                ctx.strokeStyle = n.charge > 0 ? "#d8b46e" : "#6ee7d8";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(n.x, n.y, n.mass, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = "#fff";
-                ctx.font = "10px monospace";
-                ctx.fillText(n.name, n.x - 28, n.y - n.mass - 4);
+        if (authorBtn) {
+            authorBtn.addEventListener("click", () => {
+                const b = selectedBeing();
+                if (!b || b.hasSignal) return;
+                b.hasSignal = true;
+                b.signal = 0.20;
+                b.lastAbove = false;
+                log("ActionNode::AddProperty authored " + b.id + ".signal.level = 0.20", "write");
+                announcePropertyWrite(b, b.signal);
             });
-
-            requestAnimationFrame(draw);
         }
 
-        canvas.addEventListener("mousedown", (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
-            draggedNode = nodes.find(n => {
-                const dx = n.x - x;
-                const dy = n.y - y;
-                const threshold = n.mass + 8;
-                return dx * dx + dy * dy < threshold * threshold;
+        if (removeBtn) {
+            removeBtn.addEventListener("click", () => {
+                const b = selectedBeing();
+                if (!b || !b.hasSignal) return;
+                b.hasSignal = false;
+                b.signal = null;
+                b.emission = 0;
+                b.lastAbove = false;
+                log("ActionNode::RemoveProperty removed " + b.id + ".signal.level", "write");
+                renderInspector();
+                draw();
             });
-        });
-
-        window.addEventListener("mousemove", (e) => {
-            if (!draggedNode) return;
-            const rect = canvas.getBoundingClientRect();
-            draggedNode.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            draggedNode.y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            draggedNode.vx = 0;
-            draggedNode.vy = 0;
-        });
-
-        window.addEventListener("mouseup", () => { draggedNode = null; });
+        }
 
         if (spawnBtn) {
             spawnBtn.addEventListener("click", () => {
-                nodes.push({
-                    x: Math.random() * (canvas.width - 100) + 50,
-                    y: Math.random() * (canvas.height - 100) + 50,
-                    vx: (Math.random() - 0.5) * 1.5,
-                    vy: (Math.random() - 0.5) * 1.5,
-                    mass: Math.floor(Math.random() * 8) + 10,
-                    charge: Math.random() > 0.5 ? 1.0 : -1.0,
-                    name: `Being:${String.fromCharCode(65 + nodes.length)}`
+                const n = beings.length;
+                const id = "object-" + String.fromCharCode(97 + n);
+                beings.push({
+                    id,
+                    label: "Object " + String.fromCharCode(65 + n),
+                    x: 130,
+                    y: 100 + (n % 3) * 110,
+                    signal: 0.15,
+                    emission: 0,
+                    hasSignal: true,
+                    lastAbove: false
                 });
-                if (countBadge) countBadge.textContent = `${nodes.length} Nodes`;
+                selected = beings.length - 1;
+                log("ActionNode::Create minted " + id + " with generic Object vocabulary", "event");
+                evaluateWorld("Create");
             });
         }
 
         if (resetBtn) {
             resetBtn.addEventListener("click", () => {
-                nodes = [
-                    { x: 180, y: 120, vx: 0.6, vy: -0.3, mass: 12, charge: 1.0, name: "Being:Alpha" },
-                    { x: 320, y: 160, vx: -0.4, vy: 0.5, mass: 16, charge: -1.0, name: "Being:Beta" },
-                    { x: 500, y: 100, vx: 0.3, vy: -0.4, mass: 14, charge: 1.0, name: "Being:Gamma" },
-                    { x: 420, y: 200, vx: -0.5, vy: -0.2, mass: 11, charge: -0.5, name: "Being:Delta" }
-                ];
-                if (countBadge) countBadge.textContent = `${nodes.length} Nodes`;
+                beings = seedWorld();
+                selected = 0;
+                if (eventLog) eventLog.innerHTML = "";
+                log("World reset: 3 generic Objects, 2 authored Laws", "info");
+                beings.forEach(b => evaluateBeing(b, "initial seed"));
+                renderInspector();
+                draw();
             });
         }
 
+        beings.forEach(b => evaluateBeing(b, "initial seed"));
+        log("Rete compiled from serializable ConditionModel + ActionModel text", "info");
+        renderInspector();
         draw();
     }
 
