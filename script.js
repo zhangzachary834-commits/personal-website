@@ -747,18 +747,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderConnections(w, palette, cascadeParams) {
         const { cascadeHueShift, cascadeSat, cascadeLit } = cascadeParams;
+        const maxDist = w > 768 ? 160 : 100;
+        const maxDistSq = maxDist * maxDist;
+        const grid = new Map();
+
         for (let i = 0; i < stars.length; i++) {
-            for (let j = i + 1; j < stars.length; j++) {
-                const a = stars[i];
-                const b = stars[j];
-                const maxDist = w > 768 ? 160 : 100;
+            const star = stars[i];
+            const col = Math.floor(star.x / maxDist);
+            const row = Math.floor(star.y / maxDist);
+            const key = col + "," + row;
+            let cell = grid.get(key);
+            if (!cell) { cell = []; grid.set(key, cell); }
+            cell.push(i);
+        }
 
-                // Optimize: Early exit using squared distance to avoid Math.sqrt in O(n^2) loop
-                const dx = a.x - b.x;
-                const dy = a.y - b.y;
-                const distSq = dx * dx + dy * dy;
+        for (let i = 0; i < stars.length; i++) {
+            const a = stars[i];
+            const col = Math.floor(a.x / maxDist);
+            const row = Math.floor(a.y / maxDist);
+            for (let dc = -1; dc <= 1; dc++) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    const cell = grid.get((col + dc) + "," + (row + dr));
+                    if (!cell) continue;
+                    for (let k = 0; k < cell.length; k++) {
+                        const j = cell[k];
+                        if (j <= i) continue;
+                        const b = stars[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq >= maxDistSq) continue;
 
-                if (distSq < maxDist * maxDist) {
                     const dist = Math.sqrt(distSq);
                     let cascadeAlpha = 0;
 
@@ -838,6 +857,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         ctx.moveTo(a.x, a.y);
                         ctx.quadraticCurveTo(cx, cy, b.x, b.y);
                         ctx.stroke();
+                    }
+                
                     }
                 }
             }
