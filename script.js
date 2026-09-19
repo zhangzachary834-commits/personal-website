@@ -132,9 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const urlParams = new URLSearchParams(window.location.search);
     const modeFromUrl = urlParams.get("mode");
-    const savedMode = modeFromUrl || localStorage.getItem("dimension-site-mode") || "personal";
+    const savedMode = modeFromUrl || currentSiteMode || "personal";
+    let currentSiteMode = savedMode;
 
     function setSiteMode(mode) {
+        currentSiteMode = mode;
         const isPersonal = mode === "personal";
         localStorage.setItem("dimension-site-mode", mode);
 
@@ -265,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (hamburgerBtn) {
         hamburgerBtn.addEventListener("click", () => {
-            const currentNav = localStorage.getItem("dimension-site-mode") === "dimension" ? navDimension : navPersonal;
+            const currentNav = currentSiteMode === "dimension" ? navDimension : navPersonal;
             if (currentNav) {
                 const linksList = currentNav.querySelector(".nav-links");
                 if (linksList) {
@@ -303,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (navbar) navbar.classList.toggle("scrolled", scrollTop > 28);
         if (backToTopBtn) backToTopBtn.classList.toggle("show", scrollTop > 420);
 
-        const currentMode = localStorage.getItem("dimension-site-mode") || "personal";
+        const currentMode = currentSiteMode || "personal";
         const isPersonal = currentMode === "personal";
 
         // Update active nav and vertical scroll dots
@@ -1146,7 +1148,7 @@ Sent via Dimension of Thought Platform`;
     let historyIndex = -1;
 
     function getPromptLabel() {
-        const mode = localStorage.getItem("dimension-site-mode") || "personal";
+        const mode = currentSiteMode || "personal";
         return mode === "personal" ? "guest@zachary:~$" : "guest@dimension:~$";
     }
 
@@ -1158,7 +1160,7 @@ Sent via Dimension of Thought Platform`;
         });
         const termTitle = document.getElementById("terminal-title");
         if (termTitle) {
-            const mode = localStorage.getItem("dimension-site-mode") || "personal";
+            const mode = currentSiteMode || "personal";
             termTitle.textContent = mode === "personal"
                 ? "zachary@personal-substrate — cli"
                 : "zachary@dimension-of-thought — cli";
@@ -1566,7 +1568,7 @@ Sent via Dimension of Thought Platform`;
                 updateTerminalPromptUI();
                 print("Switched to Dimension of Thought Platform Mode", "term-cmd-highlight");
             } else {
-                const cur = localStorage.getItem("dimension-site-mode") || "personal";
+                const cur = currentSiteMode || "personal";
                 const next = cur === "personal" ? "dimension" : "personal";
                 setSiteMode(next);
                 updateTerminalPromptUI();
