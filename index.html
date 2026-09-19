@@ -442,6 +442,143 @@
                             </article>
                         </div>
                     </div>
+                    <div class="earthcall-atlas">
+                        <div class="section-header left compact-header">
+                            <span class="section-tag">Earthcall // Engineering Atlas</span>
+                            <h3 class="section-title subsection-title">One system, many load-bearing layers.</h3>
+                            <p class="section-subtitle">
+                                Earthcall is not one renderer or one rule engine. It is an attempt to make ontology, identity,
+                                causality, persistence, geometry, authoring, and foreign-system integration agree with each other.
+                                These are the major systems currently carrying that architecture.
+                            </p>
+                        </div>
+
+                        <div class="earthcall-atlas-grid">
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status implemented">Implemented + verified</span>
+                                <h4>Prophetic Rete</h4>
+                                <p>Ahead-of-time analysis extracts Law read demands and write effects so irrelevant property changes can skip dirty-fact scanning. The analysis is deliberately allowed to be too broad, never too narrow; stale, incomplete, and foreign cases fail open.</p>
+                                <div class="atlas-proof"><code>evalRange()</code><span>·</span><code>propheticHears()</code><span>·</span><code>prophetic_rete_test §F</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status frontier">Built in tiers · measured</span>
+                                <h4>Formation Rete</h4>
+                                <p>An ontological relevance layer over standard Rete: sweep remains the sound floor, vocabulary indexing narrows candidates, bounded relation traversal discovers routes, and a Slow Adapter incrementally learns retained roads without making discovery part of every frame.</p>
+                                <div class="atlas-proof"><code>breadthFirstRoutes</code><span>·</span><code>SlowAdapter</code><span>·</span><code>_vocabularyIndex</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status implemented">Identity-stable persistence</span>
+                                <h4>Zones, Homes &amp; Save Identity</h4>
+                                <p>Zones persist by identity under <code>saves/zones/&lt;id&gt;/zone.json</code> instead of being copied blindly into every world save. Sessions reference Zones; load preserves non-active work; Zones can be forked and structurally diffed.</p>
+                                <div class="atlas-proof"><code>persistZone</code><span>·</span><code>forkZone</code><span>·</span><code>diffZones</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status implemented">GPU + mathematical substrate</span>
+                                <h4>Geometry, SDFs &amp; WebGPU</h4>
+                                <p>Authored geometry spans meshes and implicit fields, with OntoMath expressions feeding SDF evaluation, marching-tetrahedra mesh generation, WGSL/WebGPU rendering, and collision infrastructure. Geometry cost is treated as an architectural budget, not a cosmetic afterthought.</p>
+                                <div class="atlas-proof"><code>SdfPrim::Expr</code><span>·</span><code>WGSL</code><span>·</span><code>WebGPU</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status implemented">Person-facing authoring</span>
+                                <h4>Laws as Runtime Programs</h4>
+                                <p>Laws carry serializable Condition and Action model trees, activation semantics, scope, registered PropertyPaths, and authored mathematical transforms. The long-term goal is to move behavior out of privileged engine exceptions and into things a Person can inspect and author.</p>
+                                <div class="atlas-proof"><code>ConditionModel</code><span>·</span><code>ActionModel</code><span>·</span><code>PropertyPath</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status implemented">Independent compute clock</span>
+                                <h4>Adaptive Compute / Slow Adapter</h4>
+                                <p>The expensive relevance learner does not get to own the render loop. Its independent clock performs bounded IMPROVE and REVISIT work over time, allowing expensive discovery to accumulate without turning every frame into a graph search.</p>
+                                <div class="atlas-proof"><code>step()</code><span>·</span><code>IMPROVE</code><span>·</span><code>REVISIT</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status implemented">Foreign channels</span>
+                                <h4>Python, Web &amp; MCP Bridges</h4>
+                                <p>Earthcall already bridges the C++ vessel to Python, web surfaces, and an MCP tool layer. The MCP surface can query state, author Laws, write properties, and create SDF fields; authorization hardening remains an explicit tracked gap rather than something the portfolio hides.</p>
+                                <div class="atlas-proof"><code>CppBridge</code><span>·</span><code>Socket.IO</code><span>·</span><code>17 MCP tools</code></div>
+                            </article>
+
+                            <article class="earthcall-atlas-card">
+                                <span class="atlas-status principle">Governance is architecture</span>
+                                <h4>First Movers &amp; Human Authority</h4>
+                                <p>Earthcall distinguishes a human Person from the mechanisms that act in the world. First-Mover channels can be enabled or set down, authored state carries provenance, and external-agent authority is treated as a systems problem rather than assumed trust.</p>
+                                <div class="atlas-proof"><code>Person</code><span>·</span><code>First Mover</code><span>·</span><code>TransferPolicy</code></div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="earthcall-measured-wins">
+                        <div class="section-header left compact-header">
+                            <span class="section-tag">Measured engineering</span>
+                            <h3 class="section-title subsection-title">Architecture that survived contact with performance.</h3>
+                            <p class="section-subtitle">
+                                Some of Earthcall’s most important progress came from profiling an elegant idea, discovering where it was actually expensive, and changing the architecture instead of defending the abstraction.
+                            </p>
+                        </div>
+
+                        <div class="earthcall-metrics-grid">
+                            <article class="earthcall-metric-card">
+                                <span class="metric-before">~104 s</span>
+                                <span class="metric-arrow">→</span>
+                                <strong class="metric-after">0.4 ms</strong>
+                                <h4>Field hydration</h4>
+                                <p>Moved SDF tessellation off Zone hydration. Fields become dirty on load and rebuild on first real consumer instead of blocking startup.</p>
+                            </article>
+                            <article class="earthcall-metric-card">
+                                <span class="metric-before">106.3 s</span>
+                                <span class="metric-arrow">→</span>
+                                <strong class="metric-after">2.7 s</strong>
+                                <h4>Application startup</h4>
+                                <p>The same geometry-path redesign turned a macOS “not responding” launch into a bounded startup path.</p>
+                            </article>
+                            <article class="earthcall-metric-card">
+                                <span class="metric-before">105.7 s fail</span>
+                                <span class="metric-arrow">→</span>
+                                <strong class="metric-after">3.7 s pass</strong>
+                                <h4>Frame-lag regression test</h4>
+                                <p>Performance became a guarded invariant: sub-quadratic frame cost, idle worlds do not spuriously fire Laws, and duplicate property registration is detected.</p>
+                            </article>
+                            <article class="earthcall-metric-card">
+                                <span class="metric-before">132–208 ms</span>
+                                <span class="metric-arrow">→</span>
+                                <strong class="metric-after">~14 ms</strong>
+                                <h4>Vocabulary-index rebuild</h4>
+                                <p>Stopped asking every being about every indexed property name and stopped recollecting the name set once per Law per tick.</p>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="earthcall-proof-story">
+                        <div class="proof-story-copy">
+                            <span class="section-tag">Generality test // Chess</span>
+                            <h3>Can the substrate author an application it was never taught?</h3>
+                            <p>
+                                Earthcall’s chess work became a stress test for the architecture: legality checks, turn order,
+                                captures, castling, promotion, check detection, interaction, persistence, and rendering had to be
+                                expressed through authored world state and Laws rather than a new <code>ChessGame.cpp</code>.
+                            </p>
+                            <p>
+                                The value of that experiment is not “Earthcall can play chess.” It is that a concrete application
+                                forced the ontology, Law system, input channels, save model, and debugging surfaces to confront one
+                                another in the same world.
+                            </p>
+                        </div>
+                        <div class="proof-story-diagram" aria-label="Earthcall chess architecture proof">
+                            <div><span>Generic substrate</span><strong>Objects · Relations · Laws · Zones</strong></div>
+                            <span class="proof-arrow">↓</span>
+                            <div><span>Authored application</span><strong>Board · Pieces · Turn State · Rules</strong></div>
+                            <span class="proof-arrow">↓</span>
+                            <div><span>Behavior</span><strong>Legal moves · Capture · Check · Promotion</strong></div>
+                            <span class="proof-arrow">↓</span>
+                            <div class="proof-result"><span>Result</span><strong>No chess-specific C++ domain class</strong></div>
+                        </div>
+                    </div>
+
                     <!-- Earthcall Law Execution Explorer -->
                     <div class="ontomath-evaluator-wrapper">
                         <div class="section-header left compact-header">
