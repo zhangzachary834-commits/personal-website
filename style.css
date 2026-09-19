@@ -3939,3 +3939,30 @@ body.zen-mode .studio-editor-pane {
         min-height: 300px;
     }
 }
+
+
+/* Live Earthcall bridge state */
+.ontology-live-status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+#ontomath-source-badge {
+    transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+}
+.ontology-law-demo:has(#ontomath-source-badge:not(:empty)) .drawer-sim-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+.drawer-sim-btn.read-only {
+    border-style: dashed;
+}
+.ontology-signal-slider:disabled {
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    .ontology-live-status {
+        justify-content: flex-start;
+    }
+}

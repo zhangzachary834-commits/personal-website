@@ -466,16 +466,17 @@
                                     <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Author Object</button>
                                     <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset World</button>
                                 </div>
-                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">
-                                    ● RETE: COMPILED
-                                </span>
+                                <div class="ontology-live-status">
+                                    <span id="ontomath-source-badge" class="drawer-sim-status status-separated">○ OFFLINE ARCHITECTURE DEMO</span>
+                                    <span id="ontomath-status-badge" class="drawer-sim-status status-separated">● RETE: COMPILED</span>
+                                </div>
                             </div>
 
                             <div class="ontology-demo-layout">
                                 <div class="drawer-sim-canvas-wrapper ontology-canvas-panel">
                                     <canvas id="ontomath-canvas" class="drawer-sim-canvas" width="820" height="360"
                                         aria-label="Interactive diagram of Earthcall beings, Rete conditions, Laws, and PropertyPath writes"></canvas>
-                                    <p class="ontology-canvas-hint">
+                                    <p class="ontology-canvas-hint" id="ontomath-canvas-hint">
                                         Click a being to inspect it. Nothing moves randomly: every visual change below is caused by an explicit property write or Law.
                                     </p>
                                 </div>
@@ -489,20 +490,20 @@
 
                                     <dl class="ontology-property-list">
                                         <div>
-                                            <dt>signal.level</dt>
+                                            <dt id="ontomath-property-one-label">signal.level</dt>
                                             <dd id="ontomath-signal-value">0.82</dd>
                                         </div>
                                         <div>
-                                            <dt>material.emission</dt>
+                                            <dt id="ontomath-property-two-label">material.emission</dt>
                                             <dd id="ontomath-emission-value">0.87</dd>
                                         </div>
                                         <div>
-                                            <dt>Vocabulary</dt>
+                                            <dt id="ontomath-property-three-label">Vocabulary</dt>
                                             <dd id="ontomath-vocabulary-state">registered</dd>
                                         </div>
                                     </dl>
 
-                                    <label class="ontology-slider-label" for="ontomath-signal-slider">
+                                    <label class="ontology-slider-label" id="ontomath-slider-label" for="ontomath-signal-slider">
                                         Write <code>signal.level</code> through PropertyPath
                                     </label>
                                     <input id="ontomath-signal-slider" class="ontology-signal-slider"
@@ -517,7 +518,7 @@
                                         </button>
                                     </div>
 
-                                    <p class="ontology-inspector-note">
+                                    <p class="ontology-inspector-note" id="ontomath-inspector-note">
                                         Objects are generic beings here — there is no <code>Beacon</code> C++ class.
                                         The Law only knows the authored vocabulary it can read.
                                     </p>
@@ -549,7 +550,7 @@
 
                             <div class="ontology-event-log-wrap">
                                 <div class="ontology-event-log-heading">
-                                    <span>Execution trace</span>
+                                    <span id="ontomath-event-log-title">Execution trace</span>
                                     <span>Active beings: <strong id="ontomath-being-count">3</strong></span>
                                 </div>
                                 <ol id="ontomath-event-log" class="ontology-event-log"></ol>
@@ -557,12 +558,12 @@
 
                             <div class="ontology-law-source">
                                 <div>
-                                    <span class="evidence-label">Law A · WhileTrue · Everyone</span>
-                                    <code>if signal.level ≥ 0.60 → Map material.emission := 0.25 + 0.75 × signal.level</code>
+                                    <span class="evidence-label" id="ontomath-law-a-label">Law A · WhileTrue · Everyone</span>
+                                    <code id="ontomath-law-a-code">if signal.level ≥ 0.60 → Map material.emission := 0.25 + 0.75 × signal.level</code>
                                 </div>
                                 <div>
-                                    <span class="evidence-label">Law B · OnBecomeTrue · Everyone</span>
-                                    <code>if signal.level ≥ 0.60 → Publish("signal-awakened")</code>
+                                    <span class="evidence-label" id="ontomath-law-b-label">Law B · OnBecomeTrue · Everyone</span>
+                                    <code id="ontomath-law-b-code">if signal.level ≥ 0.60 → Publish("signal-awakened")</code>
                                 </div>
                             </div>
                         </div>
