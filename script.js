@@ -2755,7 +2755,11 @@ ${currentDraft.content}`;
             reflections: "#4ade80",
             systems: "#38bdf8",
             robotics: "#facc15",
-            concept: "#e2e8f0"
+            concept: "#e2e8f0",
+            question: "#fb7185",
+            source: "#94a3b8",
+            creative: "#f59e0b",
+            technical: "#2dd4bf"
         };
 
         const catNames = {
@@ -2764,7 +2768,163 @@ ${currentDraft.content}`;
             reflections: "Life Reflections & Evowth",
             systems: "Systems Architecture & OntoMath",
             robotics: "Robotics & Spatial AI",
-            concept: "Ontological Concept"
+            concept: "Ontological Concept",
+            question: "Open Question",
+            source: "Source / Lineage",
+            creative: "Creative Work",
+            technical: "Technical Expression"
+        };
+
+        const SEMANTIC_CONCEPTS = {
+            "Person": {
+                definition: "A being understood through relation, dignity, agency, and encounter rather than reduced to measurable function.",
+                questions: [
+                    "Can a computational system represent a Person without reducing the Person to function?",
+                    "What kinds of knowledge require encounter rather than detached measurement?"
+                ],
+                sources: ["You Don't Prove Persons", "Personhood Transcends Function", "Earthcall Person / First-Mover architecture"]
+            },
+            "Identity": {
+                definition: "The continuity by which a being remains itself through change, persistence, memory, serialization, and transformation.",
+                questions: [
+                    "What makes identity persist through radical change?",
+                    "Does continuity require memory?"
+                ],
+                sources: ["Earthcall stable SingularId / persistence", "The Holistic Narrative Continuum", "creative character arcs"]
+            },
+            "Narrative": {
+                definition: "Meaning understood through unfolding relation, consequence, memory, culture, and story rather than isolated events.",
+                questions: ["When does a story owe a character redemption rather than mere consequence?"],
+                sources: ["The Holistic Narrative Continuum", "Music: The Essence of Experiential Story", "screenwriting practice"]
+            },
+            "Dignity": {
+                definition: "Worth treated as intrinsic to the Person rather than awarded according to utility, output, consciousness score, or social role.",
+                questions: ["Can universal dignity survive if personhood is defined by measurable function?"],
+                sources: ["Personhood Transcends Function", "You Don't Prove Persons"]
+            },
+            "Relation": {
+                definition: "The connective reality through which persons, ideas, communities, and authored worlds become intelligible to one another.",
+                questions: ["Can relation be represented without collapsing it into a mere database edge?"],
+                sources: ["Dimension of Thought origin story", "Earthcall Relation / Formation architecture"]
+            },
+            "Human Agency": {
+                definition: "The standing of a Person to intend, judge, authorize, revise, and remain responsible while tools and agents assist.",
+                questions: ["How should AI amplify thought without becoming its author?"],
+                sources: ["Earthcall First Movers", "multi-agent engineering workflow", "Dimension of Thought authoring model"]
+            },
+            "Redemption": {
+                definition: "The possibility that justice can include restoration, transformation, mercy, and a future beyond the worst event in a story.",
+                questions: ["When does a story owe a character redemption rather than mere consequence?"],
+                sources: ["Justice, Love, and Life for Sadako", "fiction and screenwriting practice"]
+            },
+            "Living Knowledge": {
+                definition: "Knowledge treated as something acted upon, revised, embodied, related, and capable of changing how a person lives.",
+                questions: ["When does information become wisdom or lived knowledge?"],
+                sources: ["Dimension of Thought manifesto", "Pathways of Evowth"]
+            }
+        };
+
+        const SEMANTIC_QUESTIONS = [
+            {
+                title: "What makes identity persist through radical change?",
+                concepts: ["Identity", "Person"],
+                excerpt: "A persistence problem spanning metaphysics, memory, software identity, and character transformation."
+            },
+            {
+                title: "Can a computational system represent a Person without reducing the Person to function?",
+                concepts: ["Person", "Dignity", "Human Agency"],
+                excerpt: "A core test for ontology-first computing and human-centered AI."
+            },
+            {
+                title: "When does a story owe a character redemption rather than mere consequence?",
+                concepts: ["Narrative", "Redemption", "Dignity"],
+                excerpt: "An unresolved narrative-ethics question about justice, restoration, and the future of a character."
+            },
+            {
+                title: "How should AI amplify thought without becoming its author?",
+                concepts: ["Human Agency", "Living Knowledge", "Person"],
+                excerpt: "A governance question about assistance, authorship, judgment, and responsibility."
+            }
+        ];
+
+        const SEMANTIC_SOURCES = [
+            {
+                title: "Dimension of Thought Manifesto",
+                concepts: ["Living Knowledge", "Relation", "Person"],
+                url: "manifesto.html",
+                excerpt: "The constitutional statement behind the platform's view of persons, knowledge, art, and digital life."
+            },
+            {
+                title: "Dimension Origin Story",
+                concepts: ["Relation", "Narrative"],
+                url: "story.html",
+                excerpt: "The lived problem that motivated the platform: important spheres of life existing as disconnected islands."
+            },
+            {
+                title: "Earthcall Architecture",
+                concepts: ["Person", "Identity", "Relation", "Human Agency"],
+                url: "https://github.com/zhangzachary834-commits/Earthcall",
+                excerpt: "The technical substrate where several Dimension concepts become explicit runtime architecture."
+            },
+            {
+                title: "Creative Writing Practice",
+                concepts: ["Narrative", "Identity", "Redemption"],
+                url: null,
+                excerpt: "Fiction and screenwriting used as experiential tests of philosophical ideas."
+            }
+        ];
+
+        const SEMANTIC_EXPRESSIONS = [
+            {
+                title: "Earthcall",
+                kind: "technical",
+                concepts: ["Person", "Identity", "Relation", "Human Agency"],
+                excerpt: "A computational ontology and runtime where identity, Laws, relations, and Person-facing authority become software constraints.",
+                url: "https://github.com/zhangzachary834-commits/Earthcall"
+            },
+            {
+                title: "Dimension of Thought",
+                kind: "creative",
+                concepts: ["Relation", "Narrative", "Living Knowledge"],
+                excerpt: "The platform itself: an attempt to make a human intellectual world navigable rather than feed-shaped.",
+                url: "index.html?mode=dimension"
+            },
+            {
+                title: "The Redemption of Invynceth",
+                kind: "creative",
+                concepts: ["Identity", "Narrative", "Redemption"],
+                excerpt: "Long-form fiction where identity, transformation, moral consequence, and redemption can be explored through lived story.",
+                url: null
+            },
+            {
+                title: "Screenwriting Practice",
+                kind: "creative",
+                concepts: ["Narrative", "Redemption", "Dignity"],
+                excerpt: "Narrative craft as a second laboratory for philosophical questions that cannot be exhausted by propositions.",
+                url: null
+            }
+        ];
+
+        const CONCEPT_BRIDGES = [
+            ["Relation", "Person", "supports", "A Person is not understood as an isolated record; relation is part of how personal reality becomes knowable."],
+            ["Person", "Dignity", "supports", "If personhood is intrinsic rather than performance-earned, dignity cannot depend on function alone."],
+            ["Person", "Human Agency", "supports", "Human authority follows from treating the Person as an author and responsible agent rather than a passive endpoint."],
+            ["Identity", "Person", "questions", "Persistence asks what it means for the same Person or being to remain itself through change."],
+            ["Narrative", "Redemption", "supports", "Narrative gives redemption temporal form: a future in which consequence need not be the final word."],
+            ["Redemption", "Dignity", "supports", "Redemption presupposes that a being is worth more than the worst act or event in its story."],
+            ["Living Knowledge", "Human Agency", "supports", "Knowledge becomes living when a Person can act, judge, revise, and embody it."],
+            ["Narrative", "Identity", "questions", "Stories stress-test identity by placing characters through memory, transformation, continuity, and rupture."]
+        ];
+
+        const EDGE_STYLE = {
+            "belongs-to": { color: "rgba(216,180,110,", dash: [] },
+            "develops": { color: "rgba(56,189,248,", dash: [] },
+            "supports": { color: "rgba(45,212,191,", dash: [] },
+            "questions": { color: "rgba(251,113,133,", dash: [5,4] },
+            "contrasts": { color: "rgba(248,113,113,", dash: [2,5] },
+            "derived-from": { color: "rgba(148,163,184,", dash: [6,4] },
+            "expressed-in": { color: "rgba(245,158,11,", dash: [3,3] },
+            "implemented-by": { color: "rgba(45,212,191,", dash: [8,3] }
         };
 
         let cachedCanvasRect = null;
@@ -2816,6 +2976,7 @@ ${currentDraft.content}`;
 
             const categoryHubs = {};
             const conceptHubs = {};
+            const nodeByTitle = new Map();
             const cards = document.querySelectorAll(".essay-card");
 
             const rect = graphContainer.getBoundingClientRect();
@@ -2823,74 +2984,111 @@ ${currentDraft.content}`;
             const height = rect.height || 700;
             const center = { x: width / 2, y: height / 2 };
 
-            // 1. Create Article Nodes
-            cards.forEach((card, idx) => {
-                const titleEl = card.querySelector(".essay-title a");
-                if (!titleEl) return;
-                const title = titleEl.textContent.trim();
-                const url = titleEl.getAttribute("href");
-                const category = card.getAttribute("data-category") || "ontology";
-                const subtitle = (card.querySelector(".essay-subtitle") || {}).textContent || "";
-                const excerpt = (card.querySelector(".essay-excerpt") || {}).textContent || "";
-                const readTime = (card.querySelector(".essay-read-time") || {}).textContent || "6 min read";
-                const author = (card.querySelector(".essay-author") || {}).textContent || "By Zachary Zhang";
-
-                // Extract concepts
-                let concepts = [];
-                const conceptsAttr = card.getAttribute("data-concepts");
-                if (conceptsAttr) {
-                    concepts = conceptsAttr.split(",").map(c => c.trim()).filter(c => c);
-                }
-
-                // Compute initial angle distribution around center
-                const angle = (idx / Math.max(1, cards.length)) * Math.PI * 2;
-                const dist = 190 + (idx % 2) * 50;
-
-                const node = {
-                    id: "art_" + title,
-                    isHub: false,
-                    isConcept: false,
-                    title: title,
-                    subtitle: subtitle,
-                    excerpt: excerpt,
-                    readTime: readTime,
-                    author: author,
-                    url: url,
-                    category: category,
-                    concepts: concepts,
-                    color: colorMap[category] || "#6ee7d8",
-                    radius: 8.5,
+            function orbitNode(base) {
+                const idx = nodes.length;
+                const angle = (idx / Math.max(16, cards.length + 18)) * Math.PI * 2;
+                const dist = base.orbitRadius || 250 + (idx % 4) * 26;
+                return {
+                    vx: 0,
+                    vy: 0,
                     x: center.x + Math.cos(angle) * dist,
                     y: center.y + Math.sin(angle) * dist,
                     targetX: center.x + Math.cos(angle) * dist,
                     targetY: center.y + Math.sin(angle) * dist,
-                    vx: 0,
-                    vy: 0,
                     orbitAngle: angle,
                     orbitRadius: dist,
-                    orbitSpeed: 0.002 * ((idx % 2 === 0) ? 1 : -1),
+                    orbitSpeed: 0.0012 * ((idx % 2 === 0) ? 1 : -1),
                     orbitOffset: Math.random() * Math.PI * 2,
                     twinkleOffset: Math.random() * Math.PI * 2,
-                    pulsePhase: Math.random() * Math.PI * 2
+                    pulsePhase: Math.random() * Math.PI * 2,
+                    ...base
                 };
-                nodes.push(node);
+            }
 
-                // Create category hub if not exists
+            function ensureConcept(name) {
+                if (conceptHubs[name]) return conceptHubs[name];
+                const canonical = SEMANTIC_CONCEPTS[name];
+                const conceptNode = orbitNode({
+                    id: "concept_" + name,
+                    kind: "concept",
+                    isHub: false,
+                    isConcept: true,
+                    title: "[[" + name + "]]",
+                    rawTitle: name,
+                    subtitle: canonical ? "Canonical Concept Page" : "Emergent Concept",
+                    excerpt: canonical?.definition || ("Cross-disciplinary conceptual bridge around " + name + "."),
+                    url: "library.html?concept=" + encodeURIComponent(name) + "#semantic-concept-explorer",
+                    category: "concept",
+                    concepts: [],
+                    status: canonical ? "Living Concept" : "Emergent Concept",
+                    confidence: "Open to Revision",
+                    color: colorMap.concept,
+                    radius: canonical ? 8 : 6.5,
+                    orbitRadius: canonical ? 285 : 320
+                });
+                conceptHubs[name] = conceptNode;
+                nodeByTitle.set(name, conceptNode);
+                nodes.push(conceptNode);
+                return conceptNode;
+            }
+
+            Object.keys(SEMANTIC_CONCEPTS).forEach(ensureConcept);
+
+            cards.forEach((card, idx) => {
+                const titleEl = card.querySelector(".essay-title a");
+                if (!titleEl) return;
+
+                const title = titleEl.textContent.trim();
+                const category = card.getAttribute("data-category") || "ontology";
+                const concepts = (card.getAttribute("data-concepts") || "")
+                    .split(",")
+                    .map(c => c.trim())
+                    .filter(Boolean);
+
+                const node = orbitNode({
+                    id: "art_" + (card.getAttribute("data-essay-id") || title),
+                    kind: "essay",
+                    isHub: false,
+                    isConcept: false,
+                    title,
+                    subtitle: card.querySelector(".essay-subtitle")?.textContent || "",
+                    excerpt: card.querySelector(".essay-excerpt")?.textContent || "",
+                    readTime: card.querySelector(".essay-read-time")?.textContent || "6 min read",
+                    author: card.querySelector(".essay-author")?.textContent || "By Zachary Zhang",
+                    url: titleEl.getAttribute("href"),
+                    category,
+                    concepts,
+                    status: card.getAttribute("data-status") || "Working Thesis",
+                    confidence: card.getAttribute("data-confidence") || "Open to Revision",
+                    questions: (card.getAttribute("data-questions") || "").split(",").map(v => v.trim()).filter(Boolean),
+                    sources: (card.getAttribute("data-sources") || "").split(",").map(v => v.trim()).filter(Boolean),
+                    relationsRaw: card.getAttribute("data-relations") || "",
+                    color: colorMap[category] || "#6ee7d8",
+                    radius: 8.5,
+                    orbitRadius: 185 + (idx % 3) * 35
+                });
+
+                nodes.push(node);
+                nodeByTitle.set(title, node);
+
                 if (!categoryHubs[category]) {
                     const catCount = Object.keys(categoryHubs).length;
-                    const hubAngle = (catCount / 4) * Math.PI * 2 - Math.PI / 4;
+                    const hubAngle = (catCount / 5) * Math.PI * 2 - Math.PI / 4;
                     const hubDist = 110;
 
                     const hub = {
                         id: "hub_" + category,
+                        kind: "hub",
                         isHub: true,
                         isConcept: false,
                         title: category.charAt(0).toUpperCase() + category.slice(1) + " Hub",
                         subtitle: catNames[category] || "Core Discipline",
-                        excerpt: `Core thematic cluster for ${category} inquiries across the holistic narrative continuum.`,
+                        excerpt: "Thematic cluster for " + category + " inquiries.",
                         url: null,
-                        category: category,
+                        category,
                         concepts: [],
+                        status: "Cluster",
+                        confidence: "",
                         color: colorMap[category] || "#d8b46e",
                         radius: 14,
                         x: center.x + Math.cos(hubAngle) * hubDist,
@@ -2910,84 +3108,183 @@ ${currentDraft.content}`;
                     nodes.push(hub);
                 }
 
-                // Edge from article to its category hub
                 edges.push({
                     source: node,
                     target: categoryHubs[category],
-                    isConceptEdge: false,
+                    relation: "belongs-to",
+                    reason: title + " is catalogued inside the " + (catNames[category] || category) + " cluster.",
                     color: colorMap[category] || "#d8b46e"
                 });
 
-                // 2. Create concept diamond stars and relational edges
-                concepts.forEach((concept, cIdx) => {
-                    if (!conceptHubs[concept]) {
-                        const conceptAngle = Math.random() * Math.PI * 2;
-                        const conceptDist = 270 + Math.random() * 60;
-                        const conceptNode = {
-                            id: "concept_" + concept,
-                            isHub: false,
-                            isConcept: true,
-                            title: "[[" + concept + "]]",
-                            subtitle: "Ontological Relational Concept",
-                            excerpt: `Cross-disciplinary conceptual bridge connecting inquiries around ${concept}.`,
-                            url: null,
-                            category: "concept",
-                            concepts: [],
-                            color: "#e2e8f0",
-                            radius: 6.5,
-                            x: center.x + Math.cos(conceptAngle) * conceptDist,
-                            y: center.y + Math.sin(conceptAngle) * conceptDist,
-                            targetX: center.x + Math.cos(conceptAngle) * conceptDist,
-                            targetY: center.y + Math.sin(conceptAngle) * conceptDist,
-                            vx: 0,
-                            vy: 0,
-                            orbitAngle: conceptAngle,
-                            orbitRadius: conceptDist,
-                            orbitSpeed: 0.0015,
-                            orbitOffset: Math.random() * Math.PI * 2,
-                            twinkleOffset: Math.random() * Math.PI * 2,
-                            pulsePhase: Math.random() * Math.PI * 2
-                        };
-                        conceptHubs[concept] = conceptNode;
-                        nodes.push(conceptNode);
-                    }
-
+                concepts.forEach(concept => {
+                    const conceptNode = ensureConcept(concept);
                     edges.push({
                         source: node,
-                        target: conceptHubs[concept],
-                        isConceptEdge: true,
+                        target: conceptNode,
+                        relation: "develops",
+                        reason: title + " explicitly develops or invokes the concept " + concept + ".",
+                        color: "#38bdf8"
+                    });
+                });
+            });
+
+            CONCEPT_BRIDGES.forEach(([a, b, relation, reason]) => {
+                edges.push({
+                    source: ensureConcept(a),
+                    target: ensureConcept(b),
+                    relation,
+                    reason,
+                    color: relation === "questions" ? "#fb7185" : "#2dd4bf"
+                });
+            });
+
+            SEMANTIC_QUESTIONS.forEach((q, idx) => {
+                const node = orbitNode({
+                    id: "question_" + idx,
+                    kind: "question",
+                    isHub: false,
+                    isConcept: false,
+                    title: q.title,
+                    subtitle: "Unresolved Question",
+                    excerpt: q.excerpt,
+                    url: null,
+                    category: "question",
+                    concepts: q.concepts,
+                    status: "Open",
+                    confidence: "Unresolved",
+                    color: colorMap.question,
+                    radius: 8,
+                    orbitRadius: 365
+                });
+
+                nodes.push(node);
+                nodeByTitle.set(q.title, node);
+
+                q.concepts.forEach(concept => {
+                    edges.push({
+                        source: node,
+                        target: ensureConcept(concept),
+                        relation: "questions",
+                        reason: q.title + " keeps " + concept + " explicitly open rather than collapsing it into a finished claim.",
+                        color: "#fb7185"
+                    });
+                });
+            });
+
+            SEMANTIC_SOURCES.forEach((src, idx) => {
+                const node = orbitNode({
+                    id: "source_" + idx,
+                    kind: "source",
+                    isHub: false,
+                    isConcept: false,
+                    title: src.title,
+                    subtitle: "Source / Intellectual Lineage",
+                    excerpt: src.excerpt,
+                    url: src.url,
+                    category: "source",
+                    concepts: src.concepts,
+                    status: "Source",
+                    confidence: "",
+                    color: colorMap.source,
+                    radius: 7,
+                    orbitRadius: 405
+                });
+
+                nodes.push(node);
+
+                src.concepts.forEach(concept => {
+                    edges.push({
+                        source: ensureConcept(concept),
+                        target: node,
+                        relation: "derived-from",
+                        reason: concept + " is informed or contextualized by " + src.title + ".",
                         color: "#94a3b8"
                     });
                 });
             });
 
-            // 3. Initialize Photon Pulse Packets along edges
-            for (let i = 0; i < edges.length * 2; i++) {
+            SEMANTIC_EXPRESSIONS.forEach((expr, idx) => {
+                const category = expr.kind === "technical" ? "technical" : "creative";
+                const node = orbitNode({
+                    id: "expression_" + idx,
+                    kind: category,
+                    isHub: false,
+                    isConcept: false,
+                    title: expr.title,
+                    subtitle: category === "technical" ? "Technical Expression" : "Creative Expression",
+                    excerpt: expr.excerpt,
+                    url: expr.url,
+                    category,
+                    concepts: expr.concepts,
+                    status: "Expression",
+                    confidence: "",
+                    color: colorMap[category],
+                    radius: 9,
+                    orbitRadius: 345
+                });
+
+                nodes.push(node);
+                nodeByTitle.set(expr.title, node);
+
+                expr.concepts.forEach(concept => {
+                    edges.push({
+                        source: ensureConcept(concept),
+                        target: node,
+                        relation: category === "technical" ? "implemented-by" : "expressed-in",
+                        reason: concept + " is " + (category === "technical" ? "implemented or stress-tested by " : "explored experientially through ") + expr.title + ".",
+                        color: colorMap[category]
+                    });
+                });
+            });
+
+            nodes
+                .filter(node => node.kind === "essay" && node.relationsRaw)
+                .forEach(node => {
+                    node.relationsRaw
+                        .split(",")
+                        .map(value => value.trim())
+                        .filter(Boolean)
+                        .forEach(raw => {
+                            const parts = raw.split("|").map(value => value.trim());
+                            if (parts.length < 3) return;
+
+                            const [from, relation, to] = parts;
+                            const fromNode = nodeByTitle.get(from) || ensureConcept(from);
+                            const toNode = nodeByTitle.get(to) || ensureConcept(to);
+
+                            edges.push({
+                                source: fromNode,
+                                target: toNode,
+                                relation: relation || "supports",
+                                reason: "Authored relationship from " + node.title + ": " + from + " " + relation + " " + to + ".",
+                                color: "#d8b46e"
+                            });
+                        });
+                });
+
+            for (let i = 0; i < Math.min(edges.length * 2, 160); i++) {
                 const edge = edges[i % edges.length];
                 photonParticles.push({
-                    edge: edge,
+                    edge,
                     progress: Math.random(),
                     speed: 0.003 + Math.random() * 0.004,
                     forward: Math.random() > 0.3,
                     size: Math.random() * 2 + 1.5,
-                    color: edge.isConceptEdge ? "#38bdf8" : edge.color
+                    color: edge.color || "#38bdf8"
                 });
             }
 
-            // Update stats readout
-            const essayCount = cards.length;
-            const hubCount = Object.keys(categoryHubs).length;
-            const conceptCount = Object.keys(conceptHubs).length;
-            const synapseCount = edges.length;
+            const setStat = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = String(value);
+            };
 
-            const elE = document.getElementById("c-stat-essays");
-            const elH = document.getElementById("c-stat-hubs");
-            const elC = document.getElementById("c-stat-concepts");
-            const elS = document.getElementById("c-stat-synapses");
-            if (elE) elE.textContent = essayCount;
-            if (elH) elH.textContent = hubCount;
-            if (elC) elC.textContent = conceptCount;
-            if (elS) elS.textContent = synapseCount;
+            setStat("c-stat-essays", cards.length);
+            setStat("c-stat-hubs", Object.keys(categoryHubs).length);
+            setStat("c-stat-concepts", Object.keys(conceptHubs).length);
+            setStat("c-stat-questions", SEMANTIC_QUESTIONS.length);
+            setStat("c-stat-sources", SEMANTIC_SOURCES.length);
+            setStat("c-stat-synapses", edges.length);
 
             initBackgroundElements();
         }
