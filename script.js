@@ -5116,11 +5116,26 @@ class VesselEngine {
         const reteTrace = document.getElementById("ontomath-rete-trace");
         const actionTrace = document.getElementById("ontomath-action-trace");
         const statusBadge = document.getElementById("ontomath-status-badge");
+        const sourceBadge = document.getElementById("ontomath-source-badge");
         const eventLog = document.getElementById("ontomath-event-log");
+        const eventLogTitle = document.getElementById("ontomath-event-log-title");
+        const canvasHint = document.getElementById("ontomath-canvas-hint");
+        const propertyOneLabel = document.getElementById("ontomath-property-one-label");
+        const propertyTwoLabel = document.getElementById("ontomath-property-two-label");
+        const propertyThreeLabel = document.getElementById("ontomath-property-three-label");
+        const sliderLabel = document.getElementById("ontomath-slider-label");
+        const inspectorNote = document.getElementById("ontomath-inspector-note");
+        const lawALabel = document.getElementById("ontomath-law-a-label");
+        const lawACode = document.getElementById("ontomath-law-a-code");
+        const lawBLabel = document.getElementById("ontomath-law-b-label");
+        const lawBCode = document.getElementById("ontomath-law-b-code");
 
+        const LIVE_URL = "http://127.0.0.1:5005/api/portfolio/live";
         const activeLaws = { map: true, onset: true };
         const threshold = 0.60;
-        let serial = 4;
+        let mode = "demo";
+        let liveSnapshot = null;
+        let liveFailures = 0;
         let selected = 0;
 
         const seedWorld = () => ([
@@ -5128,16 +5143,16 @@ class VesselEngine {
             { id: "object-b", label: "Object B", x: 130, y: 210, signal: 0.31, emission: 0, hasSignal: true, lastAbove: false },
             { id: "object-c", label: "Object C", x: 130, y: 320, signal: null, emission: 0, hasSignal: false, lastAbove: false }
         ]);
-
         let beings = seedWorld();
 
-        function log(message, kind = "info") {
+        function log(message, kind = "info", replace = false) {
             if (!eventLog) return;
+            if (replace) eventLog.innerHTML = "";
             const item = document.createElement("li");
             item.className = "ontology-event-log-item " + kind;
             item.textContent = message;
             eventLog.prepend(item);
-            while (eventLog.children.length > 7) eventLog.removeChild(eventLog.lastChild);
+            while (eventLog.children.length > 8) eventLog.removeChild(eventLog.lastChild);
         }
 
         function selectedBeing() {
@@ -5148,7 +5163,22 @@ class VesselEngine {
             return Math.max(0, Math.min(1, 0.25 + 0.75 * x));
         }
 
+        function activationName(value) {
+            return ["OnEvent", "WhileTrue", "OnBecomeTrue"][Number(value)] || "Activation " + value;
+        }
+
+        function scopeName(value) {
+            return ["Subject", "Everyone"][Number(value)] || "Scope " + value;
+        }
+
+        function compact(value, max = 88) {
+            if (value === null || value === undefined || value === "") return "—";
+            const text = Array.isArray(value) ? "[" + value.map(v => typeof v === "number" ? Number(v).toFixed(2) : String(v)).join(", ") + "]" : String(value);
+            return text.length > max ? text.slice(0, max - 1) + "…" : text;
+        }
+
         function evaluateBeing(being, cause = "tick") {
+            if (mode !== "demo") return;
             if (!being.hasSignal) {
                 being.lastAbove = false;
                 if (being === selectedBeing()) {
@@ -5160,7 +5190,6 @@ class VesselEngine {
             }
 
             const above = being.signal >= threshold;
-
             if (being === selectedBeing()) {
                 if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → hear";
                 if (reteTrace) reteTrace.textContent =
@@ -5171,22 +5200,13 @@ class VesselEngine {
                 const next = mapEmission(being.signal);
                 if (Math.abs(next - being.emission) > 0.0001) {
                     being.emission = next;
-                    if (being === selectedBeing() && actionTrace) {
-                        actionTrace.textContent = "Map material.emission := " + next.toFixed(2);
-                    }
-                    log(
-                        "Law A / WhileTrue / " + being.id +
-                        " → material.emission := " + next.toFixed(2) +
-                        " (cause: " + cause + ")",
-                        "write"
-                    );
+                    if (being === selectedBeing() && actionTrace) actionTrace.textContent = "Map material.emission := " + next.toFixed(2);
+                    log("Law A / WhileTrue / " + being.id + " → material.emission := " + next.toFixed(2) + " (cause: " + cause + ")", "write");
                 } else if (being === selectedBeing() && actionTrace) {
                     actionTrace.textContent = "Map emission already satisfied (" + next.toFixed(2) + ")";
                 }
             } else if (being === selectedBeing() && actionTrace) {
-                actionTrace.textContent = activeLaws.map
-                    ? "Condition false → Map not reached"
-                    : "Law A disabled";
+                actionTrace.textContent = activeLaws.map ? "Condition false → Map not reached" : "Law A disabled";
             }
 
             if (activeLaws.onset && above && !being.lastAbove) {
@@ -5196,12 +5216,14 @@ class VesselEngine {
         }
 
         function evaluateWorld(cause = "tick") {
+            if (mode !== "demo") return;
             beings.forEach(b => evaluateBeing(b, cause));
             renderInspector();
             draw();
         }
 
         function announcePropertyWrite(being, value) {
+            if (mode !== "demo") return;
             if (lastChange) lastChange.textContent = being.id + ".signal.level ← " + value.toFixed(2);
             if (statusBadge) statusBadge.textContent = "● RETE: DIRTY FACT → EVALUATED";
             log("PropertyPath::setValue(" + being.id + ".signal.level, " + value.toFixed(2) + ")", "change");
@@ -5209,22 +5231,38 @@ class VesselEngine {
             renderInspector();
             draw();
             setTimeout(() => {
-                if (statusBadge) statusBadge.textContent = "● RETE: COMPILED";
+                if (mode === "demo" && statusBadge) statusBadge.textContent = "● RETE: COMPILED";
             }, 650);
         }
 
-        function renderInspector() {
+        function setControlsForMode() {
+            const live = mode === "live";
+            if (slider) slider.disabled = live || !selectedBeing()?.hasSignal;
+            [authorBtn, removeBtn, spawnBtn, resetBtn].forEach(btn => {
+                if (btn) btn.disabled = live;
+            });
+            lawButtons.forEach(btn => {
+                btn.disabled = live;
+                btn.classList.toggle("read-only", live);
+            });
+        }
+
+        function renderDemoInspector() {
             const b = selectedBeing();
             if (!b) return;
+            if (propertyOneLabel) propertyOneLabel.textContent = "signal.level";
+            if (propertyTwoLabel) propertyTwoLabel.textContent = "material.emission";
+            if (propertyThreeLabel) propertyThreeLabel.textContent = "Vocabulary";
+            if (sliderLabel) sliderLabel.innerHTML = 'Write <code>signal.level</code> through PropertyPath';
+            if (inspectorNote) inspectorNote.innerHTML = 'Objects are generic beings here — there is no <code>Beacon</code> C++ class. The Law only knows the authored vocabulary it can read.';
+            if (canvasHint) canvasHint.textContent = "Click a being to inspect it. Nothing moves randomly: every visual change below is caused by an explicit property write or Law.";
+            if (eventLogTitle) eventLogTitle.textContent = "Execution trace";
             if (selectedLabel) selectedLabel.textContent = b.label;
             if (selectedId) selectedId.textContent = b.id;
             if (signalValue) signalValue.textContent = b.hasSignal ? b.signal.toFixed(2) : "—";
             if (emissionValue) emissionValue.textContent = b.emission.toFixed(2);
             if (vocabularyState) vocabularyState.textContent = b.hasSignal ? "signal.level registered" : "signal.level absent";
-            if (slider) {
-                slider.disabled = !b.hasSignal;
-                slider.value = b.hasSignal ? String(b.signal) : "0";
-            }
+            if (slider) slider.value = b.hasSignal ? String(b.signal) : "0";
 
             if (!b.hasSignal) {
                 if (lastChange) lastChange.textContent = b.id + ".signal.level does not exist";
@@ -5242,6 +5280,69 @@ class VesselEngine {
                     : "Law A disabled";
             }
             if (countBadge) countBadge.textContent = String(beings.length);
+            if (lawALabel) lawALabel.textContent = "Law A · WhileTrue · Everyone";
+            if (lawACode) lawACode.textContent = "if signal.level ≥ 0.60 → Map material.emission := 0.25 + 0.75 × signal.level";
+            if (lawBLabel) lawBLabel.textContent = "Law B · OnBecomeTrue · Everyone";
+            if (lawBCode) lawBCode.textContent = 'if signal.level ≥ 0.60 → Publish("signal-awakened")';
+            setControlsForMode();
+        }
+
+        function eventSummary(evt) {
+            if (!evt || typeof evt !== "object") return compact(evt);
+            const name = evt.event || evt.eventType || evt.name || evt.type || "engine_event";
+            const subject = evt.subject || evt.target || evt.targetId || evt.targetSingularId || "";
+            return subject ? name + " · " + subject : name;
+        }
+
+        function renderLiveEvents(events) {
+            if (!eventLog) return;
+            eventLog.innerHTML = "";
+            const list = Array.isArray(events) ? events.slice(-8).reverse() : [];
+            if (!list.length) {
+                log("No recent engine events in the bounded bridge history yet.", "info");
+                return;
+            }
+            list.forEach(evt => log(eventSummary(evt), "event"));
+        }
+
+        function renderLiveInspector() {
+            const b = selectedBeing();
+            if (!b) return;
+            if (propertyOneLabel) propertyOneLabel.textContent = "position";
+            if (propertyTwoLabel) propertyTwoLabel.textContent = "materialId";
+            if (propertyThreeLabel) propertyThreeLabel.textContent = "shapeKind";
+            if (sliderLabel) sliderLabel.textContent = "Live mode is read-only from the public portfolio.";
+            if (inspectorNote) inspectorNote.textContent = "These values came from Earthcall's C++ state_sync through the Python CppBridge. This portfolio surface does not grant itself mutation authority.";
+            if (canvasHint) canvasHint.textContent = "LIVE: Objects and Laws below are projected from the running Earthcall vessel on your machine.";
+            if (eventLogTitle) eventLogTitle.textContent = "Recent C++ engine events";
+            if (selectedLabel) selectedLabel.textContent = b.label;
+            if (selectedId) selectedId.textContent = b.id;
+            if (signalValue) signalValue.textContent = compact(b.position);
+            if (emissionValue) emissionValue.textContent = compact(b.materialId);
+            if (vocabularyState) vocabularyState.textContent = compact(b.shapeKind);
+            if (countBadge) countBadge.textContent = String(liveSnapshot?.objects?.length || beings.length);
+
+            const laws = liveSnapshot?.laws || [];
+            const lawA = laws[0];
+            const lawB = laws[1];
+            if (lawALabel) lawALabel.textContent = lawA ? (lawA.name || lawA.identifier) + " · " + activationName(lawA.activation) + " · " + scopeName(lawA.scope) : "No first Law published";
+            if (lawACode) lawACode.textContent = lawA ? compact(lawA.conditionDescription || "always") + " → " + compact(lawA.actionDescription || "custom action") : "—";
+            if (lawBLabel) lawBLabel.textContent = lawB ? (lawB.name || lawB.identifier) + " · " + activationName(lawB.activation) + " · " + scopeName(lawB.scope) : "No second Law published";
+            if (lawBCode) lawBCode.textContent = lawB ? compact(lawB.conditionDescription || "always") + " → " + compact(lawB.actionDescription || "custom action") : "—";
+
+            if (lastChange) lastChange.textContent = liveSnapshot?.recent_events?.length
+                ? eventSummary(liveSnapshot.recent_events[liveSnapshot.recent_events.length - 1])
+                : "No recent engine event";
+            if (propheticTrace) propheticTrace.textContent = laws.length + " Laws published by LawManager state_sync";
+            if (reteTrace) reteTrace.textContent = "Live bridge does not fabricate per-subject Rete match state";
+            if (actionTrace) actionTrace.textContent = lawA ? compact(lawA.actionDescription || "custom action") : "No Law action published";
+            renderLiveEvents(liveSnapshot?.recent_events || []);
+            setControlsForMode();
+        }
+
+        function renderInspector() {
+            if (mode === "live") renderLiveInspector();
+            else renderDemoInspector();
         }
 
         function drawArrow(x1, y1, x2, y2, color, label) {
@@ -5252,7 +5353,6 @@ class VesselEngine {
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
-
             const angle = Math.atan2(y2 - y1, x2 - x1);
             ctx.beginPath();
             ctx.moveTo(x2, y2);
@@ -5260,7 +5360,6 @@ class VesselEngine {
             ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
             ctx.closePath();
             ctx.fill();
-
             if (label) {
                 ctx.font = "10px 'IBM Plex Mono', monospace";
                 ctx.fillStyle = "rgba(168,160,146,0.95)";
@@ -5282,27 +5381,20 @@ class VesselEngine {
             ctx.strokeStyle = stroke;
             ctx.lineWidth = 1.4;
             ctx.stroke();
-
             ctx.fillStyle = "#f7f3eb";
             ctx.font = "600 11px 'IBM Plex Mono', monospace";
-            ctx.fillText(title, x + 12, y + 21);
+            ctx.fillText(compact(title, 28), x + 12, y + 21);
             ctx.fillStyle = "rgba(168,160,146,0.95)";
             ctx.font = "10px 'IBM Plex Mono', monospace";
-            ctx.fillText(sub, x + 12, y + 40);
+            ctx.fillText(compact(sub, 34), x + 12, y + 40);
         }
 
-        function draw() {
-            if (!ctx) return;
+        function drawDemo() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             ctx.strokeStyle = "rgba(255,255,255,0.035)";
             ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 40) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += 40) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
+            for (let x = 0; x < canvas.width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+            for (let y = 0; y < canvas.height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
 
             ctx.fillStyle = "rgba(216,180,110,0.9)";
             ctx.font = "10px 'IBM Plex Mono', monospace";
@@ -5314,13 +5406,11 @@ class VesselEngine {
 
             beings.forEach((b, i) => {
                 const isSelected = i === selected;
-                const stroke = isSelected ? "#d8b46e" : "rgba(110,231,216,0.75)";
-                const fill = isSelected ? "rgba(216,180,110,0.12)" : "rgba(15,17,26,0.9)";
-                drawRoundedBox(
-                    b.x - 88, b.y - 30, 176, 60, stroke, fill,
+                drawRoundedBox(b.x - 88, b.y - 30, 176, 60,
+                    isSelected ? "#d8b46e" : "rgba(110,231,216,0.75)",
+                    isSelected ? "rgba(216,180,110,0.12)" : "rgba(15,17,26,0.9)",
                     b.label + " · " + b.id,
-                    b.hasSignal ? "signal.level = " + b.signal.toFixed(2) : "signal.level = <absent>"
-                );
+                    b.hasSignal ? "signal.level = " + b.signal.toFixed(2) : "signal.level = <absent>");
                 ctx.fillStyle = b.emission > 0.01 ? "rgba(216,180,110," + (0.22 + b.emission * 0.45) + ")" : "rgba(255,255,255,0.035)";
                 ctx.beginPath();
                 ctx.arc(b.x - 72, b.y + 16, 5 + b.emission * 7, 0, Math.PI * 2);
@@ -5328,38 +5418,147 @@ class VesselEngine {
             });
 
             const reteY = 84;
-            drawRoundedBox(300, reteY - 28, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)",
-                "α: Property exists", "signal.level is registered");
-            drawRoundedBox(300, reteY + 76, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)",
-                "α: Comparison", "signal.level ≥ 0.60");
-            drawRoundedBox(330, reteY + 180, 150, 54, "#d8b46e", "rgba(216,180,110,0.07)",
-                "β: ALL", "exists ∧ threshold");
-
-            drawRoundedBox(570, 82, 218, 68, activeLaws.map ? "#a855f7" : "#6d665b",
-                "rgba(168,85,247,0.07)", "Law A · WhileTrue", "Map material.emission");
-            drawRoundedBox(570, 210, 218, 68, activeLaws.onset ? "#a855f7" : "#6d665b",
-                "rgba(168,85,247,0.07)", "Law B · OnBecomeTrue", 'Publish "signal-awakened"');
-
+            drawRoundedBox(300, reteY - 28, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)", "α: Property exists", "signal.level is registered");
+            drawRoundedBox(300, reteY + 76, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)", "α: Comparison", "signal.level ≥ 0.60");
+            drawRoundedBox(330, reteY + 180, 150, 54, "#d8b46e", "rgba(216,180,110,0.07)", "β: ALL", "exists ∧ threshold");
+            drawRoundedBox(570, 82, 218, 68, activeLaws.map ? "#a855f7" : "#6d665b", "rgba(168,85,247,0.07)", "Law A · WhileTrue", "Map material.emission");
+            drawRoundedBox(570, 210, 218, 68, activeLaws.onset ? "#a855f7" : "#6d665b", "rgba(168,85,247,0.07)", "Law B · OnBecomeTrue", 'Publish "signal-awakened"');
             drawArrow(220, 104, 300, 84, "rgba(110,231,216,0.8)", "fact");
             drawArrow(220, 210, 300, 188, "rgba(110,231,216,0.8)", "fact");
             drawArrow(405, 114, 405, 160, "rgba(216,180,110,0.8)", "token");
             drawArrow(405, 218, 405, 264, "rgba(216,180,110,0.8)", "token");
             drawArrow(480, 290, 570, 116, "rgba(168,85,247,0.78)", "activate");
             drawArrow(480, 290, 570, 244, "rgba(168,85,247,0.78)", "edge");
-
             ctx.fillStyle = "rgba(168,160,146,0.9)";
             ctx.font = "10px 'IBM Plex Mono', monospace";
             ctx.fillText("PropertyPath write feeds the same change graph again", 535, 330);
+        }
+
+        function drawLive() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "rgba(255,255,255,0.035)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+            for (let y = 0; y < canvas.height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+            const zone = liveSnapshot?.active_zone?.name || "Unknown Zone";
+            const laws = liveSnapshot?.laws || [];
+            ctx.fillStyle = "#6ee7d8";
+            ctx.font = "600 11px 'IBM Plex Mono', monospace";
+            ctx.fillText("LIVE C++ VESSEL · " + compact(zone, 38), 22, 22);
+            ctx.fillStyle = "rgba(168,160,146,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("state_sync → Python CppBridge :5005 → read-only portfolio projection", 22, 42);
+
+            beings.slice(0, 4).forEach((b, i) => {
+                const y = 86 + i * 66;
+                b.x = 125; b.y = y;
+                drawRoundedBox(26, y - 26, 210, 52,
+                    i === selected ? "#d8b46e" : "#6ee7d8",
+                    i === selected ? "rgba(216,180,110,0.11)" : "rgba(110,231,216,0.045)",
+                    b.label,
+                    b.id);
+            });
+
+            drawRoundedBox(316, 118, 190, 76, "#d8b46e", "rgba(216,180,110,0.06)",
+                "ACTIVE ZONE", zone);
+            drawRoundedBox(316, 226, 190, 76, "#6ee7d8", "rgba(110,231,216,0.05)",
+                "PYTHON BRIDGE", "earthcall.portfolio.v1");
+
+            laws.slice(0, 3).forEach((law, i) => {
+                const y = 82 + i * 92;
+                drawRoundedBox(580, y, 214, 70,
+                    law.enabled === false ? "#6d665b" : "#a855f7",
+                    "rgba(168,85,247,0.055)",
+                    law.name || law.identifier || "Law",
+                    activationName(law.activation) + " · " + scopeName(law.scope));
+            });
+
+            drawArrow(236, 150, 316, 156, "rgba(110,231,216,0.75)", "world");
+            drawArrow(506, 156, 580, 117, "rgba(168,85,247,0.7)", "LawManager");
+            drawArrow(506, 264, 580, 209, "rgba(216,180,110,0.65)", "state");
+        }
+
+        function draw() {
+            if (mode === "live") drawLive();
+            else drawDemo();
+        }
+
+        function enterLive(snapshot) {
+            liveSnapshot = snapshot;
+            mode = "live";
+            liveFailures = 0;
+            const previousId = selectedBeing()?.id;
+            beings = (snapshot.objects || []).map((obj, i) => ({
+                id: obj.id || obj.name || ("object-" + i),
+                label: obj.name || obj.id || ("Object " + (i + 1)),
+                position: obj.position || [],
+                materialId: obj.materialId || "—",
+                shapeKind: obj.shapeKind ?? "—",
+                x: 125,
+                y: 86 + (i % 4) * 66
+            }));
+            if (!beings.length) beings = [{ id: "(none)", label: "No active-zone Objects", position: [], materialId: "—", shapeKind: "—", x: 125, y: 120 }];
+            selected = Math.max(0, beings.findIndex(b => b.id === previousId));
+            if (sourceBadge) sourceBadge.textContent = "● LIVE EARTHCALL · " + (snapshot.active_zone?.name || "CONNECTED");
+            if (statusBadge) statusBadge.textContent = "● C++ VESSEL → PYTHON :5005";
+            renderInspector();
+            draw();
+        }
+
+        function enterDemo(reason = "") {
+            if (mode === "demo") return;
+            mode = "demo";
+            liveSnapshot = null;
+            beings = seedWorld();
+            selected = 0;
+            if (sourceBadge) sourceBadge.textContent = reason ? "○ OFFLINE DEMO · " + reason : "○ OFFLINE ARCHITECTURE DEMO";
+            if (statusBadge) statusBadge.textContent = "● RETE: COMPILED";
+            if (eventLog) eventLog.innerHTML = "";
+            beings.forEach(b => evaluateBeing(b, "fallback seed"));
+            log("Earthcall live bridge unavailable; using faithful offline architecture demo.", "info");
+            renderInspector();
+            draw();
+        }
+
+        async function pollLiveEarthcall() {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 1200);
+            try {
+                const response = await fetch(LIVE_URL, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-store",
+                    headers: { "Accept": "application/json" },
+                    signal: controller.signal
+                });
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const data = await response.json();
+                if (data?.schema !== "earthcall.portfolio.v1" || !data.connected) {
+                    throw new Error("vessel offline");
+                }
+                enterLive(data);
+            } catch (error) {
+                liveFailures++;
+                if (mode === "live" && liveFailures >= 2) enterDemo("VESSEL DISCONNECTED");
+            } finally {
+                clearTimeout(timeout);
+            }
         }
 
         canvas.addEventListener("click", (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) * (canvas.width / rect.width);
             const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            const hit = beings.findIndex(b => (
-                x >= b.x - 90 && x <= b.x + 90 &&
-                y >= b.y - 34 && y <= b.y + 34
-            ));
+            let hit = -1;
+            if (mode === "live") {
+                hit = beings.slice(0, 4).findIndex((b, i) => {
+                    const yy = 86 + i * 66;
+                    return x >= 26 && x <= 236 && y >= yy - 28 && y <= yy + 28;
+                });
+            } else {
+                hit = beings.findIndex(b => x >= b.x - 90 && x <= b.x + 90 && y >= b.y - 34 && y <= b.y + 34);
+            }
             if (hit >= 0) {
                 selected = hit;
                 renderInspector();
@@ -5369,6 +5568,7 @@ class VesselEngine {
 
         lawButtons.forEach(btn => {
             btn.addEventListener("click", () => {
+                if (mode === "live") return;
                 const law = btn.getAttribute("data-law");
                 activeLaws[law] = !activeLaws[law];
                 btn.classList.toggle("active", activeLaws[law]);
@@ -5377,77 +5577,75 @@ class VesselEngine {
             });
         });
 
-        if (slider) {
-            slider.addEventListener("input", () => {
-                const b = selectedBeing();
-                if (!b || !b.hasSignal) return;
-                b.signal = Number(slider.value);
-                announcePropertyWrite(b, b.signal);
-            });
-        }
+        if (slider) slider.addEventListener("input", () => {
+            if (mode === "live") return;
+            const b = selectedBeing();
+            if (!b || !b.hasSignal) return;
+            b.signal = Number(slider.value);
+            announcePropertyWrite(b, b.signal);
+        });
 
-        if (authorBtn) {
-            authorBtn.addEventListener("click", () => {
-                const b = selectedBeing();
-                if (!b || b.hasSignal) return;
-                b.hasSignal = true;
-                b.signal = 0.20;
-                b.lastAbove = false;
-                log("ActionNode::AddProperty authored " + b.id + ".signal.level = 0.20", "write");
-                announcePropertyWrite(b, b.signal);
-            });
-        }
+        if (authorBtn) authorBtn.addEventListener("click", () => {
+            if (mode === "live") return;
+            const b = selectedBeing();
+            if (!b || b.hasSignal) return;
+            b.hasSignal = true;
+            b.signal = 0.20;
+            b.lastAbove = false;
+            log("ActionNode::AddProperty authored " + b.id + ".signal.level = 0.20", "write");
+            announcePropertyWrite(b, b.signal);
+        });
 
-        if (removeBtn) {
-            removeBtn.addEventListener("click", () => {
-                const b = selectedBeing();
-                if (!b || !b.hasSignal) return;
-                b.hasSignal = false;
-                b.signal = null;
-                b.emission = 0;
-                b.lastAbove = false;
-                log("ActionNode::RemoveProperty removed " + b.id + ".signal.level", "write");
-                renderInspector();
-                draw();
-            });
-        }
+        if (removeBtn) removeBtn.addEventListener("click", () => {
+            if (mode === "live") return;
+            const b = selectedBeing();
+            if (!b || !b.hasSignal) return;
+            b.hasSignal = false;
+            b.signal = null;
+            b.emission = 0;
+            b.lastAbove = false;
+            log("ActionNode::RemoveProperty removed " + b.id + ".signal.level", "write");
+            renderInspector();
+            draw();
+        });
 
-        if (spawnBtn) {
-            spawnBtn.addEventListener("click", () => {
-                const n = beings.length;
-                const id = "object-" + String.fromCharCode(97 + n);
-                beings.push({
-                    id,
-                    label: "Object " + String.fromCharCode(65 + n),
-                    x: 130,
-                    y: 100 + (n % 3) * 110,
-                    signal: 0.15,
-                    emission: 0,
-                    hasSignal: true,
-                    lastAbove: false
-                });
-                selected = beings.length - 1;
-                log("ActionNode::Create minted " + id + " with generic Object vocabulary", "event");
-                evaluateWorld("Create");
+        if (spawnBtn) spawnBtn.addEventListener("click", () => {
+            if (mode === "live") return;
+            const n = beings.length;
+            const id = "object-" + String.fromCharCode(97 + n);
+            beings.push({
+                id,
+                label: "Object " + String.fromCharCode(65 + n),
+                x: 130,
+                y: 100 + (n % 3) * 110,
+                signal: 0.15,
+                emission: 0,
+                hasSignal: true,
+                lastAbove: false
             });
-        }
+            selected = beings.length - 1;
+            log("ActionNode::Create minted " + id + " with generic Object vocabulary", "event");
+            evaluateWorld("Create");
+        });
 
-        if (resetBtn) {
-            resetBtn.addEventListener("click", () => {
-                beings = seedWorld();
-                selected = 0;
-                if (eventLog) eventLog.innerHTML = "";
-                log("World reset: 3 generic Objects, 2 authored Laws", "info");
-                beings.forEach(b => evaluateBeing(b, "initial seed"));
-                renderInspector();
-                draw();
-            });
-        }
+        if (resetBtn) resetBtn.addEventListener("click", () => {
+            if (mode === "live") return;
+            beings = seedWorld();
+            selected = 0;
+            if (eventLog) eventLog.innerHTML = "";
+            log("World reset: 3 generic Objects, 2 authored Laws", "info");
+            beings.forEach(b => evaluateBeing(b, "initial seed"));
+            renderInspector();
+            draw();
+        });
 
         beings.forEach(b => evaluateBeing(b, "initial seed"));
         log("Rete compiled from serializable ConditionModel + ActionModel text", "info");
         renderInspector();
         draw();
+
+        pollLiveEarthcall();
+        window.setInterval(pollLiveEarthcall, 2500);
     }
 
     initResumeModal();
