@@ -445,38 +445,46 @@
                     <!-- Earthcall Law Execution Explorer -->
                     <div class="ontomath-evaluator-wrapper">
                         <div class="section-header left compact-header">
-                            <span class="section-tag">Live Architecture // PropertyPath → Rete → Law</span>
+                            <span class="section-tag">Live Architecture // Earthcall → Python :5005 → Portfolio</span>
                             <h3 class="subsection-title">Earthcall Law Execution Explorer</h3>
                             <p class="section-subtitle">
-                                This is a browser visualization of Earthcall’s actual execution semantics, not a fake physics toy:
-                                authored properties become facts; Rete tests serializable conditions; Laws activate by
-                                <code>WhileTrue</code> or <code>OnBecomeTrue</code>; ActionModels write back through PropertyPaths.
+                                When Earthcall is running locally, this panel becomes a read-only window into the real C++ vessel:
+                                active Zone, live Objects, registered Laws, and engine events arrive through the Python bridge on
+                                <code>127.0.0.1:5005</code>. When Earthcall is offline, the same surface falls back to an
+                                ontology-faithful interactive architecture demo.
                             </p>
                         </div>
 
                         <div class="drawer-sim-box ontology-law-demo">
-                            <div class="drawer-sim-header ontology-demo-toolbar">
-                                <div class="drawer-sim-controls" id="ontomath-law-toggles">
-                                    <button type="button" class="drawer-sim-btn active" data-law="map">
-                                        WhileTrue: Map emission
-                                    </button>
-                                    <button type="button" class="drawer-sim-btn active" data-law="onset">
-                                        OnBecomeTrue: Publish event
-                                    </button>
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Author Object</button>
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset World</button>
+                            <div class="ontology-live-bar">
+                                <div>
+                                    <span id="ontomath-mode-badge" class="ontology-mode-badge demo">○ OFFLINE ARCHITECTURE DEMO</span>
+                                    <span id="ontomath-zone-badge" class="ontology-zone-badge">Local Earthcall not connected</span>
                                 </div>
-                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">
-                                    ● RETE: COMPILED
-                                </span>
+                                <div class="ontology-live-actions">
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-live-probe-btn">Reconnect Live Earthcall</button>
+                                    <button type="button" class="drawer-sim-btn is-hidden" id="ontomath-demo-mode-btn">Use Architecture Demo</button>
+                                </div>
+                            </div>
+
+                            <div class="drawer-sim-header ontology-demo-toolbar">
+                                <div class="drawer-sim-controls" id="ontomath-demo-controls">
+                                    <div id="ontomath-law-toggles" class="drawer-sim-controls">
+                                        <button type="button" class="drawer-sim-btn active" data-law="map">WhileTrue: Map emission</button>
+                                        <button type="button" class="drawer-sim-btn active" data-law="onset">OnBecomeTrue: Publish event</button>
+                                    </div>
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Author Object</button>
+                                    <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset Demo World</button>
+                                </div>
+                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">● DEMO RETE: COMPILED</span>
                             </div>
 
                             <div class="ontology-demo-layout">
                                 <div class="drawer-sim-canvas-wrapper ontology-canvas-panel">
                                     <canvas id="ontomath-canvas" class="drawer-sim-canvas" width="820" height="360"
-                                        aria-label="Interactive diagram of Earthcall beings, Rete conditions, Laws, and PropertyPath writes"></canvas>
-                                    <p class="ontology-canvas-hint">
-                                        Click a being to inspect it. Nothing moves randomly: every visual change below is caused by an explicit property write or Law.
+                                        aria-label="Earthcall live-state and Law architecture visualization"></canvas>
+                                    <p id="ontomath-canvas-hint" class="ontology-canvas-hint">
+                                        Demo mode: click a being to inspect it and move signal.level across the authored threshold.
                                     </p>
                                 </div>
 
@@ -489,73 +497,71 @@
 
                                     <dl class="ontology-property-list">
                                         <div>
-                                            <dt>signal.level</dt>
-                                            <dd id="ontomath-signal-value">0.82</dd>
+                                            <dt id="ontomath-prop-a-label">signal.level</dt>
+                                            <dd id="ontomath-prop-a-value">0.82</dd>
                                         </div>
                                         <div>
-                                            <dt>material.emission</dt>
-                                            <dd id="ontomath-emission-value">0.87</dd>
+                                            <dt id="ontomath-prop-b-label">material.emission</dt>
+                                            <dd id="ontomath-prop-b-value">0.87</dd>
                                         </div>
                                         <div>
-                                            <dt>Vocabulary</dt>
-                                            <dd id="ontomath-vocabulary-state">registered</dd>
+                                            <dt id="ontomath-prop-c-label">Vocabulary</dt>
+                                            <dd id="ontomath-prop-c-value">signal.level registered</dd>
                                         </div>
                                     </dl>
 
-                                    <label class="ontology-slider-label" for="ontomath-signal-slider">
-                                        Write <code>signal.level</code> through PropertyPath
-                                    </label>
-                                    <input id="ontomath-signal-slider" class="ontology-signal-slider"
-                                        type="range" min="0" max="1" step="0.01" value="0.82">
+                                    <div id="ontomath-demo-write-controls">
+                                        <label class="ontology-slider-label" for="ontomath-signal-slider">
+                                            Demo write through <code>PropertyPath</code>
+                                        </label>
+                                        <input id="ontomath-signal-slider" class="ontology-signal-slider"
+                                            type="range" min="0" max="1" step="0.01" value="0.82">
 
-                                    <div class="ontology-inspector-actions">
-                                        <button type="button" class="drawer-sim-btn" id="ontomath-author-property-btn">
-                                            Author signal.level
-                                        </button>
-                                        <button type="button" class="drawer-sim-btn" id="ontomath-remove-property-btn">
-                                            Remove property
-                                        </button>
+                                        <div class="ontology-inspector-actions">
+                                            <button type="button" class="drawer-sim-btn" id="ontomath-author-property-btn">Author signal.level</button>
+                                            <button type="button" class="drawer-sim-btn" id="ontomath-remove-property-btn">Remove property</button>
+                                        </div>
                                     </div>
 
-                                    <p class="ontology-inspector-note">
-                                        Objects are generic beings here — there is no <code>Beacon</code> C++ class.
-                                        The Law only knows the authored vocabulary it can read.
+                                    <p id="ontomath-inspector-note" class="ontology-inspector-note">
+                                        Demo Objects are generic beings — there is no <code>Beacon</code> C++ class.
+                                        The Law only knows authored vocabulary it can read.
                                     </p>
                                 </aside>
                             </div>
 
                             <div class="ontology-trace-grid" aria-live="polite">
                                 <article class="ontology-trace-card">
-                                    <span>1 · Change Feed</span>
+                                    <span id="ontomath-trace-a-title">1 · Change Feed</span>
                                     <strong id="ontomath-last-change">object-a.signal.level ← 0.82</strong>
-                                    <p>PropertyPath announces the owner + base property that changed.</p>
+                                    <p id="ontomath-trace-a-copy">PropertyPath announces the owner + base property that changed.</p>
                                 </article>
                                 <article class="ontology-trace-card">
-                                    <span>2 · Prophetic Relevance</span>
+                                    <span id="ontomath-trace-b-title">2 · Prophetic Relevance</span>
                                     <strong id="ontomath-prophetic">READ DEMAND: signal.level → hear</strong>
-                                    <p>If no authored condition can read the path, the hot Rete scan is skipped.</p>
+                                    <p id="ontomath-trace-b-copy">If no authored condition can read the path, the hot Rete scan is skipped.</p>
                                 </article>
                                 <article class="ontology-trace-card">
-                                    <span>3 · Rete Match</span>
+                                    <span id="ontomath-trace-c-title">3 · Rete Match</span>
                                     <strong id="ontomath-rete-trace">α exists ✓ · α ≥ 0.60 ✓ · β ALL ✓</strong>
-                                    <p>Conditions are facts over the selected subject — not hidden C++ behavior.</p>
+                                    <p id="ontomath-trace-c-copy">Conditions are facts over the selected subject — not hidden C++ behavior.</p>
                                 </article>
                                 <article class="ontology-trace-card">
-                                    <span>4 · ActionModel</span>
+                                    <span id="ontomath-trace-d-title">4 · ActionModel</span>
                                     <strong id="ontomath-action-trace">Map emission := 0.25 + 0.75x</strong>
-                                    <p>The Law writes a registered PropertyPath; the resulting write becomes another fact change.</p>
+                                    <p id="ontomath-trace-d-copy">The Law writes a registered PropertyPath; the resulting write becomes another fact change.</p>
                                 </article>
                             </div>
 
                             <div class="ontology-event-log-wrap">
                                 <div class="ontology-event-log-heading">
-                                    <span>Execution trace</span>
-                                    <span>Active beings: <strong id="ontomath-being-count">3</strong></span>
+                                    <span id="ontomath-event-heading">Execution trace</span>
+                                    <span>Visible beings: <strong id="ontomath-being-count">3</strong></span>
                                 </div>
                                 <ol id="ontomath-event-log" class="ontology-event-log"></ol>
                             </div>
 
-                            <div class="ontology-law-source">
+                            <div id="ontomath-demo-law-source" class="ontology-law-source">
                                 <div>
                                     <span class="evidence-label">Law A · WhileTrue · Everyone</span>
                                     <code>if signal.level ≥ 0.60 → Map material.emission := 0.25 + 0.75 × signal.level</code>
@@ -565,6 +571,13 @@
                                     <code>if signal.level ≥ 0.60 → Publish("signal-awakened")</code>
                                 </div>
                             </div>
+
+                            <div id="ontomath-live-law-list" class="ontology-live-law-list is-hidden" aria-label="Live Earthcall Laws"></div>
+
+                            <p class="ontology-live-footnote">
+                                Live mode is intentionally observational. This public page does not call Earthcall’s mutation routes;
+                                authoring remains inside Earthcall’s governed interfaces.
+                            </p>
                         </div>
                     </div>
                 </div>
