@@ -6,6 +6,76 @@
  * ============================================================================
  */
 
+function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+function parseMarkdown(md) {
+            if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
+
+            const NL = String.fromCharCode(10);
+            let html = md;
+            html = html.replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, "___DROPCAP_$1___");
+            html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+                return "<pre><code>" + escapeHtml(code.trim()) + "</code></pre>";
+            });
+            html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+            html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
+            html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
+            html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
+            html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
+            html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
+            html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
+            html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+            html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+            html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
+            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">');
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
+            html = html.replace(/\[\[(.*?)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
+            html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
+            html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
+            html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
+
+            const rawBlocks = html.split(NL + NL);
+            const formattedBlocks = rawBlocks.map((block) => {
+                block = block.trim();
+                if (!block) return "";
+                if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
+
+                if (block.startsWith("|")) {
+                    const rows = block.split(NL).filter(line => line.trim().startsWith("|"));
+                    let tableHTML = "<table style='width:100%; border-collapse:collapse; margin:20px 0; font-size:0.95em;'>";
+                    rows.forEach((row, idx) => {
+                        if (row.match(/^\|[\s-:|]+\|$/)) return;
+                        const cells = row.split("|").slice(1, -1).map(c => c.trim());
+                        tableHTML += "<tr>";
+                        cells.forEach(cell => {
+                            const tag = idx === 0 ? "th" : "td";
+                            const style = idx === 0 ? "border-bottom:2px solid var(--line-strong); padding:12px 8px; text-align:left; font-weight:600;" : "border-bottom:1px solid var(--line); padding:12px 8px;";
+                            tableHTML += `<${tag} style="${style}">${cell}</${tag}>`;
+                        });
+                        tableHTML += "</tr>";
+                    });
+                    tableHTML += "</table>";
+                    return tableHTML;
+                }
+
+                if (block.startsWith("- ") || block.startsWith("* ")) {
+                    const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
+                    return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
+                }
+
+                if (/^\d+\.\s+/.test(block)) {
+                    const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
+                    return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
+                }
+
+                return "<p>" + block.split(NL).join("<br>") + "</p>";
+            });
+
+            return formattedBlocks.join(NL + NL);
+        }
+
 function slugify(text) {
     return (text || "")
         .toLowerCase()
@@ -15,7 +85,7 @@ function slugify(text) {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { slugify };
+    module.exports = { slugify, parseMarkdown, escapeHtml };
 }
 
 if (typeof document !== "undefined") {
@@ -159,11 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setupTypewriter("p-typewriter-text", [
-        "Person-centered ontology architect",
-        "Computer Science & Mathematics",
-        "Creator of Earthcall (C++20 · WebGPU · OntoMath)",
-        "Robotics VLA & Spatial Perception",
-        "One Person. Many First Movers."
+        "Creator of Earthcall — C++20 · WebGPU · runtime Laws",
+        "Systems engineering from architecture to GPU",
+        "Robotics VLA · RGB-D perception · manipulator control",
+        "Geometry, graphics, identity, persistence, and tools",
+        "One human architect. Many AI collaborators."
     ]);
 
     setupTypewriter("d-typewriter-text", [
@@ -181,6 +251,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const hamburgerBtn = document.getElementById("hamburger-btn");
     const scrollProgressBar = document.getElementById("scroll-progress");
     const backToTopBtn = document.getElementById("back-to-top");
+
+    // Cache elements for handleScroll
+    let cachedPersonalSections = null;
+    let cachedDimensionSections = null;
+    let cachedPersonalVNavLinks = null;
+    let cachedDimensionVNavLinks = null;
+    let cachedPersonalNavLinks = null;
+    let cachedDimensionNavLinks = null;
 
     // Set initial mode on page load
     setSiteMode(savedMode);
@@ -232,7 +310,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const activeContainer = isPersonal ? personalView : dimensionView;
         if (!activeContainer) return;
 
-        const sections = activeContainer.querySelectorAll("section[id]");
+        let sections;
+        if (isPersonal) {
+            if (!cachedPersonalSections) cachedPersonalSections = activeContainer.querySelectorAll("section[id]");
+            sections = cachedPersonalSections;
+        } else {
+            if (!cachedDimensionSections) cachedDimensionSections = activeContainer.querySelectorAll("section[id]");
+            sections = cachedDimensionSections;
+        }
+
         let currentId = isPersonal ? "p-home" : "d-home";
 
         sections.forEach((sec) => {
@@ -243,7 +329,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const activeVNav = isPersonal ? vNavPersonal : vNavDimension;
         if (activeVNav) {
-            activeVNav.querySelectorAll(".v-nav-link").forEach((link) => {
+            let vNavLinks;
+            if (isPersonal) {
+                if (!cachedPersonalVNavLinks) cachedPersonalVNavLinks = activeVNav.querySelectorAll(".v-nav-link");
+                vNavLinks = cachedPersonalVNavLinks;
+            } else {
+                if (!cachedDimensionVNavLinks) cachedDimensionVNavLinks = activeVNav.querySelectorAll(".v-nav-link");
+                vNavLinks = cachedDimensionVNavLinks;
+            }
+            vNavLinks.forEach((link) => {
                 const target = link.getAttribute("data-target");
                 link.classList.toggle("active", target === currentId);
             });
@@ -251,7 +345,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const activeNavMenu = isPersonal ? navPersonal : navDimension;
         if (activeNavMenu) {
-            activeNavMenu.querySelectorAll(".nav-link").forEach((link) => {
+            let navLinks;
+            if (isPersonal) {
+                if (!cachedPersonalNavLinks) cachedPersonalNavLinks = activeNavMenu.querySelectorAll(".nav-link");
+                navLinks = cachedPersonalNavLinks;
+            } else {
+                if (!cachedDimensionNavLinks) cachedDimensionNavLinks = activeNavMenu.querySelectorAll(".nav-link");
+                navLinks = cachedDimensionNavLinks;
+            }
+            navLinks.forEach((link) => {
                 const href = link.getAttribute("href");
                 if (href && href.startsWith("#")) {
                     link.classList.toggle("active", href === `#${currentId}`);
@@ -278,8 +380,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const filter = btn.getAttribute("data-filter");
 
             projectCards.forEach((card) => {
-                const category = card.getAttribute("data-category");
-                const matches = filter === "all" || category === filter;
+                const categories = (card.getAttribute("data-category") || "")
+                    .split(/\s+/)
+                    .filter(Boolean);
+                const matches = filter === "all" || categories.includes(filter);
                 card.style.display = matches ? "flex" : "none";
             });
         });
@@ -376,10 +480,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     function initCardSpotlights() {
         const interactiveCards = document.querySelectorAll(
-            ".stat-card, .now-card, .project-card, .pillar-card, .skill-category-card, .story-card, .manifesto-card, .essay-card, .initiative-card, .contact-item-card, .draft-item-card, .template-card"
+            ".stat-card, .now-card, .project-card, .portfolio-snapshot-card, .evidence-card, .depth-card, .pillar-card, .skill-category-card, .story-card, .manifesto-card, .essay-card, .initiative-card, .contact-item-card, .draft-item-card, .template-card"
         );
 
         interactiveCards.forEach((card) => {
+            if (card._hasSpotlight) return;
+            card._hasSpotlight = true;
+
             card.addEventListener("mousemove", (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -405,11 +512,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let nebulae = [];
     let time = 0;
     let mousePos = { x: -1000, y: -1000, active: false };
+    let cachedConstellationRect = null;
 
     function resizeConstellation() {
         if (!canvas) return;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const rect = canvas.getBoundingClientRect();
+        cachedConstellationRect = canvas.getBoundingClientRect();
+        const rect = cachedConstellationRect;
         canvas.width = Math.floor(rect.width * dpr);
         canvas.height = Math.floor(rect.height * dpr);
         if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -417,7 +526,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initStars() {
         if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
+        const rect = cachedConstellationRect || canvas.getBoundingClientRect();
         const w = rect.width;
         const h = rect.height;
         const count = Math.min(Math.floor(w / 18), 120);
@@ -477,7 +586,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (canvas) {
         window.addEventListener("mousemove", (e) => {
-            const rect = canvas.getBoundingClientRect();
+            const rect = cachedConstellationRect || canvas.getBoundingClientRect();
             if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
                 mousePos.x = e.clientX - rect.left;
                 mousePos.y = e.clientY - rect.top;
@@ -488,7 +597,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         window.addEventListener("click", (e) => {
-            const rect = canvas.getBoundingClientRect();
+            const rect = cachedConstellationRect || canvas.getBoundingClientRect();
             if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
                 const mx = e.clientX - rect.left;
                 const my = e.clientY - rect.top;
@@ -496,7 +605,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!window.cursorPulses) window.cursorPulses = [];
                 if (!window.extraTethers) window.extraTethers = [];
 
-                let hoverStars = stars.filter(s => Math.hypot(s.x - mx, s.y - my) < 130);
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                let hoverStars = stars.filter(s => {
+                    const dx = s.x - mx;
+                    const dy = s.y - my;
+                    return dx * dx + dy * dy < 16900; // 130^2
+                });
                 const rand = Math.random();
                 let numStrands = 1;
                 if (rand > 0.4) numStrands = 2;
@@ -505,8 +619,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (rand > 0.97) numStrands = 5;
 
                 let potentialNew = stars.filter(s => {
-                    let d = Math.hypot(s.x - mx, s.y - my);
-                    return d >= 130 && d < 380;
+                    // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                    const dx = s.x - mx;
+                    const dy = s.y - my;
+                    const dSq = dx * dx + dy * dy;
+                    return dSq >= 16900 && dSq < 144400; // 130^2 and 380^2
                 }).sort(() => Math.random() - 0.5).slice(0, numStrands);
 
                 for (let s of potentialNew) {
@@ -616,8 +733,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (mousePos.active) {
                 const dx = s.x - mousePos.x;
                 const dy = s.y - mousePos.y;
-                const dist = Math.hypot(dx, dy);
-                if (dist < 120 && dist > 1) {
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const distSq = dx * dx + dy * dy;
+                if (distSq < 14400 && distSq > 1) { // 120^2
+                    const dist = Math.sqrt(distSq);
                     const force = (120 - dist) / 120 * 0.5;
                     s.x += (dx / dist) * force;
                     s.y += (dy / dist) * force;
@@ -632,10 +751,15 @@ document.addEventListener("DOMContentLoaded", () => {
             for (let j = i + 1; j < stars.length; j++) {
                 const a = stars[i];
                 const b = stars[j];
-                const dist = Math.hypot(a.x - b.x, a.y - b.y);
                 const maxDist = w > 768 ? 160 : 100;
 
-                if (dist < maxDist) {
+                // Optimize: Early exit using squared distance to avoid Math.sqrt in O(n^2) loop
+                const dx = a.x - b.x;
+                const dy = a.y - b.y;
+                const distSq = dx * dx + dy * dy;
+
+                if (distSq < maxDist * maxDist) {
+                    const dist = Math.sqrt(distSq);
                     let cascadeAlpha = 0;
 
                     if (a.pulseState !== 0 || b.pulseState !== 0) {
@@ -726,9 +850,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const { cascadeStartHue, cascadeSat, cascadeLit } = cascadeParams;
         let activeTethers = [];
         for (const s of stars) {
-            const dist = Math.hypot(s.x - mousePos.x, s.y - mousePos.y);
-            if (dist < 130) {
-                activeTethers.push({ target: s, dist: dist, alphaMultiplier: 1.0 });
+            // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+            const dx = s.x - mousePos.x;
+            const dy = s.y - mousePos.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < 16900) { // 130^2
+                activeTethers.push({ target: s, dist: Math.sqrt(distSq), alphaMultiplier: 1.0 });
             }
         }
         if (window.extraTethers) {
@@ -738,9 +865,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (et.life <= 0) {
                     window.extraTethers.splice(i, 1);
                 } else {
-                    const dist = Math.hypot(et.target.x - mousePos.x, et.target.y - mousePos.y);
-                    if (dist >= 130) {
-                        activeTethers.push({ target: et.target, dist: dist, alphaMultiplier: et.life });
+                    // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                    const dx = et.target.x - mousePos.x;
+                    const dy = et.target.y - mousePos.y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq >= 16900) { // 130^2
+                        activeTethers.push({ target: et.target, dist: Math.sqrt(distSq), alphaMultiplier: et.life });
                     }
                 }
             }
@@ -887,7 +1017,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawConstellation() {
         if (!ctx || !canvas || reduceMotion) return;
         time += 1;
-        const rect = canvas.getBoundingClientRect();
+        const rect = cachedConstellationRect || canvas.getBoundingClientRect();
         const w = rect.width;
         const h = rect.height;
 
@@ -928,6 +1058,9 @@ document.addEventListener("DOMContentLoaded", () => {
             resizeConstellation();
             initStars();
         });
+        window.addEventListener("scroll", () => {
+            if (canvas) cachedConstellationRect = canvas.getBoundingClientRect();
+        }, { passive: true });
     }
 
     // -------------------------------------------------------------------------
@@ -1850,76 +1983,6 @@ Sent via Dimension of Thought Platform`;
 
             updateLivePreview();
             renderDraftsList();
-        }
-
-        function parseMarkdown(md) {
-            if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
-
-            const NL = String.fromCharCode(10);
-            let html = md;
-            html = html.replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, "___DROPCAP_$1___");
-            html = html.replace(new RegExp("```([a-z]*)" + NL + "([\s\S]*?)```", "g"), (match, lang, code) => {
-                return "<pre><code>" + escapeHtml(code.trim()) + "</code></pre>";
-            });
-            html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-            html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
-            html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
-            html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
-            html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
-            html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
-            html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
-            html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-            html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-            html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">');
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
-            html = html.replace(/\[\[(.*?)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
-            html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
-            html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
-            html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
-
-            const rawBlocks = html.split(NL + NL);
-            const formattedBlocks = rawBlocks.map((block) => {
-                block = block.trim();
-                if (!block) return "";
-                if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
-
-                if (block.startsWith("|")) {
-                    const rows = block.split(NL).filter(line => line.trim().startsWith("|"));
-                    let tableHTML = "<table style='width:100%; border-collapse:collapse; margin:20px 0; font-size:0.95em;'>";
-                    rows.forEach((row, idx) => {
-                        if (row.match(/^\|[\s-:|]+\|$/)) return;
-                        const cells = row.split("|").slice(1, -1).map(c => c.trim());
-                        tableHTML += "<tr>";
-                        cells.forEach(cell => {
-                            const tag = idx === 0 ? "th" : "td";
-                            const style = idx === 0 ? "border-bottom:2px solid var(--line-strong); padding:12px 8px; text-align:left; font-weight:600;" : "border-bottom:1px solid var(--line); padding:12px 8px;";
-                            tableHTML += `<${tag} style="${style}">${cell}</${tag}>`;
-                        });
-                        tableHTML += "</tr>";
-                    });
-                    tableHTML += "</table>";
-                    return tableHTML;
-                }
-
-                if (block.startsWith("- ") || block.startsWith("* ")) {
-                    const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
-                    return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
-                }
-
-                if (/^\d+\.\s+/.test(block)) {
-                    const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
-                    return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
-                }
-
-                return "<p>" + block.split(NL).join("<br>") + "</p>";
-            });
-
-            return formattedBlocks.join(NL + NL);
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         function updateLivePreview() {
@@ -2987,7 +3050,10 @@ ${currentDraft.content}`;
 
                 if (!isFiltered || !isIsolated) return;
 
-                const dist = Math.hypot(b.x - a.x, b.y - a.y);
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
                 const organicFade = Math.sin(time * 2.5 + a.orbitOffset + b.orbitOffset) * 0.25 + 0.75;
                 let alpha = Math.max(0.06, 1 - (dist / 480)) * organicFade;
 
@@ -3183,7 +3249,8 @@ ${currentDraft.content}`;
                 edges.forEach(edge => {
                     const dx = edge.target.x - edge.source.x;
                     const dy = edge.target.y - edge.source.y;
-                    const dist = Math.hypot(dx, dy) || 1;
+                    // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
                     const targetDist = edge.isConceptEdge ? 130 : 160;
                     const force = (dist - targetDist) * k;
                     const fx = (dx / dist) * force;
@@ -3212,7 +3279,8 @@ ${currentDraft.content}`;
             edges.forEach(edge => {
                 const dx = edge.target.x - edge.source.x;
                 const dy = edge.target.y - edge.source.y;
-                const dist = Math.hypot(dx, dy) || 1;
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
                 const targetDist = edge.source.isHub || edge.target.isHub ? 130 : (edge.isConceptEdge ? 160 : 190);
                 const force = (dist - targetDist) * k;
                 const fx = (dx / dist) * force;
@@ -3224,17 +3292,15 @@ ${currentDraft.content}`;
                 edge.target.vy -= fy;
             });
 
-            // Repulsion between node pairs using Spatial Grid Binning
-            const CELL_SIZE = 220; // Slightly larger than sqrt(48000)
+            // Repulsion between nearby node pairs using spatial-grid binning.
+            const CELL_SIZE = 220; // > sqrt(48000), so adjacent cells cover every interacting pair.
             const grid = new Map();
 
-            // 1. Assign nodes to grid cells
             for (let i = 0; i < nodes.length; i++) {
                 const node = nodes[i];
                 const cx = Math.floor(node.x / CELL_SIZE);
                 const cy = Math.floor(node.y / CELL_SIZE);
-                const key = cx + ',' + cy;
-
+                const key = cx + "," + cy;
                 let cell = grid.get(key);
                 if (!cell) {
                     cell = [];
@@ -3242,20 +3308,16 @@ ${currentDraft.content}`;
                 }
                 cell.push(node);
 
-                // Centering gravity pull (done here to save an extra loop over nodes)
                 const gdx = center.x - node.x;
                 const gdy = center.y - node.y;
                 node.vx += gdx * 0.0012;
                 node.vy += gdy * 0.0012;
             }
 
-            // 2. Calculate repulsion for nodes in the same or neighboring cells
             for (const [key, cellNodes] of grid.entries()) {
-                const commaIndex = key.indexOf(',');
-                const cx = parseInt(key.substring(0, commaIndex));
-                const cy = parseInt(key.substring(commaIndex + 1));
-
-                // We check the current cell and 4 neighbors to avoid double-counting
+                const comma = key.indexOf(",");
+                const cx = parseInt(key.slice(0, comma), 10);
+                const cy = parseInt(key.slice(comma + 1), 10);
                 const neighbors = [
                     [cx, cy],
                     [cx + 1, cy],
@@ -3266,31 +3328,24 @@ ${currentDraft.content}`;
 
                 for (let i = 0; i < cellNodes.length; i++) {
                     const n1 = cellNodes[i];
+                    for (const [nx, ny] of neighbors) {
+                        const neighborNodes = grid.get(nx + "," + ny);
+                        if (!neighborNodes) continue;
+                        const sameCell = nx === cx && ny === cy;
+                        const first = sameCell ? i + 1 : 0;
 
-                    for (let nIdx = 0; nIdx < neighbors.length; nIdx++) {
-                        const nx = neighbors[nIdx][0];
-                        const ny = neighbors[nIdx][1];
-                        const neighborKey = nx + ',' + ny;
-                        const neighborNodes = grid.get(neighborKey);
-
-                        if (neighborNodes) {
-                            const isSameCell = (nx === cx && ny === cy);
-                            const startIndex = isSameCell ? i + 1 : 0;
-
-                            for (let j = startIndex; j < neighborNodes.length; j++) {
-                                const n2 = neighborNodes[j];
-                                const dx = n2.x - n1.x;
-                                const dy = n2.y - n1.y;
-                                const distSq = dx * dx + dy * dy || 1;
-                                if (distSq < 48000) {
-                                    const force = repulsion / distSq;
-                                    const dist = Math.sqrt(distSq);
-                                    const fx = (dx / dist) * force;
-                                    const fy = (dy / dist) * force;
-                                    n1.vx -= fx; n1.vy -= fy;
-                                    n2.vx += fx; n2.vy += fy;
-                                }
-                            }
+                        for (let j = first; j < neighborNodes.length; j++) {
+                            const n2 = neighborNodes[j];
+                            const dx = n2.x - n1.x;
+                            const dy = n2.y - n1.y;
+                            const distSq = dx * dx + dy * dy || 1;
+                            if (distSq >= 48000) continue;
+                            const force = repulsion / distSq;
+                            const dist = Math.sqrt(distSq);
+                            const fx = (dx / dist) * force;
+                            const fy = (dy / dist) * force;
+                            n1.vx -= fx; n1.vy -= fy;
+                            n2.vx += fx; n2.vy += fy;
                         }
                     }
                 }
@@ -3372,8 +3427,13 @@ ${currentDraft.content}`;
 
             nodes.forEach(node => {
                 if (!matchesActiveFilter(node)) return;
-                const dist = Math.hypot(node.x - pos.worldX, node.y - pos.worldY);
-                if (dist < node.radius + 8 && dist < minDist) {
+                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                const dx = node.x - pos.worldX;
+                const dy = node.y - pos.worldY;
+                const distSq = dx * dx + dy * dy;
+                const threshold = node.radius + 8;
+                if (distSq < threshold * threshold && distSq < minDist * minDist) {
+                    const dist = Math.sqrt(distSq);
                     minDist = dist;
                     hoveredNode = node;
                 }
@@ -3972,8 +4032,10 @@ ${currentDraft.content}`;
                             const p2 = verts[(i + 1) % verts.length];
                             const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
                             const normal = { x: -edge.y, y: edge.x };
-                            const len = Math.hypot(normal.x, normal.y);
-                            if (len > 0.0001) {
+                            // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                            const lenSq = normal.x * normal.x + normal.y * normal.y;
+                            if (lenSq > 0.00000001) {
+                                const len = Math.sqrt(lenSq);
                                 axes.push({ x: normal.x / len, y: normal.y / len });
                             }
                         }
@@ -4112,7 +4174,10 @@ ${currentDraft.content}`;
                         const x = (clientX - rect.left) * (canvas.width / rect.width);
                         const y = (clientY - rect.top) * (canvas.height / rect.height);
 
-                        if (Math.hypot(x - posA.x, y - posA.y) < 70) {
+                        // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                        const dx = x - posA.x;
+                        const dy = y - posA.y;
+                        if (dx * dx + dy * dy < 4900) { // 70^2
                             isDragging = true;
                             dragOffset.x = x - posA.x;
                             dragOffset.y = y - posA.y;
@@ -5065,183 +5130,796 @@ class VesselEngine {
     }
 
     // -------------------------------------------------------------------------
-    // Embedded OntoMath Law Evaluator Canvas Simulation
+    // Earthcall Law Execution Explorer
     // -------------------------------------------------------------------------
     function initOntoMathEvaluator() {
         const canvas = document.getElementById("ontomath-canvas");
         if (!canvas) return;
+
         const ctx = canvas.getContext("2d");
+        const LIVE_ENDPOINT = "http://127.0.0.1:5005/api/portfolio/live";
+
         const countBadge = document.getElementById("ontomath-being-count");
-        const spawnBtn = document.getElementById("ontomath-spawn-btn");
         const resetBtn = document.getElementById("ontomath-reset-btn");
+        const authorBtn = document.getElementById("ontomath-author-property-btn");
+        const removeBtn = document.getElementById("ontomath-remove-property-btn");
+        const spawnBtn = document.getElementById("ontomath-spawn-btn");
+        const slider = document.getElementById("ontomath-signal-slider");
         const lawButtons = document.querySelectorAll("#ontomath-law-toggles [data-law]");
+        const demoControls = document.getElementById("ontomath-demo-controls");
+        const demoWriteControls = document.getElementById("ontomath-demo-write-controls");
+        const demoLawSource = document.getElementById("ontomath-demo-law-source");
+        const liveLawList = document.getElementById("ontomath-live-law-list");
+        const liveProbeBtn = document.getElementById("ontomath-live-probe-btn");
+        const demoModeBtn = document.getElementById("ontomath-demo-mode-btn");
+        const modeBadge = document.getElementById("ontomath-mode-badge");
+        const zoneBadge = document.getElementById("ontomath-zone-badge");
+        const canvasHint = document.getElementById("ontomath-canvas-hint");
 
-        const activeLaws = { gravity: true, resonance: true, damping: true };
+        const selectedLabel = document.getElementById("ontomath-selected-label");
+        const selectedId = document.getElementById("ontomath-selected-id");
+        const propALabel = document.getElementById("ontomath-prop-a-label");
+        const propAValue = document.getElementById("ontomath-prop-a-value");
+        const propBLabel = document.getElementById("ontomath-prop-b-label");
+        const propBValue = document.getElementById("ontomath-prop-b-value");
+        const propCLabel = document.getElementById("ontomath-prop-c-label");
+        const propCValue = document.getElementById("ontomath-prop-c-value");
+        const inspectorNote = document.getElementById("ontomath-inspector-note");
 
-        lawButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                const law = btn.getAttribute("data-law");
-                activeLaws[law] = !activeLaws[law];
-                btn.classList.toggle("active", activeLaws[law]);
-            });
-        });
+        const lastChange = document.getElementById("ontomath-last-change");
+        const propheticTrace = document.getElementById("ontomath-prophetic");
+        const reteTrace = document.getElementById("ontomath-rete-trace");
+        const actionTrace = document.getElementById("ontomath-action-trace");
+        const traceATitle = document.getElementById("ontomath-trace-a-title");
+        const traceBTitle = document.getElementById("ontomath-trace-b-title");
+        const traceCTitle = document.getElementById("ontomath-trace-c-title");
+        const traceDTitle = document.getElementById("ontomath-trace-d-title");
+        const traceACopy = document.getElementById("ontomath-trace-a-copy");
+        const traceBCopy = document.getElementById("ontomath-trace-b-copy");
+        const traceCCopy = document.getElementById("ontomath-trace-c-copy");
+        const traceDCopy = document.getElementById("ontomath-trace-d-copy");
+        const statusBadge = document.getElementById("ontomath-status-badge");
+        const eventHeading = document.getElementById("ontomath-event-heading");
+        const eventLog = document.getElementById("ontomath-event-log");
 
-        let nodes = [
-            { x: 180, y: 120, vx: 0.6, vy: -0.3, mass: 12, charge: 1.0, name: "Being:Alpha" },
-            { x: 320, y: 160, vx: -0.4, vy: 0.5, mass: 16, charge: -1.0, name: "Being:Beta" },
-            { x: 500, y: 100, vx: 0.3, vy: -0.4, mass: 14, charge: 1.0, name: "Being:Gamma" },
-            { x: 420, y: 200, vx: -0.5, vy: -0.2, mass: 11, charge: -0.5, name: "Being:Delta" }
-        ];
+        const activeLaws = { map: true, onset: true };
+        const threshold = 0.60;
+        let selected = 0;
+        let mode = "demo";
+        let liveState = null;
+        let consecutiveLiveFailures = 0;
+        let preferDemo = false;
 
-        let draggedNode = null;
+        const seedWorld = () => ([
+            { id: "object-a", label: "Object A", x: 130, y: 100, signal: 0.82, emission: 0, hasSignal: true, lastAbove: false },
+            { id: "object-b", label: "Object B", x: 130, y: 210, signal: 0.31, emission: 0, hasSignal: true, lastAbove: false },
+            { id: "object-c", label: "Object C", x: 130, y: 320, signal: null, emission: 0, hasSignal: false, lastAbove: false }
+        ]);
+        let beings = seedWorld();
 
-        function updatePhysics() {
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const a = nodes[i];
-                    const b = nodes[j];
-                    const dx = b.x - a.x;
-                    const dy = b.y - a.y;
-                    const dist = Math.hypot(dx, dy) || 1;
+        const setHidden = (el, hidden) => {
+            if (el) el.classList.toggle("is-hidden", hidden);
+        };
 
-                    if (activeLaws.gravity && dist > 20) {
-                        const force = ((a.mass * b.mass) / (dist * dist)) * 0.09;
-                        const fx = (dx / dist) * force;
-                        const fy = (dy / dist) * force;
-                        a.vx += fx / a.mass;
-                        a.vy += fy / a.mass;
-                        b.vx -= fx / b.mass;
-                        b.vy -= fy / b.mass;
-                    }
+        const clip = (value, max = 30) => {
+            const text = String(value ?? "");
+            return text.length > max ? text.slice(0, Math.max(0, max - 1)) + "…" : text;
+        };
 
-                    if (activeLaws.resonance && dist < 140) {
-                        const rep = (140 - dist) * 0.0035 * (a.charge * b.charge);
-                        a.vx -= (dx / dist) * rep;
-                        a.vy -= (dy / dist) * rep;
-                        b.vx += (dx / dist) * rep;
-                        b.vy += (dy / dist) * rep;
-                    }
+        function activationName(value) {
+            if (value === 0) return "OnEvent";
+            if (value === 1) return "WhileTrue";
+            if (value === 2) return "OnBecomeTrue";
+            return "Activation " + String(value ?? "?");
+        }
+
+        function scopeName(value) {
+            if (value === 0) return "Subject";
+            if (value === 1) return "Everyone";
+            return "Scope " + String(value ?? "?");
+        }
+
+        function log(message, kind = "info") {
+            if (!eventLog || mode !== "demo") return;
+            const item = document.createElement("li");
+            item.className = "ontology-event-log-item " + kind;
+            item.textContent = message;
+            eventLog.prepend(item);
+            while (eventLog.children.length > 7) eventLog.removeChild(eventLog.lastChild);
+        }
+
+        function selectedDemoBeing() {
+            return beings[selected] || beings[0] || null;
+        }
+
+        function selectedLiveObject() {
+            const objects = Array.isArray(liveState?.objects) ? liveState.objects : [];
+            if (!objects.length) return null;
+            selected = Math.min(selected, objects.length - 1);
+            return objects[selected];
+        }
+
+        function mapEmission(x) {
+            return Math.max(0, Math.min(1, 0.25 + 0.75 * x));
+        }
+
+        function evaluateBeing(being, cause = "tick") {
+            if (!being.hasSignal) {
+                being.lastAbove = false;
+                if (being === selectedDemoBeing()) {
+                    if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → path absent";
+                    if (reteTrace) reteTrace.textContent = "α exists ✕ · no token reaches β";
+                    if (actionTrace) actionTrace.textContent = "No ActionModel branch reached";
                 }
+                return;
             }
 
-            nodes.forEach(n => {
-                if (n === draggedNode) return;
-                if (activeLaws.damping) {
-                    n.vx *= 0.985;
-                    n.vy *= 0.985;
-                }
-                n.x += n.vx;
-                n.y += n.vy;
+            const above = being.signal >= threshold;
+            if (being === selectedDemoBeing()) {
+                if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → hear";
+                if (reteTrace) reteTrace.textContent =
+                    "α exists ✓ · α ≥ 0.60 " + (above ? "✓" : "✕") + " · β ALL " + (above ? "✓" : "✕");
+            }
 
-                if (n.x < 35) { n.x = 35; n.vx *= -0.7; }
-                if (n.x > canvas.width - 35) { n.x = canvas.width - 35; n.vx *= -0.7; }
-                if (n.y < 35) { n.y = 35; n.vy *= -0.7; }
-                if (n.y > canvas.height - 35) { n.y = canvas.height - 35; n.vy *= -0.7; }
+            if (activeLaws.map && above) {
+                const next = mapEmission(being.signal);
+                if (Math.abs(next - being.emission) > 0.0001) {
+                    being.emission = next;
+                    if (being === selectedDemoBeing() && actionTrace) {
+                        actionTrace.textContent = "Map material.emission := " + next.toFixed(2);
+                    }
+                    log(
+                        "Law A / WhileTrue / " + being.id +
+                        " → material.emission := " + next.toFixed(2) +
+                        " (cause: " + cause + ")",
+                        "write"
+                    );
+                } else if (being === selectedDemoBeing() && actionTrace) {
+                    actionTrace.textContent = "Map emission already satisfied (" + next.toFixed(2) + ")";
+                }
+            } else if (being === selectedDemoBeing() && actionTrace) {
+                actionTrace.textContent = activeLaws.map
+                    ? "Condition false → Map not reached"
+                    : "Law A disabled";
+            }
+
+            if (activeLaws.onset && above && !being.lastAbove) {
+                log('Law B / OnBecomeTrue / ' + being.id + ' → Publish("signal-awakened")', "event");
+            }
+            being.lastAbove = above;
+        }
+
+        function evaluateDemoWorld(cause = "tick") {
+            beings.forEach(b => evaluateBeing(b, cause));
+            renderInspector();
+            draw();
+        }
+
+        function announceDemoPropertyWrite(being, value) {
+            if (lastChange) lastChange.textContent = being.id + ".signal.level ← " + value.toFixed(2);
+            if (statusBadge) statusBadge.textContent = "● DEMO RETE: DIRTY FACT → EVALUATED";
+            log("PropertyPath::setValue(" + being.id + ".signal.level, " + value.toFixed(2) + ")", "change");
+            evaluateBeing(being, "PropertyPath write");
+            renderInspector();
+            draw();
+            setTimeout(() => {
+                if (mode === "demo" && statusBadge) statusBadge.textContent = "● DEMO RETE: COMPILED";
+            }, 650);
+        }
+
+        function renderDemoInspector() {
+            const b = selectedDemoBeing();
+            if (!b) return;
+
+            if (selectedLabel) selectedLabel.textContent = b.label;
+            if (selectedId) selectedId.textContent = b.id;
+            if (propALabel) propALabel.textContent = "signal.level";
+            if (propAValue) propAValue.textContent = b.hasSignal ? b.signal.toFixed(2) : "—";
+            if (propBLabel) propBLabel.textContent = "material.emission";
+            if (propBValue) propBValue.textContent = b.emission.toFixed(2);
+            if (propCLabel) propCLabel.textContent = "Vocabulary";
+            if (propCValue) propCValue.textContent = b.hasSignal ? "signal.level registered" : "signal.level absent";
+            if (slider) {
+                slider.disabled = !b.hasSignal;
+                slider.value = b.hasSignal ? String(b.signal) : "0";
+            }
+            if (inspectorNote) {
+                inspectorNote.innerHTML =
+                    'Demo Objects are generic beings — there is no <code>Beacon</code> C++ class. ' +
+                    'The Law only knows authored vocabulary it can read.';
+            }
+
+            if (!b.hasSignal) {
+                if (lastChange) lastChange.textContent = b.id + ".signal.level does not exist";
+                if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → path absent";
+                if (reteTrace) reteTrace.textContent = "α exists ✕ · no token reaches β";
+                if (actionTrace) actionTrace.textContent = "No ActionModel branch reached";
+            } else {
+                const above = b.signal >= threshold;
+                if (lastChange) lastChange.textContent = b.id + ".signal.level = " + b.signal.toFixed(2);
+                if (propheticTrace) propheticTrace.textContent = "READ DEMAND: signal.level → hear";
+                if (reteTrace) reteTrace.textContent =
+                    "α exists ✓ · α ≥ 0.60 " + (above ? "✓" : "✕") + " · β ALL " + (above ? "✓" : "✕");
+                if (actionTrace) actionTrace.textContent = activeLaws.map
+                    ? (above ? "Map emission := " + mapEmission(b.signal).toFixed(2) : "Condition false → Map not reached")
+                    : "Law A disabled";
+            }
+            if (countBadge) countBadge.textContent = String(beings.length);
+        }
+
+        function renderLiveInspector() {
+            const obj = selectedLiveObject();
+            if (!obj) {
+                if (selectedLabel) selectedLabel.textContent = "No Object in active Zone";
+                if (selectedId) selectedId.textContent = "—";
+                if (propALabel) propALabel.textContent = "position";
+                if (propAValue) propAValue.textContent = "—";
+                if (propBLabel) propBLabel.textContent = "shapeKind";
+                if (propBValue) propBValue.textContent = "—";
+                if (propCLabel) propCLabel.textContent = "materialId";
+                if (propCValue) propCValue.textContent = "—";
+                return;
+            }
+
+            if (selectedLabel) selectedLabel.textContent = obj.name || obj.id || "Object";
+            if (selectedId) selectedId.textContent = obj.id || obj.name || "—";
+            if (propALabel) propALabel.textContent = "position";
+            if (propAValue) {
+                propAValue.textContent = Array.isArray(obj.position)
+                    ? "[" + obj.position.map(v => Number(v).toFixed(2)).join(", ") + "]"
+                    : "—";
+            }
+            if (propBLabel) propBLabel.textContent = "shapeKind";
+            if (propBValue) propBValue.textContent = String(obj.shapeKind ?? "—");
+            if (propCLabel) propCLabel.textContent = "materialId";
+            if (propCValue) propCValue.textContent = String(obj.materialId ?? "—");
+            if (inspectorNote) {
+                inspectorNote.textContent =
+                    "Live read-only projection from Earthcall state_sync. These values come from the C++ vessel through the Python bridge.";
+            }
+        }
+
+        function renderInspector() {
+            if (mode === "live") renderLiveInspector();
+            else renderDemoInspector();
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - 8 * Math.cos(angle - Math.PI / 6), y2 - 8 * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - 8 * Math.cos(angle + Math.PI / 6), y2 - 8 * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+
+            if (label) {
+                ctx.font = "10px 'IBM Plex Mono', monospace";
+                ctx.fillStyle = "rgba(168,160,146,0.95)";
+                ctx.fillText(label, (x1 + x2) / 2 - 24, (y1 + y2) / 2 - 6);
+            }
+        }
+
+        function drawRoundedBox(x, y, w, h, stroke, fill, title, sub) {
+            const r = 12;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+            ctx.fillStyle = fill;
+            ctx.fill();
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+
+            ctx.fillStyle = "#f7f3eb";
+            ctx.font = "600 11px 'IBM Plex Mono', monospace";
+            ctx.fillText(clip(title, 30), x + 12, y + 21);
+            ctx.fillStyle = "rgba(168,160,146,0.95)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText(clip(sub, 34), x + 12, y + 40);
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = "rgba(255,255,255,0.035)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+        }
+
+        function drawDemo() {
+            drawGrid();
+            ctx.fillStyle = "rgba(216,180,110,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("DEMO WORLD / SINGULARS", 24, 22);
+            ctx.fillStyle = "rgba(110,231,216,0.9)";
+            ctx.fillText("RETE / CONDITIONS", 310, 22);
+            ctx.fillStyle = "rgba(168,85,247,0.95)";
+            ctx.fillText("LAW / ACTION", 580, 22);
+
+            beings.forEach((b, i) => {
+                const isSelected = i === selected;
+                drawRoundedBox(
+                    b.x - 88, b.y - 30, 176, 60,
+                    isSelected ? "#d8b46e" : "rgba(110,231,216,0.75)",
+                    isSelected ? "rgba(216,180,110,0.12)" : "rgba(15,17,26,0.9)",
+                    b.label + " · " + b.id,
+                    b.hasSignal ? "signal.level = " + b.signal.toFixed(2) : "signal.level = <absent>"
+                );
             });
+
+            const reteY = 84;
+            drawRoundedBox(300, reteY - 28, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)",
+                "α: Property exists", "signal.level is registered");
+            drawRoundedBox(300, reteY + 76, 210, 58, "#6ee7d8", "rgba(110,231,216,0.06)",
+                "α: Comparison", "signal.level ≥ 0.60");
+            drawRoundedBox(330, reteY + 180, 150, 54, "#d8b46e", "rgba(216,180,110,0.07)",
+                "β: ALL", "exists ∧ threshold");
+
+            drawRoundedBox(570, 82, 218, 68, activeLaws.map ? "#a855f7" : "#6d665b",
+                "rgba(168,85,247,0.07)", "Law A · WhileTrue", "Map material.emission");
+            drawRoundedBox(570, 210, 218, 68, activeLaws.onset ? "#a855f7" : "#6d665b",
+                "rgba(168,85,247,0.07)", "Law B · OnBecomeTrue", 'Publish "signal-awakened"');
+
+            drawArrow(220, 104, 300, 84, "rgba(110,231,216,0.8)", "fact");
+            drawArrow(405, 114, 405, 160, "rgba(216,180,110,0.8)", "token");
+            drawArrow(405, 218, 405, 264, "rgba(216,180,110,0.8)", "token");
+            drawArrow(480, 290, 570, 116, "rgba(168,85,247,0.78)", "activate");
+            drawArrow(480, 290, 570, 244, "rgba(168,85,247,0.78)", "edge");
+
+            ctx.fillStyle = "rgba(168,160,146,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("Architecture demo: explicit writes feed the same change graph again", 418, 338);
+        }
+
+        function drawLive() {
+            drawGrid();
+            const objects = (liveState?.objects || []).slice(0, 4);
+            const laws = (liveState?.laws || []).slice(0, 3);
+            const zone = liveState?.active_zone || {};
+
+            ctx.fillStyle = "rgba(216,180,110,0.95)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("REAL ACTIVE-ZONE OBJECTS", 24, 22);
+            ctx.fillStyle = "rgba(110,231,216,0.95)";
+            ctx.fillText("PYTHON :5005 PROJECTION", 294, 22);
+            ctx.fillStyle = "rgba(168,85,247,0.95)";
+            ctx.fillText("REAL LAW REGISTRY", 590, 22);
+
+            objects.forEach((obj, i) => {
+                const y = 70 + i * 72;
+                const isSelected = i === selected;
+                const pos = Array.isArray(obj.position)
+                    ? "pos [" + obj.position.map(v => Number(v).toFixed(1)).join(", ") + "]"
+                    : (obj.type || "Object");
+                drawRoundedBox(
+                    20, y - 25, 230, 52,
+                    isSelected ? "#d8b46e" : "rgba(110,231,216,0.7)",
+                    isSelected ? "rgba(216,180,110,0.11)" : "rgba(15,17,26,0.9)",
+                    obj.name || obj.id || "Object",
+                    (obj.id || "") + " · " + pos
+                );
+            });
+            if (!objects.length) {
+                drawRoundedBox(20, 110, 230, 58, "#6d665b", "rgba(15,17,26,0.9)",
+                    "No Objects in active Zone", zone.name || "Earthcall");
+            }
+
+            drawRoundedBox(302, 120, 210, 100, "#6ee7d8", "rgba(110,231,216,0.06)",
+                liveState?.connected ? "C++ Vessel linked" : "Python bridge online",
+                (zone.name || "Unknown Zone") + " · " + objects.length + " objects");
+            ctx.fillStyle = "rgba(168,160,146,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("schema: earthcall.portfolio.v1", 320, 198);
+
+            laws.forEach((law, i) => {
+                const y = 70 + i * 92;
+                drawRoundedBox(
+                    566, y - 25, 234, 70,
+                    law.enabled ? "#a855f7" : "#6d665b",
+                    law.enabled ? "rgba(168,85,247,0.07)" : "rgba(60,58,54,0.14)",
+                    law.name || law.identifier || "Law",
+                    activationName(law.activation) + " · " + scopeName(law.scope)
+                );
+            });
+            if (!laws.length) {
+                drawRoundedBox(566, 110, 234, 58, "#6d665b", "rgba(15,17,26,0.9)",
+                    "No Laws in snapshot", "LawManager projection empty");
+            }
+
+            drawArrow(250, 165, 302, 165, "rgba(110,231,216,0.55)", "state");
+            drawArrow(512, 165, 566, 165, "rgba(168,85,247,0.55)", "registry");
+
+            ctx.fillStyle = "rgba(168,160,146,0.9)";
+            ctx.font = "10px 'IBM Plex Mono', monospace";
+            ctx.fillText("Read-only observational path — no causal edge is inferred by this diagram", 190, 338);
         }
 
         function draw() {
+            if (!ctx) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            updatePhysics();
-
-            // Background subtle grid
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 30) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += 30) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-
-            // Law connection edges
-            for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const a = nodes[i];
-                    const b = nodes[j];
-                    const dist = Math.hypot(b.x - a.x, b.y - a.y);
-                    if (dist < 220) {
-                        const alpha = (1 - dist / 220) * 0.45;
-                        ctx.strokeStyle = `rgba(110, 231, 216, ${alpha})`;
-                        ctx.lineWidth = 1.2;
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.stroke();
-
-                        // Midpoint property badge
-                        const mx = (a.x + b.x) / 2;
-                        const my = (a.y + b.y) / 2;
-                        ctx.fillStyle = `rgba(216, 180, 110, ${alpha * 0.7})`;
-                        ctx.fillRect(mx - 2, my - 2, 4, 4);
-                    }
-                }
-            }
-
-            // Draw Being Nodes
-            nodes.forEach(n => {
-                ctx.fillStyle = n.charge > 0 ? "rgba(216, 180, 110, 0.3)" : "rgba(110, 231, 216, 0.3)";
-                ctx.strokeStyle = n.charge > 0 ? "#d8b46e" : "#6ee7d8";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(n.x, n.y, n.mass, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = "#fff";
-                ctx.font = "10px monospace";
-                ctx.fillText(n.name, n.x - 28, n.y - n.mass - 4);
-            });
-
-            requestAnimationFrame(draw);
+            if (mode === "live") drawLive();
+            else drawDemo();
         }
 
-        canvas.addEventListener("mousedown", (e) => {
+        function renderLiveLaws() {
+            if (!liveLawList) return;
+            liveLawList.innerHTML = "";
+            const laws = Array.isArray(liveState?.laws) ? liveState.laws.slice(0, 6) : [];
+            if (!laws.length) {
+                const empty = document.createElement("p");
+                empty.className = "ontology-empty-live";
+                empty.textContent = "No Laws were present in the current state snapshot.";
+                liveLawList.appendChild(empty);
+                return;
+            }
+
+            laws.forEach(law => {
+                const card = document.createElement("article");
+                card.className = "ontology-live-law-card";
+
+                const meta = document.createElement("span");
+                meta.className = "evidence-label";
+                meta.textContent =
+                    activationName(law.activation) + " · " +
+                    scopeName(law.scope) + " · " +
+                    (law.enabled ? "enabled" : "disabled");
+
+                const title = document.createElement("strong");
+                title.textContent = law.name || law.identifier || "Unnamed Law";
+
+                const id = document.createElement("code");
+                id.textContent = law.identifier || "—";
+
+                const condition = document.createElement("p");
+                condition.textContent = "Condition: " + (law.conditionDescription || "always (no condition guard)");
+
+                const action = document.createElement("p");
+                action.textContent = "Action: " + (law.actionDescription || "custom action");
+
+                card.append(meta, title, id, condition, action);
+                liveLawList.appendChild(card);
+            });
+        }
+
+        function renderLiveEvents() {
+            if (!eventLog) return;
+            eventLog.innerHTML = "";
+            const events = Array.isArray(liveState?.recent_events) ? [...liveState.recent_events].reverse() : [];
+            if (!events.length) {
+                const item = document.createElement("li");
+                item.className = "ontology-event-log-item info";
+                item.textContent = "No engine events captured in the Python bridge ring buffer yet.";
+                eventLog.appendChild(item);
+                return;
+            }
+
+            events.slice(0, 7).forEach(evt => {
+                const item = document.createElement("li");
+                item.className = "ontology-event-log-item event";
+                const eventName = evt.event || evt.eventType || evt.type || "engine_event";
+                let detail = "";
+                if (evt.data !== undefined) {
+                    try {
+                        detail = " · " + clip(JSON.stringify(evt.data), 110);
+                    } catch (_) {}
+                } else if (evt.subject || evt.target) {
+                    detail = " · " + String(evt.subject || evt.target);
+                }
+                item.textContent = String(eventName) + detail;
+                eventLog.appendChild(item);
+            });
+        }
+
+        function renderLiveTrace() {
+            const zone = liveState?.active_zone || {};
+            const laws = Array.isArray(liveState?.laws) ? liveState.laws : [];
+            const enabled = laws.filter(l => l.enabled).length;
+            const events = Array.isArray(liveState?.recent_events) ? liveState.recent_events : [];
+            const bridge = liveState?.bridge || {};
+
+            if (traceATitle) traceATitle.textContent = "1 · State Source";
+            if (lastChange) {
+                const stamp = liveState?.timestamp
+                    ? new Date(Number(liveState.timestamp) * 1000).toLocaleTimeString()
+                    : "now";
+                lastChange.textContent = "state_sync snapshot @ " + stamp;
+            }
+            if (traceACopy) traceACopy.textContent = "The C++ vessel builds the world snapshot; Python projects it without inventing a second ontology.";
+
+            if (traceBTitle) traceBTitle.textContent = "2 · Active Zone";
+            if (propheticTrace) propheticTrace.textContent = (zone.name || "Unknown Zone") + " · " + (zone.id || "no id");
+            if (traceBCopy) traceBCopy.textContent = "Objects shown above are the real Objects currently projected for Earthcall's active Zone.";
+
+            if (traceCTitle) traceCTitle.textContent = "3 · Law Registry";
+            if (reteTrace) reteTrace.textContent = laws.length + " Laws · " + enabled + " enabled";
+            if (traceCCopy) traceCCopy.textContent = "Activation, scope, conditions, and actions come from LawManager's serialized inspection data.";
+
+            if (traceDTitle) traceDTitle.textContent = "4 · Bridge Events";
+            if (actionTrace) actionTrace.textContent =
+                events.length + " recent · " + String(bridge.messages_received ?? 0) + " bridge messages received";
+            if (traceDCopy) traceDCopy.textContent = "Engine events are observed through the bounded Python event buffer; this public surface does not mutate Earthcall.";
+        }
+
+        function renderLiveMode() {
+            const zone = liveState?.active_zone || {};
+            const objects = Array.isArray(liveState?.objects) ? liveState.objects : [];
+            selected = objects.length ? Math.min(selected, objects.length - 1) : 0;
+
+            if (modeBadge) {
+                modeBadge.textContent = liveState?.connected
+                    ? "● LIVE EARTHCALL · C++ VESSEL"
+                    : "◐ LIVE PYTHON · C++ VESSEL OFFLINE";
+                modeBadge.classList.remove("demo");
+                modeBadge.classList.add("live");
+            }
+            if (zoneBadge) {
+                zoneBadge.textContent = (zone.name || "Unknown Zone") + (zone.id ? " · " + zone.id : "");
+            }
+            if (statusBadge) {
+                statusBadge.textContent = liveState?.connected
+                    ? "● LIVE STATE_SYNC"
+                    : "◐ BRIDGE ONLINE · ENGINE DISCONNECTED";
+            }
+            if (canvasHint) {
+                canvasHint.textContent =
+                    "Live mode: these Objects and Laws come from Earthcall's C++ world snapshot through the Python bridge on port 5005.";
+            }
+            if (eventHeading) eventHeading.textContent = "Live engine event buffer";
+            if (countBadge) countBadge.textContent = String(objects.length);
+
+            setHidden(demoControls, true);
+            setHidden(demoWriteControls, true);
+            setHidden(demoLawSource, true);
+            setHidden(liveLawList, false);
+            setHidden(demoModeBtn, false);
+
+            renderLiveInspector();
+            renderLiveTrace();
+            renderLiveEvents();
+            renderLiveLaws();
+            draw();
+        }
+
+        function renderDemoMode(reason = "") {
+            if (modeBadge) {
+                modeBadge.textContent = "○ OFFLINE ARCHITECTURE DEMO";
+                modeBadge.classList.remove("live");
+                modeBadge.classList.add("demo");
+            }
+            if (zoneBadge) {
+                zoneBadge.textContent = reason || "Local Earthcall not connected";
+            }
+            if (statusBadge) statusBadge.textContent = "● DEMO RETE: COMPILED";
+            if (canvasHint) {
+                canvasHint.textContent =
+                    "Demo mode: click a being to inspect it and move signal.level across the authored threshold.";
+            }
+            if (eventHeading) eventHeading.textContent = "Demo execution trace";
+
+            if (traceATitle) traceATitle.textContent = "1 · Change Feed";
+            if (traceACopy) traceACopy.textContent = "PropertyPath announces the owner + base property that changed.";
+            if (traceBTitle) traceBTitle.textContent = "2 · Prophetic Relevance";
+            if (traceBCopy) traceBCopy.textContent = "If no authored condition can read the path, the hot Rete scan is skipped.";
+            if (traceCTitle) traceCTitle.textContent = "3 · Rete Match";
+            if (traceCCopy) traceCCopy.textContent = "Conditions are facts over the selected subject — not hidden C++ behavior.";
+            if (traceDTitle) traceDTitle.textContent = "4 · ActionModel";
+            if (traceDCopy) traceDCopy.textContent = "The Law writes a registered PropertyPath; the resulting write becomes another fact change.";
+
+            setHidden(demoControls, false);
+            setHidden(demoWriteControls, false);
+            setHidden(demoLawSource, false);
+            setHidden(liveLawList, true);
+            setHidden(demoModeBtn, true);
+
+            evaluateDemoWorld("demo mode");
+        }
+
+        function enterDemo(reason = "", explicit = false) {
+            mode = "demo";
+            if (explicit) preferDemo = true;
+            renderDemoMode(reason);
+        }
+
+        function enterLive(state) {
+            liveState = state;
+            mode = "live";
+            preferDemo = false;
+            consecutiveLiveFailures = 0;
+            renderLiveMode();
+        }
+
+        async function probeLive(manual = false) {
+            if (preferDemo && !manual) return;
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 1400);
+
+            if (manual && liveProbeBtn) {
+                liveProbeBtn.disabled = true;
+                liveProbeBtn.textContent = "Connecting…";
+            }
+
+            try {
+                const response = await fetch(LIVE_ENDPOINT, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-store",
+                    signal: controller.signal,
+                    headers: { "Accept": "application/json" }
+                });
+                if (!response.ok) throw new Error("HTTP " + response.status);
+
+                const state = await response.json();
+                if (!state || state.schema !== "earthcall.portfolio.v1") {
+                    throw new Error("Unexpected Earthcall portfolio schema");
+                }
+                enterLive(state);
+            } catch (error) {
+                consecutiveLiveFailures += 1;
+                if (mode === "live" && consecutiveLiveFailures < 3) {
+                    if (statusBadge) statusBadge.textContent = "◐ LIVE LINK STALE · RETRYING";
+                } else if (mode !== "demo" || manual) {
+                    enterDemo(
+                        error?.name === "AbortError"
+                            ? "Local Earthcall did not answer on :5005"
+                            : "Live bridge unavailable · using faithful demo"
+                    );
+                }
+            } finally {
+                clearTimeout(timeout);
+                if (manual && liveProbeBtn) {
+                    liveProbeBtn.disabled = false;
+                    liveProbeBtn.textContent = "Reconnect Live Earthcall";
+                }
+            }
+        }
+
+        canvas.addEventListener("click", (e) => {
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) * (canvas.width / rect.width);
             const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            draggedNode = nodes.find(n => Math.hypot(n.x - x, n.y - y) < n.mass + 8);
+
+            if (mode === "live") {
+                const objects = (liveState?.objects || []).slice(0, 4);
+                const hit = objects.findIndex((_, i) => {
+                    const cy = 70 + i * 72;
+                    return x >= 20 && x <= 250 && y >= cy - 27 && y <= cy + 29;
+                });
+                if (hit >= 0) {
+                    selected = hit;
+                    renderLiveInspector();
+                    draw();
+                }
+                return;
+            }
+
+            const hit = beings.findIndex(b => (
+                x >= b.x - 90 && x <= b.x + 90 &&
+                y >= b.y - 34 && y <= b.y + 34
+            ));
+            if (hit >= 0) {
+                selected = hit;
+                renderDemoInspector();
+                draw();
+            }
         });
 
-        window.addEventListener("mousemove", (e) => {
-            if (!draggedNode) return;
-            const rect = canvas.getBoundingClientRect();
-            draggedNode.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-            draggedNode.y = (e.clientY - rect.top) * (canvas.height / rect.height);
-            draggedNode.vx = 0;
-            draggedNode.vy = 0;
+        lawButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (mode !== "demo") return;
+                const law = btn.getAttribute("data-law");
+                activeLaws[law] = !activeLaws[law];
+                btn.classList.toggle("active", activeLaws[law]);
+                log("Law " + law + " " + (activeLaws[law] ? "enabled" : "disabled"), "info");
+                evaluateDemoWorld("law toggle");
+            });
         });
 
-        window.addEventListener("mouseup", () => { draggedNode = null; });
+        if (slider) {
+            slider.addEventListener("input", () => {
+                if (mode !== "demo") return;
+                const b = selectedDemoBeing();
+                if (!b || !b.hasSignal) return;
+                b.signal = Number(slider.value);
+                announceDemoPropertyWrite(b, b.signal);
+            });
+        }
+
+        if (authorBtn) {
+            authorBtn.addEventListener("click", () => {
+                if (mode !== "demo") return;
+                const b = selectedDemoBeing();
+                if (!b || b.hasSignal) return;
+                b.hasSignal = true;
+                b.signal = 0.20;
+                b.lastAbove = false;
+                log("ActionNode::AddProperty authored " + b.id + ".signal.level = 0.20", "write");
+                announceDemoPropertyWrite(b, b.signal);
+            });
+        }
+
+        if (removeBtn) {
+            removeBtn.addEventListener("click", () => {
+                if (mode !== "demo") return;
+                const b = selectedDemoBeing();
+                if (!b || !b.hasSignal) return;
+                b.hasSignal = false;
+                b.signal = null;
+                b.emission = 0;
+                b.lastAbove = false;
+                log("ActionNode::RemoveProperty removed " + b.id + ".signal.level", "write");
+                renderDemoInspector();
+                draw();
+            });
+        }
 
         if (spawnBtn) {
             spawnBtn.addEventListener("click", () => {
-                nodes.push({
-                    x: Math.random() * (canvas.width - 100) + 50,
-                    y: Math.random() * (canvas.height - 100) + 50,
-                    vx: (Math.random() - 0.5) * 1.5,
-                    vy: (Math.random() - 0.5) * 1.5,
-                    mass: Math.floor(Math.random() * 8) + 10,
-                    charge: Math.random() > 0.5 ? 1.0 : -1.0,
-                    name: `Being:${String.fromCharCode(65 + nodes.length)}`
+                if (mode !== "demo") return;
+                const n = beings.length;
+                const id = "object-" + String.fromCharCode(97 + (n % 26));
+                beings.push({
+                    id,
+                    label: "Object " + String.fromCharCode(65 + (n % 26)),
+                    x: 130,
+                    y: 100 + (n % 3) * 110,
+                    signal: 0.15,
+                    emission: 0,
+                    hasSignal: true,
+                    lastAbove: false
                 });
-                if (countBadge) countBadge.textContent = `${nodes.length} Nodes`;
+                selected = beings.length - 1;
+                log("ActionNode::Create minted " + id + " with generic Object vocabulary", "event");
+                evaluateDemoWorld("Create");
             });
         }
 
         if (resetBtn) {
             resetBtn.addEventListener("click", () => {
-                nodes = [
-                    { x: 180, y: 120, vx: 0.6, vy: -0.3, mass: 12, charge: 1.0, name: "Being:Alpha" },
-                    { x: 320, y: 160, vx: -0.4, vy: 0.5, mass: 16, charge: -1.0, name: "Being:Beta" },
-                    { x: 500, y: 100, vx: 0.3, vy: -0.4, mass: 14, charge: 1.0, name: "Being:Gamma" },
-                    { x: 420, y: 200, vx: -0.5, vy: -0.2, mass: 11, charge: -0.5, name: "Being:Delta" }
-                ];
-                if (countBadge) countBadge.textContent = `${nodes.length} Nodes`;
+                if (mode !== "demo") return;
+                beings = seedWorld();
+                selected = 0;
+                if (eventLog) eventLog.innerHTML = "";
+                log("World reset: 3 generic Objects, 2 authored Laws", "info");
+                beings.forEach(b => evaluateBeing(b, "initial seed"));
+                renderDemoInspector();
+                draw();
             });
         }
 
-        draw();
+        if (liveProbeBtn) {
+            liveProbeBtn.addEventListener("click", () => {
+                preferDemo = false;
+                probeLive(true);
+            });
+        }
+
+        if (demoModeBtn) {
+            demoModeBtn.addEventListener("click", () => {
+                enterDemo("Live link paused by visitor · demo mode", true);
+            });
+        }
+
+        beings.forEach(b => evaluateBeing(b, "initial seed"));
+        log("Rete compiled from serializable ConditionModel + ActionModel text", "info");
+        renderDemoMode();
+        probeLive(false);
+        setInterval(() => probeLive(false), 2000);
     }
 
     initResumeModal();
