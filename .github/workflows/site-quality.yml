@@ -26,3 +26,4 @@ jobs:
           npm run sync-metadata
           git diff --exit-code
       - run: npm run audit
+      - run: npm run audit:assets
