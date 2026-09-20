@@ -1172,7 +1172,7 @@ Message:
 ${message}
 
 ---
-Sent via zacharyzhang.dev`;
+Sent via Dimension of Thought`;
             window.location.href = `mailto:zhangzachary834@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
         });
     }
@@ -2500,14 +2500,14 @@ Sent via Dimension of Thought Platform`;
     <title>${escapeHtml(draft.title)} — Dimension of Thought</title>
     <meta name="description" content="${escapeHtml(draft.subtitle || draft.excerpt || "")}">
     <meta name="author" content="${escapeHtml(draft.author || "Zachary Zhang")}">
-    <link rel="canonical" href="https://zhangzachary834-commits.github.io/posts/${draft.slug}.html">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/${draft.slug}.html">
 
     <meta property="og:type" content="article">
     <meta property="og:title" content="${escapeHtml(draft.title)} — Dimension of Thought">
     <meta property="og:description" content="${escapeHtml(draft.subtitle || "")}">
     <meta property="og:image" content="../assets/dimension-emblem.jpg">
 
-    <link rel="icon" type="image/jpeg" href="../assets/favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="../assets/dimension-emblem.jpg">
     <link rel="stylesheet" href="../style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2601,7 +2601,7 @@ ${compiledBody}
         <div class="container footer-container">
             <div class="footer-left">
                 <div class="footer-brand-row">
-                    <img src="../assets/favicon.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
+                    <img src="../assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
                     <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
                 </div>
                 <p class="footer-tagline">Systems, Ontology, and the Constellation of Life &amp; Community.</p>
