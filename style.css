@@ -3627,6 +3627,222 @@ body.zen-mode .studio-editor-pane {
     background: color-mix(in srgb, var(--bg-elev) 86%, transparent);
 }
 
+/* Law-Direct / Self-Refining Relevance Showcase */
+.relevance-showcase {
+    margin: 54px 0 58px;
+    padding: clamp(24px, 4vw, 42px);
+    border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle at 88% 8%, rgba(110, 231, 216, 0.12), transparent 32%),
+        radial-gradient(circle at 10% 92%, rgba(216, 180, 110, 0.10), transparent 34%),
+        linear-gradient(145deg, rgba(8, 12, 14, 0.88), color-mix(in srgb, var(--bg-card) 92%, transparent));
+    overflow: hidden;
+    position: relative;
+}
+[data-theme="light"] .relevance-showcase {
+    background:
+        radial-gradient(circle at 88% 8%, rgba(13, 148, 136, 0.10), transparent 32%),
+        radial-gradient(circle at 10% 92%, rgba(180, 128, 43, 0.08), transparent 34%),
+        var(--bg-card);
+}
+.relevance-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 34px;
+    align-items: start;
+}
+.relevance-hero h3 {
+    margin: 8px 0 14px;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+}
+.relevance-lede {
+    max-width: 820px;
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.72;
+}
+.relevance-lede strong { color: var(--ink); }
+.relevance-equation {
+    margin-top: 24px;
+    padding: 16px 18px;
+    border-left: 2px solid var(--teal);
+    background: color-mix(in srgb, var(--bg-elev) 82%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.relevance-equation span,
+.relevance-equation small {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+}
+.relevance-equation code {
+    color: var(--teal);
+    font-family: var(--font-mono);
+    font-size: clamp(1rem, 2vw, 1.32rem);
+    font-weight: 700;
+}
+.relevance-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+.relevance-metric {
+    min-height: 116px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+}
+.relevance-metric strong {
+    font-family: var(--font-mono);
+    color: var(--gold);
+    font-size: clamp(1.05rem, 2.3vw, 1.5rem);
+    letter-spacing: -0.04em;
+}
+.relevance-metric span {
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+.relevance-flow {
+    margin: 34px 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.relevance-step {
+    min-height: 126px;
+    padding: 16px;
+    border-right: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-card) 91%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.relevance-step:last-child { border-right: 0; }
+.relevance-step > span {
+    color: var(--dim);
+    font: 0.68rem var(--font-mono);
+    letter-spacing: 0.1em;
+}
+.relevance-step strong {
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+}
+.relevance-step small {
+    color: var(--muted);
+    line-height: 1.45;
+    font-size: 0.76rem;
+}
+.relevance-step.is-live {
+    background: linear-gradient(160deg, rgba(110, 231, 216, 0.12), rgba(110, 231, 216, 0.025));
+    box-shadow: inset 0 2px 0 var(--teal);
+}
+.relevance-step.is-live strong { color: var(--teal); }
+.relevance-step.is-frontier {
+    background: linear-gradient(160deg, rgba(216, 180, 110, 0.12), rgba(216, 180, 110, 0.025));
+    box-shadow: inset 0 2px 0 var(--gold);
+}
+.relevance-step.is-frontier strong { color: var(--gold); }
+.relevance-frontier {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.relevance-frontier-card {
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+}
+.relevance-frontier-card.implemented { border-top: 2px solid var(--teal); }
+.relevance-frontier-card.frontier { border-top: 2px solid var(--gold); }
+.relevance-card-kicker {
+    display: inline-block;
+    margin-bottom: 9px;
+    color: var(--dim);
+    font: 0.7rem var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.relevance-frontier-card h4 {
+    margin-bottom: 9px;
+    font-family: var(--font-serif);
+    font-size: 1.45rem;
+}
+.relevance-frontier-card p,
+.relevance-frontier-card li {
+    color: var(--muted);
+    line-height: 1.62;
+    font-size: 0.91rem;
+}
+.relevance-frontier-card ul {
+    margin: 15px 0 0 18px;
+    display: grid;
+    gap: 8px;
+}
+.relevance-frontier-card li::marker { color: var(--teal); }
+.relevance-frontier-card.frontier li::marker { color: var(--gold); }
+.relevance-frontier-card li strong { color: var(--ink); }
+.relevance-thesis {
+    margin-top: 20px;
+    padding: 18px 20px;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-md);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px 16px;
+    align-items: center;
+    color: var(--muted);
+}
+.relevance-thesis strong {
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+.relevance-thesis a {
+    color: var(--teal);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    white-space: nowrap;
+}
+.relevance-thesis a:hover { color: var(--gold); }
+
+@media (max-width: 960px) {
+    .relevance-hero,
+    .relevance-frontier {
+        grid-template-columns: 1fr;
+    }
+    .relevance-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .relevance-step { border-bottom: 1px solid var(--line); }
+    .relevance-thesis { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+    .relevance-metrics,
+    .relevance-flow {
+        grid-template-columns: 1fr;
+    }
+    .relevance-step { border-right: 0; }
+    .relevance-thesis a { white-space: normal; }
+}
+
 .project-card-featured {
     grid-column: span 2;
     background:

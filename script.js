@@ -1537,6 +1537,10 @@ Sent via Dimension of Thought Platform`;
         earthcall: () => {
             print("Earthcall Substrate", "term-cmd-highlight");
             print("Person-centered computational ontology with a C++20/WebGPU vessel.");
+            print("Formation Rete: Sweep → Vocabulary → AdapterRoad → LawDirect", "term-cyan");
+            print("Measured: 131,072 repeated relation queries → 0; 4.02× hostile stress speedup.", "term-gold");
+            print("Real Chess: 42 Laws graduated to Direct; p95 20.07ms → 11.16ms.", "term-accent");
+            print("Frontier: Prophetic relevant-change invalidation + incremental route/event maintenance.");
             print("Repository: https://github.com/zhangzachary834-commits/Earthcall");
         },
         projects: () => {
@@ -4530,14 +4534,63 @@ ${currentDraft.content}`;
                                     <span class="drawer-metric-label">Unified Math Language</span>
                                 </div>
                                 <div class="drawer-metric-card">
-                                    <span class="drawer-metric-val">Rete Laws</span>
-                                    <span class="drawer-metric-label">Runtime Law Compilation</span>
+                                    <span class="drawer-metric-val">42 Direct</span>
+                                    <span class="drawer-metric-label">Chess Laws Graduated</span>
                                 </div>
                                 <div class="drawer-metric-card">
-                                    <span class="drawer-metric-val">React / WASM</span>
-                                    <span class="drawer-metric-label">Creator Console Surface</span>
+                                    <span class="drawer-metric-val">4.02×</span>
+                                    <span class="drawer-metric-label">Hostile Law-Direct Stress Speedup</span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="drawer-section">
+                            <span class="drawer-section-title">Formation Rete // Law-Direct Relevance Compiler</span>
+                            <p class="drawer-lead-text">
+                                Lower tiers discover relevance; higher tiers compile it. Once a current positive category road is proved,
+                                Earthcall can retain the concrete bearers and evaluate only the live residual condition instead of asking
+                                the relation graph the same structural question every pulse.
+                            </p>
+                            <div class="drawer-metrics-grid">
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">131,072 → 0</span><span class="drawer-metric-label">Repeated Relation Queries</span></div>
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">16.9M → 0</span><span class="drawer-metric-label">Returned Relation References</span></div>
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">10.94 → 9.61 ms</span><span class="drawer-metric-label">Real Chess Median</span></div>
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">20.07 → 11.16 ms</span><span class="drawer-metric-label">Real Chess p95</span></div>
+                            </div>
+                            <div class="drawer-sim-box">
+                                <pre style="margin:0;overflow:auto;color:var(--teal);font:0.8rem/1.7 var(--font-mono);"><code>GENERAL FLOOR
+Sweep → Vocabulary → AdapterRoad
+                         │
+                         └── prove stable relevance
+                                  ↓
+                              LawDirect
+                                  ↓
+                       concrete bearers + live residual
+
+proved category hot path:
+Θ(P · L · M · D) → Θ(P · L · M)</code></pre>
+                            </div>
+                            <div class="drawer-cards-grid">
+                                <div class="drawer-info-card">
+                                    <h4>Relevant-change invalidation</h4>
+                                    <p>Next: use Prophetic abstract interpretation to decide whether a change can affect a proof before invalidating categories, direct routes, or Relation/Formations.</p>
+                                </div>
+                                <div class="drawer-info-card">
+                                    <h4>Incremental route repair</h4>
+                                    <p>BFS/Dijkstra-style discovery should repair only paths whose proof or cost went stale, instead of restarting from the entire Being graph.</p>
+                                </div>
+                                <div class="drawer-info-card">
+                                    <h4>Self-refining event topology</h4>
+                                    <p>Broad EventBus boundaries can compile into narrower dependency channels, then be recompiled as Prophetic knowledge becomes more precise.</p>
+                                </div>
+                                <div class="drawer-info-card">
+                                    <h4>OntoMath delta synthesis</h4>
+                                    <p>Stable Relation/Formation subsystems can compile into explicit delta-transfer functions, preserving a complete opcode/PropertyPath fallback for bootstrap and uncertainty.</p>
+                                </div>
+                            </div>
+                            <p style="margin:0;">
+                                <a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Analysis/LAW_DIRECT_TRAVERSAL_COMPLEXITY_AND_CI_RESULTS_2026-09-19.md" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-family:var(--font-mono);font-size:0.82rem;">Read the full measured O-complexity analysis ↗</a>
+                            </p>
                         </div>
 
                         <div class="drawer-section">
