@@ -491,20 +491,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const catLabel = catLabels[art.category] || "Original Inquiry";
             const readTime = art.readTime || "5 min read";
             const author = art.author || "Zachary Zhang";
-            const previewUrl = "posts/" + (art.slug || "article") + ".html";
+            const previewUrl = "studio.html?load=" + encodeURIComponent(String(articleId));
+            const excerpt = art.excerpt || (art.content ? art.content.slice(0, 180) + "..." : "Open the locally saved draft.");
 
             card.innerHTML = `
                 <div class="essay-meta">
-                    <span class="essay-tag">${catLabel}</span>
-                    <span class="essay-read-time">${readTime}</span>
+                    <span class="essay-tag">${escapeHtml(catLabel)}</span>
+                    <span class="essay-read-time">${escapeHtml(readTime)}</span>
                 </div>
-                <h3 class="essay-title"><a href="${previewUrl}">${art.title || "Untitled Essay"}</a></h3>
-                <p class="essay-subtitle">${art.subtitle || ""}</p>
-                <p class="essay-excerpt">${art.excerpt || (art.content ? art.content.slice(0, 180) + "..." : "Read the complete drafted inquiry.")}</p>
+                <h3 class="essay-title"><a href="${sanitizeUrl(previewUrl)}">${escapeHtml(art.title || "Untitled Essay")}</a></h3>
+                <p class="essay-subtitle">${escapeHtml(art.subtitle || "")}</p>
+                <p class="essay-excerpt">${escapeHtml(excerpt)}</p>
                 <div class="essay-card-footer">
-                    <span class="essay-author">By ${author}</span>
+                    <span class="essay-author">By ${escapeHtml(author)}</span>
                     <div style="display:flex;gap:8px;align-items:center;">
-                        <a href="${previewUrl}" class="btn btn-small btn-primary">Read Full Essay →</a>
+                        <a href="${sanitizeUrl(previewUrl)}" class="btn btn-small btn-primary">Open Local Draft →</a>
                     </div>
                 </div>
             `;
@@ -2327,7 +2328,7 @@ Sent via Dimension of Thought Platform`;
 
                 card.innerHTML = `
                     <div class="draft-title-row">
-                        <span class="draft-card-title">${d.title || "Untitled Draft"}</span>
+                        <span class="draft-card-title">${escapeHtml(d.title || "Untitled Draft")}</span>
                         ${d.isPublished ? '<span class="badge" style="background:var(--teal);color:#07080d;font-weight:700;">Published</span>' : '<span class="badge">Draft</span>'}
                     </div>
                     <div class="draft-meta-row">
@@ -3447,11 +3448,11 @@ ${currentDraft.content}`;
                 tooltip.style.left = (pos.canvasX + 15) + "px";
                 tooltip.style.top = (pos.canvasY - 15) + "px";
                 tooltip.innerHTML = `
-                    <div style="font-size:0.72rem;color:${hoveredNode.color};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${catNames[hoveredNode.category] || hoveredNode.category}
+                    <div style="font-size:0.72rem;color:${escapeAttribute(hoveredNode.color)};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
+                        ${escapeHtml(catNames[hoveredNode.category] || hoveredNode.category)}
                     </div>
-                    <strong style="color:var(--gold);font-size:0.95rem;">${hoveredNode.title}</strong>
-                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${hoveredNode.subtitle}</div>` : ""}
+                    <strong style="color:var(--gold);font-size:0.95rem;">${escapeHtml(hoveredNode.title)}</strong>
+                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${escapeHtml(hoveredNode.subtitle)}</div>` : ""}
                 `;
             } else {
                 canvas.style.cursor = isDraggingCanvas ? "grabbing" : "grab";
