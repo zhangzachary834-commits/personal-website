@@ -799,7 +799,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const star = stars[i];
             const col = Math.floor(star.x / maxDist);
             const row = Math.floor(star.y / maxDist);
-            const key = col + "," + row;
+            // Offset by large constant (e.g., 5000) to ensure keys remain positive when coordinates go negative
+            const key = (col + 5000) + (row + 5000) * 10000;
             let cell = grid.get(key);
             if (!cell) { cell = []; grid.set(key, cell); }
             cell.push(i);
@@ -811,7 +812,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const row = Math.floor(a.y / maxDist);
             for (let dc = -1; dc <= 1; dc++) {
                 for (let dr = -1; dr <= 1; dr++) {
-                    const cell = grid.get((col + dc) + "," + (row + dr));
+                    const cell = grid.get((col + dc + 5000) + (row + dr + 5000) * 10000);
                     if (!cell) continue;
                     for (let k = 0; k < cell.length; k++) {
                         const j = cell[k];
@@ -3369,7 +3370,8 @@ ${currentDraft.content}`;
                 const node = nodes[i];
                 const cx = Math.floor(node.x / CELL_SIZE);
                 const cy = Math.floor(node.y / CELL_SIZE);
-                const key = cx + "," + cy;
+                // Offset by large constant (e.g., 5000) to ensure keys remain positive when coordinates go negative
+                const key = (cx + 5000) + (cy + 5000) * 10000;
                 let cell = grid.get(key);
                 if (!cell) {
                     cell = [];
@@ -3384,9 +3386,8 @@ ${currentDraft.content}`;
             }
 
             for (const [key, cellNodes] of grid.entries()) {
-                const comma = key.indexOf(",");
-                const cx = parseInt(key.slice(0, comma), 10);
-                const cy = parseInt(key.slice(comma + 1), 10);
+                const cx = (key % 10000) - 5000;
+                const cy = Math.floor(key / 10000) - 5000;
                 const neighbors = [
                     [cx, cy],
                     [cx + 1, cy],
@@ -3398,7 +3399,7 @@ ${currentDraft.content}`;
                 for (let i = 0; i < cellNodes.length; i++) {
                     const n1 = cellNodes[i];
                     for (const [nx, ny] of neighbors) {
-                        const neighborNodes = grid.get(nx + "," + ny);
+                        const neighborNodes = grid.get((nx + 5000) + (ny + 5000) * 10000);
                         if (!neighborNodes) continue;
                         const sameCell = nx === cx && ny === cy;
                         const first = sameCell ? i + 1 : 0;
