@@ -29,7 +29,7 @@ jobs:
           git rm -r --cached --ignore-unmatch node_modules
           git rm -r --ignore-unmatch backup
           git rm --ignore-unmatch .DS_Store fix_parser.py scratch.js
-          git rm --ignore-unmatch assets/favicon.jpg
+          git rm --ignore-unmatch assets/favicon.jpg assets/cosmic-bg.jpg
           mkdir -p tools/perf
           if [ -f benchmark.js ]; then git mv benchmark.js tools/perf/legacy-physics-before.js; fi
           if [ -f benchmark2.js ]; then git mv benchmark2.js tools/perf/legacy-physics-after.js; fi
