@@ -4,3 +4,6 @@
 ## 2026-08-16 - Layout Thrashing in Animation Loop
 **Learning:** `canvas.getBoundingClientRect()` causes layout thrashing and is very expensive when called 60 times a second inside a `requestAnimationFrame` loop like `drawConstellation`.
 **Action:** Cache the result of `getBoundingClientRect()` inside a variable and update it only when necessary (e.g. on window resize or scroll).
+## 2026-09-20 - Spatial Grid String Allocation Bottleneck
+**Learning:** Constructing string keys (e.g., `cx + "," + cy`) inside high-frequency (N)$ nested loops for spatial grids causes significant string allocation overhead and makes map lookups slow. Using `parseInt` to unpack them later compounds the issue.
+**Action:** Use fixed-width integer packing (e.g., `cx + cy * 10000`) for spatial grid keys instead of string concatenation to eliminate allocation overhead and bypass string parsing completely.
