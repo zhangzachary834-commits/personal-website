@@ -5876,6 +5876,10 @@ class VesselEngine {
                 const response = await fetch(LIVE_ENDPOINT, {
                     method: "GET",
                     mode: "cors",
+                    // Newer browsers may gate public HTTPS → loopback access behind
+                    // Local Network Access permission. This hint is ignored where
+                    // unsupported and the existing demo fallback remains authoritative.
+                    targetAddressSpace: "loopback",
                     cache: "no-store",
                     signal: controller.signal,
                     headers: { "Accept": "application/json" }
