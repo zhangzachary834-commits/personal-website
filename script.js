@@ -2364,8 +2364,8 @@ Sent via Dimension of Thought Platform`;
                         ${d.isPublished ? '<span class="badge" style="background:var(--teal);color:#07080d;font-weight:700;">Published</span>' : '<span class="badge">Draft</span>'}
                     </div>
                     <div class="draft-meta-row">
-                        <span>${d.category || "ontology"}</span>
-                        <span>${updatedTime}</span>
+                        <span>${escapeHtml(d.category || "ontology")}</span>
+                        <span>${escapeHtml(updatedTime)}</span>
                     </div>
                     <div class="draft-actions-row">
                         <button type="button" class="btn btn-secondary btn-small load-draft-btn" style="flex:1;">Open</button>
