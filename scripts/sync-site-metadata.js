@@ -91,6 +91,7 @@ if (fs.existsSync(scriptPath)) {
   let script = fs.readFileSync(scriptPath, 'utf8');
   const original = script;
   script = script.replace(/Sent via zacharyzhang\.dev/g, 'Sent via Dimension of Thought');
+  script = script.replace(/favicon\.jpg/g, 'dimension-emblem.jpg');
   script = script.replace(
     /https:\/\/zhangzachary834-commits\.github\.io\/posts\/\$\{draft\.slug\}\.html/g,
     `${baseUrl}/posts/\${draft.slug}.html`
