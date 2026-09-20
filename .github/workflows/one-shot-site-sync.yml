@@ -37,3 +37,5 @@ jobs:
           git push
 
 # retrigger after sanitizer regression fix
+
+# retrigger after favicon sync fix
