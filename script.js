@@ -2642,7 +2642,7 @@ ${currentDraft.content}`;
             publishBtn.addEventListener("click", async () => {
                 commitCurrentDraft();
                 if (!currentDraft.title || !currentDraft.content) {
-                    alert("Please provide at least a title and body text before publishing.");
+                    alert("Please provide at least a title and body text before saving.");
                     return;
                 }
 
@@ -2682,14 +2682,14 @@ ${currentDraft.content}`;
                         const writable = await handle.createWritable();
                         await writable.write(htmlContent);
                         await writable.close();
-                        showToast(`Successfully published to ${handle.name}!`);
+                        showToast(`Saved locally and exported to ${handle.name}.`);
                     } else {
                         const blob = new Blob([htmlContent], { type: "text/html" });
                         const link = document.createElement("a");
                         link.href = URL.createObjectURL(blob);
                         link.download = defaultName;
                         link.click();
-                        showToast("Published file downloaded.");
+                        showToast("Saved locally; HTML file downloaded.");
                     }
                 } catch (err) {
                     if (err.name !== 'AbortError') {
