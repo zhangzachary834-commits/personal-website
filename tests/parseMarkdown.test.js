@@ -75,4 +75,30 @@ test("parseMarkdown function tests", async (t) => {
         const dropcap = parseMarkdown('<span class="drop-cap">A</span>bc');
         assert.equal(dropcap, '<p><span class="drop-cap">A</span>bc</p>');
     });
+    await t.test("escapes raw HTML instead of executing it", () => {
+        const html = parseMarkdown('<script>alert("x")</script>');
+        assert.doesNotMatch(html, /<script>/i);
+        assert.match(html, /&lt;script&gt;/);
+    });
+
+    await t.test("rejects executable link and image URL schemes", () => {
+        const link = parseMarkdown("[click](javascript:alert(1))");
+        const image = parseMarkdown("![x](data:text/html,boom)");
+        assert.match(link, /href="#"/);
+        assert.doesNotMatch(link, /href="javascript:/i);
+        assert.match(image, /src="#"/);
+        assert.doesNotMatch(image, /src="data:/i);
+    });
+
+    await t.test("keeps safe web and relative URLs", () => {
+        assert.match(parseMarkdown("[web](https://example.com)"), /href="https:\/\/example\.com"/);
+        assert.match(parseMarkdown("[local](\.\.\/contact\.html)"), /href="\.\.\/contact\.html"/);
+    });
+
+    await t.test("escapes attribute-breaking authored text", () => {
+        const wiki = parseMarkdown('[[Concept" onclick="alert(1)]]');
+        assert.doesNotMatch(wiki, /data-concept="Concept" onclick=/);
+        assert.match(wiki, /&quot;/);
+    });
+
 });

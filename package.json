@@ -1,8 +1,12 @@
 {
+  "scripts": {
+    "test": "node --test",
+    "sync-metadata": "node scripts/sync-site-metadata.js",
+    "audit": "node scripts/audit-site.js",
+    "check": "npm test && npm run sync-metadata && npm run audit && npm run audit:assets",
+    "audit:assets": "node scripts/audit-assets.js"
+  },
   "dependencies": {
     "jsdom": "^30.0.1"
-  },
-  "scripts": {
-    "test": "node --test"
   }
 }

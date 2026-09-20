@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zhangzachary834-commits.github.io/personal-website/sitemap.xml
