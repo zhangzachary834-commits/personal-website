@@ -45,6 +45,9 @@ for (const file of htmlFiles) {
   const isToolPage = r === 'studio.html';
   const isErrorPage = r === '404.html';
 
+  // Reuse the canonical emblem for favicons instead of shipping a duplicate image blob.
+  html = html.replace(/favicon\\.jpg/g, 'dimension-emblem.jpg');
+
   if (isToolPage || isErrorPage) {
     const robotsTag = '<meta name="robots" content="noindex, nofollow">';
     html = replaceOrInsert(
