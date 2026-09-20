@@ -1,0 +1,37 @@
+name: One-shot stabilization sync
+
+on:
+  push:
+    branches:
+      - sol/site-stabilization-audit-20260916
+    paths:
+      - '.github/workflows/one-shot-site-sync.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Apply generated cleanup
+        run: |
+          npm run sync-metadata
+          rm -f assets/favicon.jpg
+          rm -f .github/workflows/one-shot-site-sync.yml
+      - run: npm test
+      - run: npm run audit
+      - run: npm run audit:assets
+      - name: Commit generated stabilization
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Apply generated site stabilization cleanup"
+          git push
