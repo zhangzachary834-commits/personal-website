@@ -26,7 +26,8 @@ jobs:
 
       - name: Remove generated and stale working-tree artifacts
         run: |
-          git rm -r --ignore-unmatch node_modules backup
+          git rm -r --cached --ignore-unmatch node_modules
+          git rm -r --ignore-unmatch backup
           git rm --ignore-unmatch .DS_Store fix_parser.py scratch.js
           git rm --ignore-unmatch assets/favicon.jpg
           mkdir -p tools/perf
