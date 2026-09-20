@@ -35,3 +35,5 @@ jobs:
           git add -A
           git commit -m "Apply generated site stabilization cleanup"
           git push
+
+# retrigger after sanitizer regression fix
