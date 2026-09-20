@@ -97,3 +97,38 @@ for (const page of pages) {
     dom.window.close();
   });
 }
+
+
+test('locally saved article metadata is rendered as text and reopens the Studio draft', () => {
+  const html = fs.readFileSync(path.join(root, 'library.html'), 'utf8');
+  const dom = new JSDOM(html, {
+    url: 'https://example.test/library.html',
+    runScripts: 'outside-only',
+    pretendToBeVisual: true
+  });
+  installBrowserMocks(dom.window);
+
+  const maliciousTitle = '<img src=x onerror="window.__pwned=true">';
+  dom.window.localStorage.setItem('dimension_custom_articles', JSON.stringify([{
+    id: 'draft_malicious',
+    title: maliciousTitle,
+    subtitle: '<script>window.__pwned=true</script>',
+    excerpt: '<b>not markup</b>',
+    author: '<svg onload="window.__pwned=true"></svg>',
+    category: 'ontology',
+    content: 'safe body',
+    isPublished: true
+  }]));
+
+  dom.window.eval(script);
+  dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded', { bubbles: true }));
+
+  const card = dom.window.document.querySelector('[data-essay-id="draft_malicious"]');
+  assert.ok(card);
+  assert.equal(card.querySelector('.essay-title a').textContent, maliciousTitle);
+  assert.equal(card.querySelector('.essay-title img'), null);
+  assert.equal(dom.window.__pwned, undefined);
+  assert.equal(card.querySelector('.essay-title a').getAttribute('href'), 'studio.html?load=draft_malicious');
+  assert.match(card.querySelector('.essay-excerpt').textContent, /<b>not markup<\/b>/);
+  dom.window.close();
+});
