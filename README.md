@@ -71,7 +71,7 @@ GitHub Actions runs the same quality gate on pushes and pull requests and also f
 
 ### Finder 1-click launch / restart
 
-Double-click **`restart-server.command`** in Finder to terminate any previous server running strictly on port 8000 and start a fresh server.
+Double-click **`launch.command`** in Finder to terminate any previous server running strictly on port 8000 and start a fresh server.
 
 ### Terminal
 
