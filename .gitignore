@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# OS/editor junk
+.DS_Store
+*.swp
+*.swo
+
+# Test/build output
+coverage/
+*.log
+
+# Local server state
+*.pid
