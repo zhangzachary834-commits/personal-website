@@ -3940,7 +3940,6 @@ body.zen-mode .studio-editor-pane {
     }
 }
 
-
 /* ==========================================================================
    Earthcall Engineering Atlas + Live Bridge
    ========================================================================== */
@@ -4206,6 +4205,83 @@ body.zen-mode .studio-editor-pane {
     }
 }
 
+.earthcall-frontier {
+    margin-top: 72px;
+    padding-top: 54px;
+    border-top: 1px solid var(--line);
+}
+.earthcall-frontier-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+.earthcall-frontier-grid article {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 19px;
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+}
+.frontier-state {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.frontier-state.active {
+    color: #60a5fa;
+    border-color: rgba(96,165,250,0.32);
+    background: rgba(96,165,250,0.07);
+}
+.frontier-state.guarded {
+    color: #fb7185;
+    border-color: rgba(251,113,133,0.32);
+    background: rgba(251,113,133,0.07);
+}
+.earthcall-frontier-grid h4 {
+    margin: 11px 0 8px;
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: 1.04rem;
+}
+.earthcall-frontier-grid p {
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.58;
+}
+.atlas-proof {
+    align-items: center;
+}
+.atlas-proof a {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--teal);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+}
+.atlas-proof a:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+@media (max-width: 1080px) {
+    .earthcall-frontier-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+@media (max-width: 640px) {
+    .earthcall-frontier-grid {
+        grid-template-columns: 1fr;
+    }
+    .atlas-proof a {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 4px;
+    }
+}
 
 /* ==========================================================================
    Earthcall Engineering Dossier
@@ -4435,6 +4511,31 @@ body.zen-mode .studio-editor-pane {
 }
 
 /* Live Earthcall bridge state */
+.ontology-live-status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+#ontomath-source-badge {
+    transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+}
+.ontology-law-demo:has(#ontomath-source-badge:not(:empty)) .drawer-sim-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+.drawer-sim-btn.read-only {
+    border-style: dashed;
+}
+.ontology-signal-slider:disabled {
+    cursor: not-allowed;
+}
+@media (max-width: 768px) {
+    .ontology-live-status {
+        justify-content: flex-start;
+    }
+}
+
 .is-hidden { display: none !important; }
 .ontology-live-bar {
     display: flex;

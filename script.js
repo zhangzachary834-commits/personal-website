@@ -7,81 +7,11 @@
  */
 
 function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-function parseMarkdown(md) {
-            if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
-
-            const NL = String.fromCharCode(10);
-            let html = md;
-            html = html.replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, "___DROPCAP_$1___");
-            html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, (match, lang, code) => {
-                return "<pre><code>" + escapeHtml(code.trim()) + "</code></pre>";
-            });
-            html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-            html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
-            html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
-            html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
-            html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
-            html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
-            html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
-            html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-            html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-            html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-            html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">');
-            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
-            html = html.replace(/\[\[(.*?)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
-            html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
-            html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
-            html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
-
-            const rawBlocks = html.split(NL + NL);
-            const formattedBlocks = rawBlocks.map((block) => {
-                block = block.trim();
-                if (!block) return "";
-                if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
-
-                if (block.startsWith("|")) {
-                    const rows = block.split(NL).filter(line => line.trim().startsWith("|"));
-                    let tableHTML = "<table style='width:100%; border-collapse:collapse; margin:20px 0; font-size:0.95em;'>";
-                    rows.forEach((row, idx) => {
-                        if (row.match(/^\|[\s-:|]+\|$/)) return;
-                        const cells = row.split("|").slice(1, -1).map(c => c.trim());
-                        tableHTML += "<tr>";
-                        cells.forEach(cell => {
-                            const tag = idx === 0 ? "th" : "td";
-                            const style = idx === 0 ? "border-bottom:2px solid var(--line-strong); padding:12px 8px; text-align:left; font-weight:600;" : "border-bottom:1px solid var(--line); padding:12px 8px;";
-                            tableHTML += `<${tag} style="${style}">${cell}</${tag}>`;
-                        });
-                        tableHTML += "</tr>";
-                    });
-                    tableHTML += "</table>";
-                    return tableHTML;
-                }
-
-                if (block.startsWith("- ") || block.startsWith("* ")) {
-                    const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
-                    return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
-                }
-
-                if (/^\d+\.\s+/.test(block)) {
-                    const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
-                    return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
-                }
-
-                return "<p>" + block.split(NL).join("<br>") + "</p>";
-            });
-
-            return formattedBlocks.join(NL + NL);
-        }
-
-function slugify(text) {
-    return (text || "")
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .trim()
-        .replace(/\s+/g, "-") || "my-essay";
+    if (str === null || str === undefined) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
 if (typeof module !== "undefined" && module.exports) {
@@ -747,18 +677,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderConnections(w, palette, cascadeParams) {
         const { cascadeHueShift, cascadeSat, cascadeLit } = cascadeParams;
+        const maxDist = w > 768 ? 160 : 100;
+        const maxDistSq = maxDist * maxDist;
+        const grid = new Map();
+
         for (let i = 0; i < stars.length; i++) {
-            for (let j = i + 1; j < stars.length; j++) {
-                const a = stars[i];
-                const b = stars[j];
-                const maxDist = w > 768 ? 160 : 100;
+            const star = stars[i];
+            const col = Math.floor(star.x / maxDist);
+            const row = Math.floor(star.y / maxDist);
+            const key = col + "," + row;
+            let cell = grid.get(key);
+            if (!cell) { cell = []; grid.set(key, cell); }
+            cell.push(i);
+        }
 
-                // Optimize: Early exit using squared distance to avoid Math.sqrt in O(n^2) loop
-                const dx = a.x - b.x;
-                const dy = a.y - b.y;
-                const distSq = dx * dx + dy * dy;
+        for (let i = 0; i < stars.length; i++) {
+            const a = stars[i];
+            const col = Math.floor(a.x / maxDist);
+            const row = Math.floor(a.y / maxDist);
+            for (let dc = -1; dc <= 1; dc++) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    const cell = grid.get((col + dc) + "," + (row + dr));
+                    if (!cell) continue;
+                    for (let k = 0; k < cell.length; k++) {
+                        const j = cell[k];
+                        if (j <= i) continue;
+                        const b = stars[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq >= maxDistSq) continue;
 
-                if (distSq < maxDist * maxDist) {
                     const dist = Math.sqrt(distSq);
                     let cascadeAlpha = 0;
 
@@ -838,6 +787,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         ctx.moveTo(a.x, a.y);
                         ctx.quadraticCurveTo(cx, cy, b.x, b.y);
                         ctx.stroke();
+                    }
+                
                     }
                 }
             }
@@ -3292,29 +3243,63 @@ ${currentDraft.content}`;
                 edge.target.vy -= fy;
             });
 
-            // Repulsion between all node pairs
+            // Repulsion between nearby node pairs using spatial-grid binning.
+            const CELL_SIZE = 220; // > sqrt(48000), so adjacent cells cover every interacting pair.
+            const grid = new Map();
+
             for (let i = 0; i < nodes.length; i++) {
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const n1 = nodes[i];
-                    const n2 = nodes[j];
-                    const dx = n2.x - n1.x;
-                    const dy = n2.y - n1.y;
-                    const distSq = dx * dx + dy * dy || 1;
-                    if (distSq < 48000) {
-                        const force = repulsion / distSq;
-                        const dist = Math.sqrt(distSq);
-                        const fx = (dx / dist) * force;
-                        const fy = (dy / dist) * force;
-                        n1.vx -= fx; n1.vy -= fy;
-                        n2.vx += fx; n2.vy += fy;
+                const node = nodes[i];
+                const cx = Math.floor(node.x / CELL_SIZE);
+                const cy = Math.floor(node.y / CELL_SIZE);
+                const key = cx + "," + cy;
+                let cell = grid.get(key);
+                if (!cell) {
+                    cell = [];
+                    grid.set(key, cell);
+                }
+                cell.push(node);
+
+                const gdx = center.x - node.x;
+                const gdy = center.y - node.y;
+                node.vx += gdx * 0.0012;
+                node.vy += gdy * 0.0012;
+            }
+
+            for (const [key, cellNodes] of grid.entries()) {
+                const comma = key.indexOf(",");
+                const cx = parseInt(key.slice(0, comma), 10);
+                const cy = parseInt(key.slice(comma + 1), 10);
+                const neighbors = [
+                    [cx, cy],
+                    [cx + 1, cy],
+                    [cx - 1, cy + 1],
+                    [cx, cy + 1],
+                    [cx + 1, cy + 1]
+                ];
+
+                for (let i = 0; i < cellNodes.length; i++) {
+                    const n1 = cellNodes[i];
+                    for (const [nx, ny] of neighbors) {
+                        const neighborNodes = grid.get(nx + "," + ny);
+                        if (!neighborNodes) continue;
+                        const sameCell = nx === cx && ny === cy;
+                        const first = sameCell ? i + 1 : 0;
+
+                        for (let j = first; j < neighborNodes.length; j++) {
+                            const n2 = neighborNodes[j];
+                            const dx = n2.x - n1.x;
+                            const dy = n2.y - n1.y;
+                            const distSq = dx * dx + dy * dy || 1;
+                            if (distSq >= 48000) continue;
+                            const force = repulsion / distSq;
+                            const dist = Math.sqrt(distSq);
+                            const fx = (dx / dist) * force;
+                            const fy = (dy / dist) * force;
+                            n1.vx -= fx; n1.vy -= fy;
+                            n2.vx += fx; n2.vy += fy;
+                        }
                     }
                 }
-
-                // Centering gravity pull
-                const dx = center.x - nodes[i].x;
-                const dy = center.y - nodes[i].y;
-                nodes[i].vx += dx * 0.0012;
-                nodes[i].vy += dy * 0.0012;
             }
 
             // Apply velocities & boundaries
