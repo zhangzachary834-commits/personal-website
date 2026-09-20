@@ -57,7 +57,7 @@ function parseMarkdown(md) {
     html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
     html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
     html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
-    html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
+    html = html.replace(/^&gt; (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
     html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
     html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
