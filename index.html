@@ -3,1545 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zachary Zhang — Systems Engineer, Earthcall Creator &amp; Robotics Builder</title>
-    <meta name="description" content="Portfolio of Zachary Zhang: creator of Earthcall, C++20/WebGPU systems builder, robotics developer, AI workflow architect, and founder of Dimension of Thought.">
+    <title>Zachary Zhang — Home</title>
+    <meta name="description" content="Zachary Zhang's personal home on the web: engineering, Earthcall, Dimension of Thought, writing, story, and the things he is exploring and creating.">
     <meta name="author" content="Zachary Zhang">
-    <meta name="keywords" content="Zachary Zhang, Earthcall, C++20, WebGPU, Dimension of Thought, Ontology, Robotics, OpenVLA">
     <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/">
-
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Zachary Zhang — Systems, Graphics, Robotics &amp; Earthcall">
-    <meta property="og:description" content="Creator of Earthcall · C++20/WebGPU systems · graphics · robotics · AI-assisted engineering · Dimension of Thought.">
+    <meta property="og:title" content="Zachary Zhang — Home">
+    <meta property="og:description" content="A personal home for what I'm building, writing, wondering about, and becoming.">
     <meta property="og:image" content="https://zhangzachary834-commits.github.io/personal-website/assets/dimension-emblem.jpg">
     <meta property="og:url" content="https://zhangzachary834-commits.github.io/personal-website/">
-
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Zachary Zhang — Systems, Graphics, Robotics &amp; Earthcall">
-    <meta name="twitter:description" content="Creator of Earthcall · C++20/WebGPU systems · graphics · robotics · AI-assisted engineering · Dimension of Thought.">
+    <meta name="twitter:title" content="Zachary Zhang — Home">
+    <meta name="twitter:description" content="A personal home for what I'm building, writing, wondering about, and becoming.">
     <meta name="twitter:image" content="assets/dimension-emblem.jpg">
-
-    <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="assets/dimension-emblem.jpg">
     <link rel="apple-touch-icon" href="assets/dimension-emblem.jpg">
-
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Zachary Zhang",
-      "url": "https://zhangzachary834-commits.github.io/personal-website/",
-      "sameAs": [
-        "https://github.com/zhangzachary834-commits",
-        "https://www.linkedin.com/in/zachary-of-zhang/"
-      ],
-      "knowsAbout": [
-        "C++20", "WebGPU", "systems architecture", "computer graphics",
-        "computational ontology", "robotics", "vision-language-action models",
-        "AI-assisted software engineering"
-      ],
-      "description": "Computer Science & Engineering student, creator of Earthcall, robotics builder, and founder of Dimension of Thought."
-    }
-    </script>
+    <style>
+        .personal-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-serif);
+            font-size: 1.08rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+        }
+        .personal-brand img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid var(--line-strong);
+        }
+        .personal-nav {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            font-size: .95rem;
+            color: var(--muted);
+        }
+        .personal-nav a { transition: color var(--ease); }
+        .personal-nav a:hover { color: var(--gold-2); }
+        .home-hero {
+            min-height: 88vh;
+            display: flex;
+            align-items: center;
+            padding-top: calc(var(--nav-height) + 48px);
+        }
+        .home-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+            gap: 54px;
+            align-items: center;
+        }
+        .home-kicker {
+            font-family: var(--font-mono);
+            color: var(--teal);
+            font-size: .9rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .home-title {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: clamp(3.4rem, 7vw, 7rem);
+            line-height: .94;
+            letter-spacing: -.035em;
+            max-width: 900px;
+        }
+        .home-title em {
+            color: var(--gold-2);
+            font-weight: 500;
+        }
+        .home-lede {
+            max-width: 760px;
+            margin-top: 28px;
+            font-size: clamp(1.12rem, 1.8vw, 1.35rem);
+            color: var(--muted);
+        }
+        .home-hero-aside {
+            padding: 28px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+        }
+        .home-hero-aside .aside-label {
+            font-family: var(--font-mono);
+            color: var(--gold);
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+        .home-hero-aside p {
+            color: var(--muted);
+            margin-top: 12px;
+        }
+        .door-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 34px;
+        }
+        .door-card {
+            display: block;
+            min-height: 270px;
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--line);
+            background: var(--bg-card);
+            transition: transform var(--ease), border-color var(--ease), background var(--ease);
+            position: relative;
+            overflow: hidden;
+        }
+        .door-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--line-strong);
+            background: var(--bg-card-hover);
+        }
+        .door-index {
+            display: block;
+            font-family: var(--font-mono);
+            color: var(--dim);
+            font-size: .78rem;
+            margin-bottom: 38px;
+        }
+        .door-card h3 {
+            font-family: var(--font-heading);
+            font-size: 2.05rem;
+            line-height: 1.05;
+            margin-bottom: 12px;
+        }
+        .door-card p { color: var(--muted); max-width: 560px; }
+        .door-arrow {
+            position: absolute;
+            right: 26px;
+            bottom: 22px;
+            color: var(--gold);
+            font-size: 1.35rem;
+        }
+        .personal-now-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 30px;
+        }
+        .personal-now-card {
+            padding: 22px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+        }
+        .personal-now-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+        .personal-now-card p { color: var(--muted); font-size: .96rem; }
+        .personal-note {
+            max-width: 820px;
+            font-family: var(--font-heading);
+            font-size: clamp(1.9rem, 4vw, 3.35rem);
+            line-height: 1.14;
+        }
+        .site-purpose {
+            padding: 34px;
+            border-left: 2px solid var(--gold);
+            background: linear-gradient(90deg, var(--glow), transparent);
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            margin-top: 28px;
+            max-width: 920px;
+        }
+        .site-purpose p { color: var(--muted); font-size: 1.08rem; }
+        .home-footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            color: var(--muted);
+        }
+        @media (max-width: 900px) {
+            .personal-nav { display: none; }
+            .home-hero-grid { grid-template-columns: 1fr; }
+            .door-grid { grid-template-columns: 1fr; }
+            .personal-now-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 560px) {
+            .personal-now-grid { grid-template-columns: 1fr; }
+            .home-title { font-size: clamp(3rem, 16vw, 4.6rem); }
+        }
+    </style>
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
-    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
-    <!-- Top Site Navigation -->
+
     <header class="navbar" id="navbar">
         <div class="nav-container">
-            <!-- Top Left Mode Switcher Widget -->
-            <div class="nav-left-brand">
-                <div class="mode-switcher-pill" role="tablist" aria-label="Site View Mode Switcher">
-                    <button class="mode-btn active" id="mode-personal-btn" data-mode="personal" role="tab" aria-selected="true" title="Switch to Zachary Zhang's Personal &amp; Professional Portfolio">
-                        <span class="mode-btn-icon">👤</span>
-                        <span class="mode-btn-text">Zachary Zhang</span>
-                    </button>
-                    <button class="mode-btn" id="mode-dimension-btn" data-mode="dimension" role="tab" aria-selected="false" title="Switch to Dimension of Thought Platform">
-                        <span class="mode-btn-icon">✧</span>
-                        <span class="mode-btn-text">Dimension of Thought</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Dynamic Nav Links for Personal Mode -->
-            <nav class="nav-menu" id="nav-menu-personal" aria-label="Personal Portfolio Navigation">
-                <ul class="nav-links">
-                    <li><a href="#p-home" class="nav-link active">Home</a></li>
-                    <li><a href="#p-now" class="nav-link">Now</a></li>
-                    <li><a href="#p-earthcall" class="nav-link">Earthcall</a></li>
-                    <li><a href="#p-work" class="nav-link">Projects</a></li>
-                    <li><a href="#p-about" class="nav-link">About</a></li>
-                    <li><a href="#p-skills" class="nav-link">Skills</a></li>
-                    <li><a href="#p-contact" class="nav-link">Contact</a></li>
-                </ul>
+            <a href="index.html" class="personal-brand" aria-label="Zachary Zhang home">
+                <img src="assets/dimension-emblem.jpg" alt="" aria-hidden="true">
+                <span>Zachary Zhang</span>
+            </a>
+            <nav class="personal-nav" aria-label="Primary navigation">
+                <a href="#worlds">My Worlds</a>
+                <a href="#now">Now</a>
+                <a href="story.html">Story</a>
+                <a href="library.html">Writing</a>
+                <a href="portfolio.html">Engineering</a>
+                <a href="contact.html">Contact</a>
             </nav>
-
-            <!-- Dynamic Nav Links for Dimension Mode -->
-            <nav class="nav-menu" id="nav-menu-dimension" aria-label="Dimension of Thought Navigation" style="display: none;">
-                <ul class="nav-links">
-                    <li><a href="#d-home" class="nav-link">Home</a></li>
-                    <li><a href="story.html" class="nav-link">Story</a></li>
-                    <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
-                    <li><a href="library.html" class="nav-link">The Library</a></li>
-                    <li><a href="ecosystem.html" class="nav-link">Ecosystem</a></li>
-                    <li><a href="contact.html" class="nav-link">Dialogue</a></li>
-                </ul>
-            </nav>
-
             <div class="nav-actions">
-                <button id="palette-toggle-btn" class="icon-btn" title="Open Command Palette (Cmd + K)" aria-label="Open Command Palette">
-                    <span class="cli-glyph" aria-hidden="true">⌘K</span>
-                    <span class="btn-label">Find</span>
-                </button>
-                <button id="terminal-toggle-btn" class="icon-btn" title="Open Interactive CLI (press ` )" aria-label="Open Interactive CLI">
-                    <span class="cli-glyph" aria-hidden="true">&gt;_</span>
-                    <span class="btn-label">CLI</span>
-                </button>
                 <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light mode">
                     <span id="theme-icon" aria-hidden="true">☽</span>
-                </button>
-                <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Vertical Section Scroll Navigator (Personal Mode) -->
-    <nav class="vertical-scroll-nav" id="v-nav-personal" aria-label="Personal Section Fast Navigation">
-        <ul class="v-nav-list">
-            <li class="v-nav-item">
-                <a href="#p-home" class="v-nav-link active" data-target="p-home" aria-label="Jump to Home">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Home</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#p-now" class="v-nav-link" data-target="p-now" aria-label="Jump to Now">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Now</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#p-earthcall" class="v-nav-link" data-target="p-earthcall" aria-label="Jump to Earthcall">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Earthcall</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#p-work" class="v-nav-link" data-target="p-work" aria-label="Jump to Projects">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Projects</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#p-about" class="v-nav-link" data-target="p-about" aria-label="Jump to About">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">About</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#p-skills" class="v-nav-link" data-target="p-skills" aria-label="Jump to Skills">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Skills</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#p-contact" class="v-nav-link" data-target="p-contact" aria-label="Jump to Contact">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Contact</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- Vertical Section Scroll Navigator (Dimension Mode) -->
-    <nav class="vertical-scroll-nav" id="v-nav-dimension" aria-label="Dimension Section Fast Navigation" style="display: none;">
-        <ul class="v-nav-list">
-            <li class="v-nav-item">
-                <a href="#d-home" class="v-nav-link active" data-target="d-home" aria-label="Jump to Dimension Home">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Home</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#d-story" class="v-nav-link" data-target="d-story" aria-label="Jump to The Story">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">The Story</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#d-manifesto" class="v-nav-link" data-target="d-manifesto" aria-label="Jump to Manifesto">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Manifesto</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#d-library" class="v-nav-link" data-target="d-library" aria-label="Jump to The Library">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">The Library</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#d-ecosystem" class="v-nav-link" data-target="d-ecosystem" aria-label="Jump to Ecosystem">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Ecosystem</span>
-                </a>
-            </li>
-            <li class="v-nav-item">
-                <a href="#d-contact" class="v-nav-link" data-target="d-contact" aria-label="Jump to Dialogue">
-                    <span class="v-nav-dot"></span>
-                    <span class="v-nav-label">Dialogue</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
     <main id="main-content">
-        <!-- ===================================================================
-             MODE 1: ZACHARY ZHANG — PERSONAL & PROFESSIONAL PORTFOLIO
-             =================================================================== -->
-        <div id="mode-personal-view" class="site-mode-view active-mode">
-            <!-- Personal Hero -->
-            <section id="p-home" class="hero section">
-
-                <div class="container hero-container">
-                    <p class="hero-kicker">
-                        <span class="pulse-dot" aria-hidden="true"></span>
-                        Computer Science &amp; Engineering · Systems · Graphics · Robotics
+        <section class="section home-hero">
+            <div class="container home-hero-grid">
+                <div>
+                    <p class="home-kicker">Personal home // maker · writer · worldbuilder · student</p>
+                    <h1 class="home-title">Hi, I’m Zachary.<br>I like building <em>worlds</em>.</h1>
+                    <p class="home-lede">
+                        This is my home on the web: a place for the systems I build, the stories I write,
+                        the questions I keep wandering into, and the strange constellations that form when
+                        engineering, imagination, philosophy, art, and human life refuse to stay in separate boxes.
                     </p>
-
-                    <h1 class="hero-title">
-                        Building computational worlds<br>
-                        from <em>first principles</em>.
-                    </h1>
-
-                    <div class="hero-typewriter-container" aria-live="polite">
-                        <span class="typewriter-prefix">&gt;</span>
-                        <span id="p-typewriter-text" class="typewriter-text"></span>
-                        <span class="cursor" aria-hidden="true">▍</span>
+                    <div class="hero-cta-group" style="margin-top: 30px;">
+                        <a href="#worlds" class="btn btn-primary">Enter the site <span aria-hidden="true">↓</span></a>
+                        <a href="portfolio.html" class="btn btn-secondary">Engineering Portfolio <span aria-hidden="true">→</span></a>
+                        <a href="library.html" class="btn btn-ghost">Read my writing</a>
                     </div>
+                </div>
 
-                    <p class="hero-bio">
-                        I’m <strong>Zachary Zhang</strong>, a computer science and engineering student building systems where
-                        architecture, mathematics, graphics, AI, and human intention meet. My flagship project is
-                        <a href="#p-earthcall" class="inline-link">Earthcall</a> — a C++20/WebGPU computational ontology and runtime
-                        for authoring beings, relationships, mathematical Laws, and entire Zones instead of hardcoding a world as a pile of special cases.
-                        I also build robotics perception/control systems, geometry and physics infrastructure, human-in-the-loop tools,
-                        and creative platforms for thought and story.
+                <aside class="home-hero-aside">
+                    <span class="aside-label">About this place</span>
+                    <p>
+                        This is not a résumé with extra scenery. It is the larger map.
+                        The engineering portfolio is one region of it; Earthcall, Dimension of Thought,
+                        fiction, essays, experiments, and the rest belong here too.
                     </p>
+                </aside>
+            </div>
+        </section>
 
-                    <p class="hero-opportunity-note">
-                        Building toward <strong>Summer / Fall 2027 engineering and research opportunities</strong>, especially in systems,
-                        graphics, robotics, AI infrastructure, and ambitious interdisciplinary work.
+        <section id="worlds" class="section">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">01 // Doorways</span>
+                    <h2 class="section-title">Different doors into the same life.</h2>
+                    <p class="section-subtitle">
+                        Come here for code, essays, worldbuilding, ideas, or just to figure out what on earth I am doing.
                     </p>
-
-                    <div class="hero-cta-group">
-                        <a href="#p-earthcall" class="btn btn-primary">Explore Earthcall <span aria-hidden="true">→</span></a>
-                        <a href="#p-work" class="btn btn-secondary">See Project Portfolio</a>
-                        <button class="btn btn-ghost" id="hero-resume-btn" title="Open Print-Ready Academic CV">Résumé / CV ↗</button>
-                        <a class="btn btn-ghost" href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-                    </div>
-
-                    <ul class="hero-stats" aria-label="Key Highlights">
-                        <li class="stat-card"><span class="stat-value">Earthcall</span><span class="stat-label">Ontology-first runtime · authored Laws · Zones · persistence</span></li>
-                        <li class="stat-card"><span class="stat-value">C++20 · WebGPU</span><span class="stat-label">Rendering · geometry · runtime systems · WASM</span></li>
-                        <li class="stat-card"><span class="stat-value">Robotics</span><span class="stat-label">OpenVLA · RealSense · AprilTag · JAKA control</span></li>
-                        <li class="stat-card"><span class="stat-value">AI Engineering</span><span class="stat-label">Multi-agent orchestration with human architectural authority</span></li>
-                    </ul>
                 </div>
 
-                <a href="#p-now" class="scroll-indicator" aria-label="Scroll to Now">
-                    <span>Now</span>
-                    <span class="scroll-chevron" aria-hidden="true"></span>
-                </a>
-            </section>
+                <div class="door-grid">
+                    <a class="door-card" href="portfolio.html">
+                        <span class="door-index">ENGINEERING // SYSTEMS</span>
+                        <h3>Engineering Portfolio</h3>
+                        <p>
+                            Earthcall, systems architecture, graphics, robotics, computational geometry,
+                            performance work, AI-assisted engineering, benchmarks, and the technical deep dives.
+                        </p>
+                        <span class="door-arrow" aria-hidden="true">↗</span>
+                    </a>
 
-            <!-- Portfolio Snapshot -->
-            <section class="section portfolio-snapshot-section" aria-labelledby="portfolio-snapshot-title">
-                <div class="container">
-                    <div class="section-header left compact-header">
-                        <span class="section-tag">Portfolio // At a Glance</span>
-                        <h2 class="section-title" id="portfolio-snapshot-title">I build across the stack — and across disciplines.</h2>
-                        <p class="section-subtitle">The through-line is architectural: model the thing truthfully, expose the right primitives, then make the system fast, inspectable, and usable by a real person.</p>
-                    </div>
-                    <div class="portfolio-snapshot-grid">
-                        <article class="portfolio-snapshot-card"><span class="snapshot-index">01</span><h3>Systems &amp; Runtime Architecture</h3><p>C++20 runtime design, identity, persistence, event-driven execution, permissions, IPC, and architecture that survives large-scale extension.</p><div class="snapshot-tags"><span>C++20</span><span>CMake</span><span>WASM</span><span>IPC</span></div></article>
-                        <article class="portfolio-snapshot-card"><span class="snapshot-index">02</span><h3>Graphics, Geometry &amp; Simulation</h3><p>WebGPU/WGSL rendering, signed-distance geometry, collision systems, spatial interaction, and mathematical representations that can become authored runtime behavior.</p><div class="snapshot-tags"><span>WebGPU</span><span>WGSL</span><span>SDF</span><span>SAT</span></div></article>
-                        <article class="portfolio-snapshot-card"><span class="snapshot-index">03</span><h3>Robotics &amp; Embodied AI</h3><p>Vision-language-action inference, RGB-D perception, fiducial calibration, kinematic control, and live tooling around a physical manipulator.</p><div class="snapshot-tags"><span>OpenVLA</span><span>RealSense</span><span>AprilTag</span><span>JAKA</span></div></article>
-                        <article class="portfolio-snapshot-card"><span class="snapshot-index">04</span><h3>AI-Augmented Engineering</h3><p>I orchestrate multiple coding agents as constrained collaborators: shared architecture, tests, review, CI, and explicit human ownership of final technical judgment.</p><div class="snapshot-tags"><span>Agents</span><span>CI</span><span>Review</span><span>Human-in-loop</span></div></article>
-                        <article class="portfolio-snapshot-card"><span class="snapshot-index">05</span><h3>Creative Systems &amp; Writing</h3><p>Dimension of Thought, long-form fiction, screenwriting, and worldbuilding feed directly back into how I think about interfaces, ontologies, narrative, and human meaning.</p><div class="snapshot-tags"><span>Writing</span><span>Worldbuilding</span><span>Design</span><span>Story</span></div></article>
-                        <article class="portfolio-snapshot-card"><span class="snapshot-index">06</span><h3>Research Mindset</h3><p>I like questions that cross boundaries: how software represents beings, how rules become authorable, how machines perceive space, and how tools amplify rather than erase human agency.</p><div class="snapshot-tags"><span>Ontology</span><span>HCI</span><span>AI</span><span>Systems</span></div></article>
-                    </div>
+                    <a class="door-card" href="manifesto.html">
+                        <span class="door-index">DIMENSION OF THOUGHT // VISION</span>
+                        <h3>Dimension of Thought</h3>
+                        <p>
+                            The larger project of connecting scattered realms of thought, creativity,
+                            relationship, and community into something more like a constellation than a feed.
+                        </p>
+                        <span class="door-arrow" aria-hidden="true">↗</span>
+                    </a>
+
+                    <a class="door-card" href="story.html">
+                        <span class="door-index">PERSONAL // STORY</span>
+                        <h3>My Story</h3>
+                        <p>
+                            The human path underneath the projects: the places, relationships, longings,
+                            questions, and turns that made these ideas matter to me in the first place.
+                        </p>
+                        <span class="door-arrow" aria-hidden="true">↗</span>
+                    </a>
+
+                    <a class="door-card" href="library.html">
+                        <span class="door-index">WRITING // LIBRARY</span>
+                        <h3>The Library</h3>
+                        <p>
+                            Essays and explorations across technology, place, culture, metaphysics,
+                            narrative, personhood, creativity, and whatever else I cannot stop thinking about.
+                        </p>
+                        <span class="door-arrow" aria-hidden="true">↗</span>
+                    </a>
                 </div>
-            </section>
-
-            <!-- Personal Now Section -->
-            <section id="p-now" class="section now-section">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">00 // Present Tense</span>
-                        <h2 class="section-title">What I’m Building Now</h2>
-                        <p class="section-subtitle">Active systems engineering, lab research, and software craft.</p>
-                    </div>
-
-                    <div class="now-grid">
-                        <article class="now-card now-featured">
-                            <p class="now-label">Flagship</p>
-                            <h3>Earthcall’s Person-Facing Authoring Surface</h3>
-                            <p>
-                                Turning Creator Console tools — brush, 3D select, morph, snap, save/load — into First Movers
-                                so authoring is not a bolted-on “game UI.” Laws can be switched off; default locomotion is
-                                not a lock. The Person Interface is the world, not a widget kit sitting on top of it.
-                            </p>
-                            <ul class="now-chips">
-                                <li>First Movers</li>
-                                <li>GUI as Law</li>
-                                <li>Shape Generator</li>
-                                <li>World Saves</li>
-                            </ul>
-                        </article>
-                        <article class="now-card">
-                            <p class="now-label">Robotics</p>
-                            <h3>OpenVLA on a JAKA Manipulator</h3>
-                            <p>
-                                Vision-language-action inference (OpenVLA-OFT) from macOS, executed on remote CUDA,
-                                with Intel RealSense depth, AprilTag pose calibration, and a live teleoperation dashboard for a JAKA manipulator.
-                            </p>
-                        </article>
-                        <article class="now-card">
-                            <p class="now-label">How I Work</p>
-                            <h3>One Person, Many First Movers</h3>
-                            <p>
-                                I orchestrate multiple AI coding agents against the same ontology. They write C++, they coordinate, but they
-                                are not Persons. I am. That distinction is load-bearing in Earthcall, and in how I actually build.
-                            </p>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Personal Earthcall Section -->
-            <section id="p-earthcall" class="section earthcall-section">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">01 // Flagship Substrate</span>
-                        <h2 class="section-title">Earthcall</h2>
-                        <p class="section-subtitle">A Person-centered ontology. An engine is attached to it — not the other way around.</p>
-                    </div>
-
-                    <blockquote class="pull-quote">
-                        “Unlike most of software history, Earthcall is built on a foundational conviction that all beings must be represented
-                        not by illusions hiding a teleologically indifferent operating system, but rather according to what they are —
-                        their actual, innate structure in reality.”
-                        <cite>— Earthcall Manifesto</cite>
-                    </blockquote>
-
-                    <div class="earthcall-layout">
-                        <div class="earthcall-copy">
-                            <p>
-                                Earthcall is not a game engine with philosophy in the docs. Domain nouns are not C++ classes.
-                                A tree is not a <code>Tree</code>. A robot is not a <code>RobotEntity</code>. Beings are authored in-world
-                                from primitives every other subsystem can see, then governed by <strong>Laws</strong> — runtime mathematical
-                                rules a Person writes, not hardcoded collisions wearing a story.
-                            </p>
-                            <p>
-                                The top-level source tree <em>is</em> the ontology:
-                                <code>Person</code>, <code>ConstructedBeing</code>, <code>Relation</code>, <code>Singularity</code>,
-                                <code>ZonesOfEarth</code>, <code>Identity</code>. Adding a folder is an ontological claim.
-                            </p>
-                            <p>
-                                People author behavior at runtime. Instead of shipping “move object X to Y,” Earthcall compiles through a Rete-style Law network expressed in
-                                <strong>OntoMath</strong> — one mathematical substrate for geometry, physics, and authored change.
-                            </p>
-                            <p>
-                                Rendering is a modern WebGPU pipeline with a C++20 substrate, WASM, embedded React/Vite Person surface, and Python foreign IPC.
-                            </p>
-                            <div class="project-links-row">
-                                <a class="btn btn-primary" href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer">View Repository ↗</a>
-                                <button type="button" class="btn btn-secondary proj-spec-btn" data-project="earthcall">Deep-Dive Spec ↗</button>
-                                <a class="btn btn-ghost" href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Analysis/LAW_DIRECT_TRAVERSAL_COMPLEXITY_AND_CI_RESULTS_2026-09-19.md" target="_blank" rel="noopener noreferrer">Law-Direct Analysis ↗</a>
-                                <a class="btn btn-ghost" href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/core/Earthcall%20Ourverse%20Manifesto/EarthcallOurverse.md" target="_blank" rel="noopener noreferrer">Read Manifesto ↗</a>
-                            </div>
-                        </div>
-
-                        <aside class="ontology-stack" aria-label="Earthcall Substrate Stack">
-                            <h3>Substrate Order</h3>
-                            <ol class="stack-list">
-                                <li>
-                                    <span class="stack-name">Person</span>
-                                    <span class="stack-desc">A human being. Body belongs here. AI is never this.</span>
-                                </li>
-                                <li>
-                                    <span class="stack-name">Ontology</span>
-                                    <span class="stack-desc">Beings, Relations, Formations, Identity, Zones.</span>
-                                </li>
-                                <li>
-                                    <span class="stack-name">Laws</span>
-                                    <span class="stack-desc">Runtime-authored math. First Movers can be switched off.</span>
-                                </li>
-                                <li>
-                                    <span class="stack-name">OntoMath</span>
-                                    <span class="stack-desc">One language for shape, change, collision, telos.</span>
-                                </li>
-                                <li>
-                                    <span class="stack-name">Singularity</span>
-                                    <span class="stack-desc">Ground of the machine: Kernel, channels, permissions.</span>
-                                </li>
-                                <li>
-                                    <span class="stack-name">Vessel</span>
-                                    <span class="stack-desc">C++20 · WebGPU · WASM · React · Python IPC</span>
-                                </li>
-                            </ol>
-                        </aside>
-                    </div>
-
-                    <div class="earthcall-evidence">
-                        <div class="section-header left compact-header">
-                            <span class="section-tag">What exists in the system</span>
-                            <h3 class="section-title subsection-title">Engineering evidence, not just a thesis.</h3>
-                            <p class="section-subtitle">Earthcall’s philosophy is implemented as concrete runtime machinery.</p>
-                        </div>
-                        <div class="evidence-grid">
-                            <article class="evidence-card"><span class="evidence-label">Runtime semantics</span><h4>Laws + Rete-style evaluation</h4><p>People author conditions and mathematical operations at runtime. The C++ substrate evaluates those Laws instead of forcing every behavior into a bespoke hardcoded path.</p></article>
-                            <article class="evidence-card"><span class="evidence-label">Identity &amp; persistence</span><h4>Stable beings across save → hydration</h4><p>Identity, property paths, authored state, Persons, Zones, and dependencies are treated as first-class persistence problems rather than serialized afterthoughts.</p></article>
-                            <article class="evidence-card"><span class="evidence-label">Rendering &amp; geometry</span><h4>WebGPU, WGSL, SDFs, meshes</h4><p>The vessel includes a modern GPU rendering path, authored geometry, implicit surfaces, spatial interaction, and the infrastructure needed to make ontology visible.</p></article>
-                            <article class="evidence-card"><span class="evidence-label">Person-facing authoring</span><h4>Tools become part of the world</h4><p>Creator tools, locomotion, selection, morphing, and other interactions are being moved toward First-Mover/Law semantics rather than remaining privileged UI exceptions.</p></article>
-                            <article class="evidence-card"><span class="evidence-label">Interop</span><h4>Native, web, Python, foreign channels</h4><p>C++20, embedded React/Vite, WASM, Python processes, and external systems meet through explicit interfaces instead of collapsing into one opaque application layer.</p></article>
-                            <article class="evidence-card"><span class="evidence-label">Engineering process</span><h4>Tests, CI, review, and many agents</h4><p>A multi-agent workflow is useful only when architecture remains coherent. Tests, bounded tasks, code review, and explicit invariants are how the project keeps many contributors aligned.</p></article>
-                        </div>
-                    </div>
-
-                    <section class="relevance-showcase" aria-labelledby="relevance-showcase-title">
-                        <div class="relevance-hero">
-                            <div>
-                                <span class="section-tag">Measured Systems Result // Formation Rete</span>
-                                <h3 id="relevance-showcase-title">From relevance search to relevance compilation.</h3>
-                                <p class="relevance-lede">
-                                    Earthcall’s Law engine now lets lower relevance tiers discover and prove a route, then
-                                    <strong>crystallize that proof into Law-Direct traversal</strong> instead of re-checking
-                                    the same category relation forever. The result is a self-refining execution ladder:
-                                    slower general mechanisms discover structure; higher tiers retain it until relevant reality changes.
-                                </p>
-                                <div class="relevance-equation" aria-label="Law-Direct complexity improvement">
-                                    <span>proven relevance hot path</span>
-                                    <code>Θ(P · L · M · D) → Θ(P · L · M)</code>
-                                    <small>removing relation-neighborhood degree <em>D</em> from steady category proof</small>
-                                </div>
-                            </div>
-
-                            <div class="relevance-metrics" aria-label="Law-Direct benchmark results">
-                                <div class="relevance-metric">
-                                    <strong>131,072 → 0</strong>
-                                    <span>hot relation queries</span>
-                                </div>
-                                <div class="relevance-metric">
-                                    <strong>4.02×</strong>
-                                    <span>hostile stress speedup</span>
-                                </div>
-                                <div class="relevance-metric">
-                                    <strong>42 Laws</strong>
-                                    <span>graduated to Direct in Chess</span>
-                                </div>
-                                <div class="relevance-metric">
-                                    <strong>20.07 → 11.16 ms</strong>
-                                    <span>Chess frame p95</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="relevance-flow" aria-label="Earthcall relevance ladder">
-                            <div class="relevance-step"><span>01</span><strong>Sweep</strong><small>complete correctness floor</small></div>
-                            <div class="relevance-step"><span>02</span><strong>Vocabulary</strong><small>narrow by required properties</small></div>
-                            <div class="relevance-step"><span>03</span><strong>Adapter Road</strong><small>discover retained relational paths</small></div>
-                            <div class="relevance-step is-live"><span>04</span><strong>Law-Direct</strong><small>reuse proved bearers + residual condition</small></div>
-                            <div class="relevance-step is-frontier"><span>05</span><strong>Prophetic Incrementality</strong><small>repair only proof frontiers touched by relevant change</small></div>
-                        </div>
-
-                        <div class="relevance-frontier">
-                            <article class="relevance-frontier-card implemented">
-                                <span class="relevance-card-kicker">Implemented + measured</span>
-                                <h4>Law-Direct traversal</h4>
-                                <p>
-                                    A current positive relational proof becomes a concrete bearer route. Dynamic state still evaluates live;
-                                    only the already-proven relation conjunct disappears from the hot path. A hostile Chess-shaped CI witness
-                                    kept the same 65,536 lawful applications while eliminating 16,908,288 returned relation references.
-                                </p>
-                                <ul>
-                                    <li>Derived state, never a silent authored-world mutation.</li>
-                                    <li>Falls downward when Law, structure, graph, or road currency goes stale.</li>
-                                    <li>Preserves <code>Any</code>, <code>Not</code>, quantifier, authority, audit, and action semantics.</li>
-                                </ul>
-                            </article>
-
-                            <article class="relevance-frontier-card frontier">
-                                <span class="relevance-card-kicker">Research frontier</span>
-                                <h4>Incrementality all the way up.</h4>
-                                <p>
-                                    The next step is to stop treating higher-tier maintenance as a global recomputation problem. Computation
-                                    should follow <em>relevant change</em>: categories, Relations-between-Relations, shortest paths, event
-                                    subscriptions, and route priority should repair only the proof frontier that could actually have changed.
-                                </p>
-                                <ul>
-                                    <li><strong>Prophetic invalidation:</strong> abstract interpretation rules out irrelevant changes before they wake a proof.</li>
-                                    <li><strong>Incremental BFS/Dijkstra:</strong> repair stale path regions instead of re-searching every Being.</li>
-                                    <li><strong>Self-refining events:</strong> broad EventBus feeds compile into increasingly precise dependency channels.</li>
-                                    <li><strong>OntoMath delta compilation:</strong> stable Relation/Formation subsystems synthesize into bounded change-transfer functions.</li>
-                                    <li><strong>Incremental path priority:</strong> preserve the cheapest proven route until a relevant cost proof changes.</li>
-                                    <li><strong>Bootstrap floor:</strong> human-facing First-Mover opcodes + PropertyPaths remain the complete substrate from which higher tiers prove safe specialization.</li>
-                                </ul>
-                            </article>
-                        </div>
-
-                        <div class="relevance-thesis">
-                            <strong>Architectural thesis:</strong>
-                            <span>Nothing stable should be recomputed merely because time passed. Search broadly only when proof is absent; repair only what relevant change made uncertain.</span>
-                            <a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Analysis/LAW_DIRECT_TRAVERSAL_COMPLEXITY_AND_CI_RESULTS_2026-09-19.md" target="_blank" rel="noopener noreferrer">Read the full O-complexity analysis ↗</a>
-                        </div>
-                    </section>
-
-                    <div class="refusals">
-                        <h3>Load-Bearing Refusals</h3>
-                        <p class="refusals-lead">These are not style rules. They are the architecture.</p>
-                        <div class="refusal-grid">
-                            <article>
-                                <h4>No Domain Class</h4>
-                                <p>No <code>Tree</code>, <code>Vehicle</code>, or hardcoded entity classes. What a thing is is authored in-world.</p>
-                            </article>
-                            <article>
-                                <h4>The Tree is the Ontology</h4>
-                                <p>No arbitrary subsystem directories. Foreign hardware/software live under Singularity as channels.</p>
-                            </article>
-                            <article>
-                                <h4>Person Means Human</h4>
-                                <p>A Person is an actual human. Generative models are First Movers or Objects; they do not get a Body.</p>
-                            </article>
-                            <article>
-                                <h4>No Black Box</h4>
-                                <p>Every field a being carries is a registered property path. Unregistered is ungoverned.</p>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="earthcall-atlas">
-                        <div class="section-header left compact-header">
-                            <span class="section-tag">Earthcall // Engineering Atlas</span>
-                            <h3 class="section-title subsection-title">One system, many load-bearing layers.</h3>
-                            <p class="section-subtitle">
-                                Earthcall is not one renderer or one rule engine. It is an attempt to make ontology, identity,
-                                causality, persistence, geometry, authoring, and foreign-system integration agree with each other.
-                                These are the major systems currently carrying that architecture.
-                            </p>
-                        </div>
-
-                        <div class="earthcall-atlas-grid">
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status implemented">Implemented + verified</span>
-                                <h4>Prophetic Rete</h4>
-                                <p>Ahead-of-time analysis extracts Law read demands and write effects so irrelevant property changes can skip dirty-fact scanning. The analysis is deliberately allowed to be too broad, never too narrow; stale, incomplete, and foreign cases fail open.</p>
-                                <div class="atlas-proof"><code>evalRange()</code><span>·</span><code>propheticHears()</code><span>·</span><code>prophetic_rete_test §F</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/PROPHETIC_RETE.md" target="_blank" rel="noopener noreferrer">Architecture doc ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status frontier">Built in tiers · measured</span>
-                                <h4>Formation Rete</h4>
-                                <p>An ontological relevance layer over standard Rete: sweep remains the sound floor, vocabulary indexing narrows candidates, bounded relation traversal discovers routes, and a Slow Adapter incrementally learns retained roads without making discovery part of every frame.</p>
-                                <div class="atlas-proof"><code>breadthFirstRoutes</code><span>·</span><code>SlowAdapter</code><span>·</span><code>_vocabularyIndex</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/FORMATION_RETE.md" target="_blank" rel="noopener noreferrer">Architecture doc ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status implemented">Identity-stable persistence</span>
-                                <h4>Zones, Homes &amp; Save Identity</h4>
-                                <p>Zones persist by identity under <code>saves/zones/&lt;id&gt;/zone.json</code> instead of being copied blindly into every world save. Sessions reference Zones; load preserves non-active work; Zones can be forked and structurally diffed.</p>
-                                <div class="atlas-proof"><code>persistZone</code><span>·</span><code>forkZone</code><span>·</span><code>diffZones</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Per_Zone_serialization_pathway/Per_Zone_serialization_pathway.md" target="_blank" rel="noopener noreferrer">Persistence record ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status implemented">GPU + mathematical substrate</span>
-                                <h4>Geometry, SDFs &amp; WebGPU</h4>
-                                <p>Authored geometry spans meshes and implicit fields, with OntoMath expressions feeding SDF evaluation, marching-tetrahedra mesh generation, WGSL/WebGPU rendering, and collision infrastructure. Geometry cost is treated as an architectural budget, not a cosmetic afterthought.</p>
-                                <div class="atlas-proof"><code>SdfPrim::Expr</code><span>·</span><code>WGSL</code><span>·</span><code>WebGPU</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Field_tessellation_blocks_startup_for_104_s_and_the/Field_tessellation_blocks_startup_for_104_s_and_the.md" target="_blank" rel="noopener noreferrer">Performance case ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status implemented">Person-facing authoring</span>
-                                <h4>Laws as Runtime Programs</h4>
-                                <p>Laws carry serializable Condition and Action model trees, activation semantics, scope, registered PropertyPaths, and authored mathematical transforms. The long-term goal is to move behavior out of privileged engine exceptions and into things a Person can inspect and author.</p>
-                                <div class="atlas-proof"><code>ConditionModel</code><span>·</span><code>ActionModel</code><span>·</span><code>PropertyPath</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/INTERACTION_AS_LAW.md" target="_blank" rel="noopener noreferrer">Law framework ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status implemented">Independent compute clock</span>
-                                <h4>Adaptive Compute / Slow Adapter</h4>
-                                <p>The expensive relevance learner does not get to own the render loop. Its independent clock performs bounded IMPROVE and REVISIT work over time, allowing expensive discovery to accumulate without turning every frame into a graph search.</p>
-                                <div class="atlas-proof"><code>step()</code><span>·</span><code>IMPROVE</code><span>·</span><code>REVISIT</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Analysis/SLOW_ADAPTER_CLOCK_COUPLING_AND_ADAPTIVE_COMPUTE_ANALYSIS_2026-09-17.md" target="_blank" rel="noopener noreferrer">Compute analysis ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status implemented">Foreign channels</span>
-                                <h4>Python, Web &amp; MCP Bridges</h4>
-                                <p>Earthcall already bridges the C++ vessel to Python, web surfaces, and an MCP tool layer. The MCP surface can query state, author Laws, write properties, and create SDF fields; authorization hardening remains an explicit tracked gap rather than something the portfolio hides.</p>
-                                <div class="atlas-proof"><code>CppBridge</code><span>·</span><code>Socket.IO</code><span>·</span><code>17 MCP tools</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Model_Context_Protocol_MCP_Server_Bridge/Model_Context_Protocol_MCP_Server_Bridge.md" target="_blank" rel="noopener noreferrer">MCP field test ↗</a></div>
-                            </article>
-
-                            <article class="earthcall-atlas-card">
-                                <span class="atlas-status principle">Governance is architecture</span>
-                                <h4>First Movers &amp; Human Authority</h4>
-                                <p>Earthcall distinguishes a human Person from the mechanisms that act in the world. First-Mover channels can be enabled or set down, authored state carries provenance, and external-agent authority is treated as a systems problem rather than assumed trust.</p>
-                                <div class="atlas-proof"><code>Person</code><span>·</span><code>First Mover</code><span>·</span><code>TransferPolicy</code><a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/architecture/law/FIRST_MOVER_AUTHORING.md" target="_blank" rel="noopener noreferrer">Authorship doctrine ↗</a></div>
-                            </article>
-                        </div>
-                    </div>
-
-                    <div class="earthcall-measured-wins">
-                        <div class="section-header left compact-header">
-                            <span class="section-tag">Measured engineering</span>
-                            <h3 class="section-title subsection-title">Architecture that survived contact with performance.</h3>
-                            <p class="section-subtitle">
-                                Some of Earthcall’s most important progress came from profiling an elegant idea, discovering where it was actually expensive, and changing the architecture instead of defending the abstraction.
-                            </p>
-                        </div>
-
-                        <div class="earthcall-metrics-grid">
-                            <article class="earthcall-metric-card">
-                                <span class="metric-before">~104 s</span>
-                                <span class="metric-arrow">→</span>
-                                <strong class="metric-after">0.4 ms</strong>
-                                <h4>Field hydration</h4>
-                                <p>Moved SDF tessellation off Zone hydration. Fields become dirty on load and rebuild on first real consumer instead of blocking startup.</p>
-                            </article>
-                            <article class="earthcall-metric-card">
-                                <span class="metric-before">106.3 s</span>
-                                <span class="metric-arrow">→</span>
-                                <strong class="metric-after">2.7 s</strong>
-                                <h4>Application startup</h4>
-                                <p>The same geometry-path redesign turned a macOS “not responding” launch into a bounded startup path.</p>
-                            </article>
-                            <article class="earthcall-metric-card">
-                                <span class="metric-before">105.7 s fail</span>
-                                <span class="metric-arrow">→</span>
-                                <strong class="metric-after">3.7 s pass</strong>
-                                <h4>Frame-lag regression test</h4>
-                                <p>Performance became a guarded invariant: sub-quadratic frame cost, idle worlds do not spuriously fire Laws, and duplicate property registration is detected.</p>
-                            </article>
-                            <article class="earthcall-metric-card">
-                                <span class="metric-before">132–208 ms</span>
-                                <span class="metric-arrow">→</span>
-                                <strong class="metric-after">~14 ms</strong>
-                                <h4>Vocabulary-index rebuild</h4>
-                                <p>Stopped asking every being about every indexed property name and stopped recollecting the name set once per Law per tick.</p>
-                            </article>
-                        </div>
-                    </div>
-
-                    <div class="earthcall-proof-story">
-                        <div class="proof-story-copy">
-                            <span class="section-tag">Generality test // Chess</span>
-                            <h3>Can the substrate author an application it was never taught?</h3>
-                            <p>
-                                Earthcall’s chess work became a stress test for the architecture: legality checks, turn order,
-                                captures, castling, promotion, check detection, interaction, persistence, and rendering had to be
-                                expressed through authored world state and Laws rather than a new <code>ChessGame.cpp</code>.
-                            </p>
-                            <p>
-                                The value of that experiment is not “Earthcall can play chess.” It is that a concrete application
-                                forced the ontology, Law system, input channels, save model, and debugging surfaces to confront one
-                                another in the same world.
-                            </p>
-                        </div>
-                        <div class="proof-story-diagram" aria-label="Earthcall chess architecture proof">
-                            <div><span>Generic substrate</span><strong>Objects · Relations · Laws · Zones</strong></div>
-                            <span class="proof-arrow">↓</span>
-                            <div><span>Authored application</span><strong>Board · Pieces · Turn State · Rules</strong></div>
-                            <span class="proof-arrow">↓</span>
-                            <div><span>Behavior</span><strong>Legal moves · Capture · Check · Promotion</strong></div>
-                            <span class="proof-arrow">↓</span>
-                            <div class="proof-result"><span>Result</span><strong>No chess-specific C++ domain class</strong></div>
-                        </div>
-                    </div>
-
-                    <div class="earthcall-frontier">
-                        <div class="section-header left compact-header">
-                            <span class="section-tag">Earthcall // Current Frontier</span>
-                            <h3 class="section-title subsection-title">The hard parts I am still pushing on.</h3>
-                            <p class="section-subtitle">
-                                I do not treat unfinished architecture as a marketing secret. These are active edges where the substrate
-                                is implemented enough to expose the next problem clearly.
-                            </p>
-                        </div>
-                        <div class="earthcall-frontier-grid">
-                            <article>
-                                <span class="frontier-state active">Active</span>
-                                <h4>Formation Rete relevance</h4>
-                                <p>Turn relation/category structure into faster candidate routing without ever letting an optimization make a valid Law go deaf. Sweep remains the sound floor.</p>
-                            </article>
-                            <article>
-                                <span class="frontier-state active">Active</span>
-                                <h4>Second-nature Law authoring</h4>
-                                <p>Make authoring Laws feel like manipulating the world itself rather than filling in a compiler form: direct targets, visible conditions, rehearsal, and native persistence.</p>
-                            </article>
-                            <article>
-                                <span class="frontier-state guarded">Governance gap tracked</span>
-                                <h4>External-agent authority</h4>
-                                <p>MCP and other foreign channels are mechanically powerful; the next requirement is enforcing Person-authored First-Mover scope instead of trusting the caller by default.</p>
-                            </article>
-                            <article>
-                                <span class="frontier-state active">Active</span>
-                                <h4>Zone-native composition</h4>
-                                <p>Continue replacing conglomerate world saves with independent, identity-stable Zones whose dependencies can be closed, loaded, forked, diffed, and shared safely.</p>
-                            </article>
-                        </div>
-                    </div>
-
-                    <!-- Earthcall Law Execution Explorer -->
-                    <div class="ontomath-evaluator-wrapper">
-                        <div class="section-header left compact-header">
-                            <span class="section-tag">Live Architecture // Earthcall → Python :5005 → Portfolio</span>
-                            <h3 class="subsection-title">Earthcall Law Execution Explorer</h3>
-                            <p class="section-subtitle">
-                                When Earthcall is running locally, this panel becomes a read-only window into the real C++ vessel:
-                                active Zone, live Objects, registered Laws, and engine events arrive through the Python bridge on
-                                <code>127.0.0.1:5005</code>. When Earthcall is offline, the same surface falls back to an
-                                ontology-faithful interactive architecture demo.
-                            </p>
-                        </div>
-
-                        <div class="drawer-sim-box ontology-law-demo">
-                            <div class="ontology-live-bar">
-                                <div>
-                                    <span id="ontomath-mode-badge" class="ontology-mode-badge demo">○ OFFLINE ARCHITECTURE DEMO</span>
-                                    <span id="ontomath-zone-badge" class="ontology-zone-badge">Local Earthcall not connected</span>
-                                </div>
-                                <div class="ontology-live-actions">
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-live-probe-btn">Reconnect Live Earthcall</button>
-                                    <button type="button" class="drawer-sim-btn is-hidden" id="ontomath-demo-mode-btn">Use Architecture Demo</button>
-                                </div>
-                            </div>
-
-                            <div class="drawer-sim-header ontology-demo-toolbar">
-                                <div class="drawer-sim-controls" id="ontomath-demo-controls">
-                                    <div id="ontomath-law-toggles" class="drawer-sim-controls">
-                                        <button type="button" class="drawer-sim-btn active" data-law="map">WhileTrue: Map emission</button>
-                                        <button type="button" class="drawer-sim-btn active" data-law="onset">OnBecomeTrue: Publish event</button>
-                                    </div>
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-spawn-btn">+ Author Object</button>
-                                    <button type="button" class="drawer-sim-btn" id="ontomath-reset-btn">Reset Demo World</button>
-                                </div>
-                                <span id="ontomath-status-badge" class="drawer-sim-status status-separated">● DEMO RETE: COMPILED</span>
-                            </div>
-
-                            <div class="ontology-demo-layout">
-                                <div class="drawer-sim-canvas-wrapper ontology-canvas-panel">
-                                    <canvas id="ontomath-canvas" class="drawer-sim-canvas" width="820" height="360"
-                                        aria-label="Earthcall live-state and Law architecture visualization"></canvas>
-                                    <p id="ontomath-canvas-hint" class="ontology-canvas-hint">
-                                        Demo mode: click a being to inspect it and move signal.level across the authored threshold.
-                                    </p>
-                                </div>
-
-                                <aside class="ontology-being-inspector" aria-label="Selected being inspector">
-                                    <div class="ontology-inspector-heading">
-                                        <span class="evidence-label">Selected Singular</span>
-                                        <strong id="ontomath-selected-label">Object A</strong>
-                                        <code id="ontomath-selected-id">object-a</code>
-                                    </div>
-
-                                    <dl class="ontology-property-list">
-                                        <div>
-                                            <dt id="ontomath-prop-a-label">signal.level</dt>
-                                            <dd id="ontomath-prop-a-value">0.82</dd>
-                                        </div>
-                                        <div>
-                                            <dt id="ontomath-prop-b-label">material.emission</dt>
-                                            <dd id="ontomath-prop-b-value">0.87</dd>
-                                        </div>
-                                        <div>
-                                            <dt id="ontomath-prop-c-label">Vocabulary</dt>
-                                            <dd id="ontomath-prop-c-value">signal.level registered</dd>
-                                        </div>
-                                    </dl>
-
-                                    <div id="ontomath-demo-write-controls">
-                                        <label class="ontology-slider-label" for="ontomath-signal-slider">
-                                            Demo write through <code>PropertyPath</code>
-                                        </label>
-                                        <input id="ontomath-signal-slider" class="ontology-signal-slider"
-                                            type="range" min="0" max="1" step="0.01" value="0.82">
-
-                                        <div class="ontology-inspector-actions">
-                                            <button type="button" class="drawer-sim-btn" id="ontomath-author-property-btn">Author signal.level</button>
-                                            <button type="button" class="drawer-sim-btn" id="ontomath-remove-property-btn">Remove property</button>
-                                        </div>
-                                    </div>
-
-                                    <p id="ontomath-inspector-note" class="ontology-inspector-note">
-                                        Demo Objects are generic beings — there is no <code>Beacon</code> C++ class.
-                                        The Law only knows authored vocabulary it can read.
-                                    </p>
-                                </aside>
-                            </div>
-
-                            <div class="ontology-trace-grid" aria-live="polite">
-                                <article class="ontology-trace-card">
-                                    <span id="ontomath-trace-a-title">1 · Change Feed</span>
-                                    <strong id="ontomath-last-change">object-a.signal.level ← 0.82</strong>
-                                    <p id="ontomath-trace-a-copy">PropertyPath announces the owner + base property that changed.</p>
-                                </article>
-                                <article class="ontology-trace-card">
-                                    <span id="ontomath-trace-b-title">2 · Prophetic Relevance</span>
-                                    <strong id="ontomath-prophetic">READ DEMAND: signal.level → hear</strong>
-                                    <p id="ontomath-trace-b-copy">If no authored condition can read the path, the hot Rete scan is skipped.</p>
-                                </article>
-                                <article class="ontology-trace-card">
-                                    <span id="ontomath-trace-c-title">3 · Rete Match</span>
-                                    <strong id="ontomath-rete-trace">α exists ✓ · α ≥ 0.60 ✓ · β ALL ✓</strong>
-                                    <p id="ontomath-trace-c-copy">Conditions are facts over the selected subject — not hidden C++ behavior.</p>
-                                </article>
-                                <article class="ontology-trace-card">
-                                    <span id="ontomath-trace-d-title">4 · ActionModel</span>
-                                    <strong id="ontomath-action-trace">Map emission := 0.25 + 0.75x</strong>
-                                    <p id="ontomath-trace-d-copy">The Law writes a registered PropertyPath; the resulting write becomes another fact change.</p>
-                                </article>
-                            </div>
-
-                            <div class="ontology-event-log-wrap">
-                                <div class="ontology-event-log-heading">
-                                    <span id="ontomath-event-heading">Execution trace</span>
-                                    <span>Visible beings: <strong id="ontomath-being-count">3</strong></span>
-                                </div>
-                                <ol id="ontomath-event-log" class="ontology-event-log"></ol>
-                            </div>
-
-                            <div id="ontomath-demo-law-source" class="ontology-law-source">
-                                <div>
-                                    <span class="evidence-label">Law A · WhileTrue · Everyone</span>
-                                    <code>if signal.level ≥ 0.60 → Map material.emission := 0.25 + 0.75 × signal.level</code>
-                                </div>
-                                <div>
-                                    <span class="evidence-label">Law B · OnBecomeTrue · Everyone</span>
-                                    <code>if signal.level ≥ 0.60 → Publish("signal-awakened")</code>
-                                </div>
-                            </div>
-
-                            <div id="ontomath-live-law-list" class="ontology-live-law-list is-hidden" aria-label="Live Earthcall Laws"></div>
-
-                            <p class="ontology-live-footnote">
-                                Live mode is intentionally observational. This public page does not call Earthcall’s mutation routes;
-                                authoring remains inside Earthcall’s governed interfaces.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Personal Work / Projects Section -->
-            <section id="p-work" class="section work-section">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">02 // Selected Work</span>
-                        <h2 class="section-title">Systems, Robots, Tools &amp; Creative Work</h2>
-                        <p class="section-subtitle">A portfolio of things I have actually built, debugged, integrated, or carried from idea into working form.</p>
-                    </div>
-
-                    <div class="project-filters" role="tablist" aria-label="Filter Projects">
-                        <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="systems">Systems</button>
-                        <button class="filter-btn" data-filter="robotics">Robotics</button>
-                        <button class="filter-btn" data-filter="tools">Tools</button>
-                        <button class="filter-btn" data-filter="creative">Creative</button>
-                    </div>
-
-                    <div class="projects-grid">
-                        <article class="project-card project-card-featured" data-category="systems">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Flagship · Ongoing</span><h3>Earthcall</h3><p class="project-role">Computational Ontology · Runtime Systems · Graphics</p></div></div>
-                            <p class="project-description">An ontology-first C++20/WebGPU runtime in which people author beings, relationships, geometry, and mathematical Laws at runtime. Recent Formation Rete work turns discovered relevance into direct Law-to-bearer execution: a hostile CI workload cut 131,072 repeated relation queries to zero, while real Chess moved 42 Laws into the Direct tier. The next frontier is Prophetic, relevant-change-only maintenance of categories, paths, event boundaries, and route priority.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">C++20</span><span class="tech-tag">WebGPU</span><span class="tech-tag">WGSL</span><span class="tech-tag">Rete</span><span class="tech-tag">Law-Direct</span><span class="tech-tag">Prophetic Analysis</span><span class="tech-tag">WASM</span><span class="tech-tag">React/Vite</span></div>
-                            <div class="proj-card-actions"><button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="earthcall">Deep-Dive Spec ↗</button><a href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer" class="proj-link-btn">Repository ↗</a></div>
-                        </article>
-
-                        <article class="project-card" data-category="robotics">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Robotics</span><h3>Vision Pipeline &amp; JAKA Manipulator</h3><p class="project-role">Spatial Perception · Teleoperation · VLA</p></div></div>
-                            <p class="project-description">A manipulation stack combining OpenVLA-OFT inference, Intel RealSense RGB-D sensing, AprilTag pose calibration, remote CUDA execution, and live control tooling for a JAKA arm.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">Python</span><span class="tech-tag">PyTorch</span><span class="tech-tag">OpenVLA-OFT</span><span class="tech-tag">RealSense</span><span class="tech-tag">AprilTag</span><span class="tech-tag">JAKA SDK</span></div>
-                            <div class="proj-card-actions"><button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="robotics">Technical Spec &amp; Kinematics ↗</button></div>
-                        </article>
-
-                        <article class="project-card" data-category="systems">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Geometry</span><h3>SAT Physics &amp; Collision Engine</h3><p class="project-role">Computational Geometry · Contact Generation</p></div></div>
-                            <p class="project-description">Continuous 3D convex-polyhedron collision work using the Separating Axis Theorem, contact manifold reasoning, and modern C++ — a concrete exercise in turning linear algebra into robust engine behavior.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">C++20</span><span class="tech-tag">Linear Algebra</span><span class="tech-tag">SAT</span><span class="tech-tag">3D Geometry</span></div>
-                            <div class="proj-card-actions"><button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="sat">Technical Spec &amp; Live SAT Sim ↗</button></div>
-                        </article>
-
-                        <article class="project-card" data-category="systems tools">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Engineering Infrastructure</span><h3>Multi-Agent Development System</h3><p class="project-role">Agent Orchestration · Review · CI · Architectural Governance</p></div></div>
-                            <p class="project-description">A practical workflow for directing multiple remote coding agents against one large system: bounded tasking, shared architectural documents, inter-agent communication, branch/PR isolation, regression testing, and human arbitration when abstractions collide.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">GitHub</span><span class="tech-tag">CI</span><span class="tech-tag">Code Review</span><span class="tech-tag">Agent Workflows</span><span class="tech-tag">Architecture</span></div>
-                            <div class="proj-card-actions"><a href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer" class="proj-link-btn">See it operating in Earthcall ↗</a></div>
-                        </article>
-
-                        <article class="project-card" data-category="tools">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Operations Tool</span><h3>TeacherOps</h3><p class="project-role">Human-in-the-Loop Operations</p></div></div>
-                            <p class="project-description">A local FastAPI + SQLite assistant for a family tutoring hub: teacher matching, parent inquiries, follow-ups, and drafted coordination messages. Automation accelerates the work without pretending judgment can be automated away.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">Python</span><span class="tech-tag">FastAPI</span><span class="tech-tag">SQLite</span><span class="tech-tag">Uvicorn</span></div>
-                            <div class="proj-card-actions"><button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="teacherops">Technical Spec ↗</button><a href="https://github.com/zhangzachary834-commits/teacherops" target="_blank" rel="noopener noreferrer" class="proj-link-btn">GitHub ↗</a></div>
-                        </article>
-
-                        <article class="project-card" data-category="tools systems">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Developer Tooling</span><h3>Sandbox-to-Terminal Bridge</h3><p class="project-role">Host IPC · Security Gates · Agent Workflows</p></div></div>
-                            <p class="project-description">A bidirectional bridge connecting isolated AI coding sandboxes with host execution and document synchronization while keeping dangerous actions behind explicit human-controlled approval boundaries.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">Python</span><span class="tech-tag">macOS IPC</span><span class="tech-tag">FastAPI</span><span class="tech-tag">Security</span></div>
-                            <div class="proj-card-actions"><button type="button" class="btn btn-small btn-primary proj-spec-btn" data-project="bridge">Technical Spec ↗</button></div>
-                        </article>
-
-                        <article class="project-card" data-category="creative">
-                            <div class="project-card-header"><div><span class="project-eyebrow">Creative Practice</span><h3>Dimension of Thought &amp; Narrative Work</h3><p class="project-role">Writing · Worldbuilding · Platform Design</p></div></div>
-                            <p class="project-description">Dimension of Thought is my long-running attempt to connect ideas, relationships, community, and story in one digital place. Around it I write long-form fiction, develop <em>The Redemption of Invynceth</em>, and study screenwriting — work that directly shapes how I think about worlds and interfaces.</p>
-                            <div class="tech-tag-list"><span class="tech-tag">Long-form Writing</span><span class="tech-tag">Screenwriting</span><span class="tech-tag">Worldbuilding</span><span class="tech-tag">Web Design</span></div>
-                            <div class="proj-card-actions"><a href="story.html" class="proj-link-btn">Read the story ↗</a><a href="library.html" class="proj-link-btn">Explore the Library ↗</a></div>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section engineering-depth-section" aria-labelledby="engineering-depth-title">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">03 // Engineering Depth</span>
-                        <h2 class="section-title" id="engineering-depth-title">The problems I like are the ones hiding between subsystems.</h2>
-                        <p class="section-subtitle">The most valuable engineering work is often not a feature. It is finding the invariant that two independently reasonable systems accidentally violated.</p>
-                    </div>
-                    <div class="depth-grid">
-                        <article class="depth-card"><span class="depth-kicker">Identity</span><h3>Persistence without identity drift</h3><p>Runtime-authored worlds force identity to survive serialization, hydration, dependency closure, property lookup, and detached Zone loading. “Same name” is not the same thing as “same being.”</p></article>
-                        <article class="depth-card"><span class="depth-kicker">Performance</span><h3>Keep expensive reasoning off the render clock</h3><p>When global search, adapters, diagnostics, or legacy simulation paths leak into every frame, the architecture is wrong. I look for ways to separate clocks, cache stable work, and make cost proportional to change.</p></article>
-                        <article class="depth-card"><span class="depth-kicker">Abstraction</span><h3>Replace special cases with authored primitives</h3><p>Earthcall repeatedly asks whether a hardcoded behavior can become a Law, relation, property path, or other primitive that a Person can inspect and author instead of trusting an invisible engine exception.</p></article>
-                        <article class="depth-card"><span class="depth-kicker">Integration</span><h3>Make boundaries explicit</h3><p>GPU ↔ CPU, C++ ↔ Python, native ↔ web, model ↔ robot, agent ↔ repository: the interesting bugs live at boundaries. I prefer typed contracts, observable state, and narrow interfaces over magical coupling.</p></article>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Personal About Section -->
-            <section id="p-about" class="section about-section">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">04 // Background</span>
-                        <h2 class="section-title">About, Education &amp; Principles</h2>
-                        <p class="section-subtitle">I am interested in software as both machinery and representation: what the system does, and what its structure says the world is.</p>
-                    </div>
-                    <div class="about-grid">
-                        <div class="about-text-column">
-                            <p class="lead-text">I’m an undergraduate in <strong>Computer Science &amp; Engineering at the University of California, Merced</strong>. I learn fastest by building systems large enough that the abstractions eventually fight back.</p>
-                            <p>Earthcall began as a world-authoring idea and became an experiment in computational ontology, runtime Laws, graphics, persistence, identity, and human-facing tools. Robotics gives me the opposite pressure: the world is not an abstraction, the camera is noisy, coordinate frames disagree, hardware has limits, and the code has to touch reality.</p>
-                            <p>Writing is the third strand. Fiction, screenwriting, and Dimension of Thought train the same faculty from another direction: hold an entire world in mind, discover the relationships that make it coherent, then make those relationships legible to another person.</p>
-                            <p>That is the common thread in my work: <strong>build the whole without losing the truth of the parts.</strong></p>
-                            <dl class="quick-facts">
-                                <div class="fact-item"><dt>Education</dt><dd>UC Merced · Computer Science &amp; Engineering</dd></div>
-                                <div class="fact-item"><dt>Primary Domains</dt><dd>Systems, Graphics, Ontology, Robotics, AI Tooling</dd></div>
-                                <div class="fact-item"><dt>Creative Work</dt><dd>Dimension of Thought · Fiction · Screenwriting</dd></div>
-                                <div class="fact-item"><dt>Based In</dt><dd>California</dd></div>
-                                <div class="fact-item"><dt>Opportunity Window</dt><dd>Summer / Fall 2027 internships &amp; research</dd></div>
-                                <div class="fact-item"><dt>Email</dt><dd><a href="mailto:zhangzachary834@gmail.com">zhangzachary834@gmail.com</a></dd></div>
-                            </dl>
-                        </div>
-                        <div class="about-pillars-column">
-                            <h3 class="pillars-heading">How I Judge a System</h3>
-                            <article class="pillar-card"><div class="pillar-header"><span class="pillar-num">01</span><h4>Model the Thing, Not the Convenience</h4></div><p>Useful abstractions simplify reality without quietly falsifying it. Names, ownership, identity, and boundaries should correspond to something real.</p></article>
-                            <article class="pillar-card"><div class="pillar-header"><span class="pillar-num">02</span><h4>Prefer Generative Primitives</h4></div><p>A small set of strong primitives that compose is more powerful than an endless catalog of one-off features.</p></article>
-                            <article class="pillar-card"><div class="pillar-header"><span class="pillar-num">03</span><h4>Human Authority Stays Human</h4></div><p>AI can search, draft, test, and implement at enormous scale. The person remains responsible for intent, architecture, judgment, and consequences.</p></article>
-                            <article class="pillar-card"><div class="pillar-header"><span class="pillar-num">04</span><h4>Performance Is Architectural Feedback</h4></div><p>When the system is slow, I want to know which assumption made the work expensive — not merely which line can be micro-optimized.</p></article>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Personal Skills Section -->
-            <section id="p-skills" class="section skills-section">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">05 // Technical Toolkit</span>
-                        <h2 class="section-title">Tools I Can Actually Build With</h2>
-                        <p class="section-subtitle">Grouped by the kinds of problems they let me solve, not by keyword count.</p>
-                    </div>
-                    <div class="skills-categories-grid">
-                        <article class="skill-category-card"><h3>Languages</h3><ul class="skill-list"><li><span>C++20</span><span class="skill-level">Earthcall / systems</span></li><li><span>Python 3</span><span class="skill-level">Robotics / tooling</span></li><li><span>Java</span><span class="skill-level">Coursework / software</span></li><li><span>JavaScript / TypeScript</span><span class="skill-level">Web surfaces</span></li><li><span>WGSL / GLSL</span><span class="skill-level">GPU shaders</span></li><li><span>HTML / CSS</span><span class="skill-level">Interactive web</span></li></ul></article>
-                        <article class="skill-category-card"><h3>Systems &amp; Runtime</h3><ul class="skill-list"><li><span>CMake · WASM</span><span class="skill-level">Native + web builds</span></li><li><span>POSIX · Linux · macOS</span><span class="skill-level">Host/runtime work</span></li><li><span>IPC · FlatBuffers</span><span class="skill-level">Cross-process boundaries</span></li><li><span>Event-driven / Rete systems</span><span class="skill-level">Runtime rules</span></li><li><span>Git · GitHub · CI</span><span class="skill-level">Daily engineering</span></li></ul></article>
-                        <article class="skill-category-card"><h3>Graphics &amp; Mathematics</h3><ul class="skill-list"><li><span>WebGPU · OpenGL</span><span class="skill-level">Rendering systems</span></li><li><span>GLM · GLFW · ImGui</span><span class="skill-level">Engine/tooling stack</span></li><li><span>SDFs · Raymarching</span><span class="skill-level">Implicit geometry</span></li><li><span>SAT Collision</span><span class="skill-level">Computational geometry</span></li><li><span>Linear Algebra · Vector Calculus</span><span class="skill-level">Spatial reasoning</span></li></ul></article>
-                        <article class="skill-category-card"><h3>Robotics &amp; AI</h3><ul class="skill-list"><li><span>PyTorch · OpenVLA-OFT</span><span class="skill-level">VLA inference</span></li><li><span>Intel RealSense</span><span class="skill-level">RGB-D perception</span></li><li><span>AprilTag</span><span class="skill-level">Pose calibration</span></li><li><span>JAKA SDK</span><span class="skill-level">Manipulator control</span></li><li><span>Multi-agent orchestration</span><span class="skill-level">Human-governed workflows</span></li></ul></article>
-                        <article class="skill-category-card"><h3>Product &amp; Web</h3><ul class="skill-list"><li><span>React · Vite</span><span class="skill-level">Interactive surfaces</span></li><li><span>FastAPI · SQLite</span><span class="skill-level">Local applications</span></li><li><span>Accessible HTML</span><span class="skill-level">Semantic interfaces</span></li><li><span>Technical writing</span><span class="skill-level">Architecture &amp; design docs</span></li></ul></article>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Personal Contact Section -->
-            <section id="p-contact" class="section contact-section">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">06 // Connect</span>
-                        <h2 class="section-title">Get in Touch</h2>
-                        <p class="section-subtitle">Open to Summer / Fall 2027 internships, research collaborations, systems work, robotics, graphics, and unusually ambitious technical conversations.</p>
-                    </div>
-
-                    <div class="contact-wrapper">
-                        <div class="contact-card-main">
-                            <div class="contact-links-grid">
-                                <div class="contact-item-card">
-                                    <div class="contact-item-info">
-                                        <span class="item-label">Direct Email</span>
-                                        <a href="mailto:zhangzachary834@gmail.com" class="item-link">zhangzachary834@gmail.com</a>
-                                    </div>
-                                    <button class="btn btn-small btn-primary copy-email-btn" data-email="zhangzachary834@gmail.com">Copy Email</button>
-                                </div>
-                                <div class="contact-item-card">
-                                    <div class="contact-item-info">
-                                        <span class="item-label">GitHub</span>
-                                        <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="item-link">zhangzachary834-commits</a>
-                                    </div>
-                                    <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Explore ↗</a>
-                                </div>
-                                <div class="contact-item-card">
-                                    <div class="contact-item-info">
-                                        <span class="item-label">LinkedIn</span>
-                                        <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="item-link">zachary-of-zhang</a>
-                                    </div>
-                                    <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Connect ↗</a>
-                                </div>
-                            </div>
-
-                            <div class="quick-composer">
-                                <h3>Send a Quick Note</h3>
-                                <p class="composer-desc">Opens your mail client with a pre-filled draft directly to Zach.</p>
-                                <form id="personal-email-form" class="composer-form">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="p-form-name">Your Name</label>
-                                            <input type="text" id="p-form-name" name="name" placeholder="Ada Lovelace" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="p-form-subject">Subject</label>
-                                            <input type="text" id="p-form-subject" name="subject" placeholder="Earthcall / Systems / Collaboration" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="p-form-message">Message</label>
-                                        <textarea id="p-form-message" name="message" rows="4" placeholder="Hi Zachary — I saw your work on..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-submit">Open Pre-filled Email <span aria-hidden="true">→</span></button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-
-        <!-- ===================================================================
-             MODE 2: DIMENSION OF THOUGHT — LIFE CONNECTIONS & PHILOSOPHY PLATFORM
-             =================================================================== -->
-        <div id="mode-dimension-view" class="site-mode-view">
-            <!-- Dimension Hero -->
-            <section id="d-home" class="hero section">
-
-                <div class="container hero-container">
-                    <div class="hero-split-layout">
-                        <div class="hero-copy-column">
-                            <p class="hero-kicker">
-                                <span class="pulse-dot" aria-hidden="true"></span>
-                                Life Connections Platform · Holistic Digital Space
-                            </p>
-
-                            <h1 class="hero-title">
-                                The internet is many scattered stars.<br>
-                                Dimension of Thought seeks to form the <em>constellation</em>.
-                            </h1>
-
-                            <div class="hero-typewriter-container" aria-live="polite">
-                                <span class="typewriter-prefix">✧</span>
-                                <span id="d-typewriter-text" class="typewriter-text"></span>
-                                <span class="cursor" aria-hidden="true">▍</span>
-                            </div>
-
-                            <p class="hero-bio">
-                                Welcome to <strong>Dimension of Thought</strong>. More than a blog, forum, or academic journal — it is an open digital embodiment of human life, relationships, and deep thought. Created by <strong>Zachary Zhang</strong>, this space explores how digital power can bring us closer to real life, shaping technology after the mind, heart, and soul.
-                            </p>
-
-                            <div class="hero-cta-group">
-                                <a href="library.html" class="btn btn-primary">Explore The Library <span aria-hidden="true">→</span></a>
-                                <a href="manifesto.html" class="btn btn-secondary">Read The Manifesto</a>
-                                <a href="ecosystem.html" class="btn btn-ghost">Earthcall &amp; Initiatives</a>
-                                <button class="btn btn-ghost copy-email-btn" data-email="zhangzachary834@gmail.com" title="Copy email address">
-                                    Copy Email
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="hero-visual-column">
-                            <div class="emblem-showcase-card">
-                                <div class="emblem-glow-ring" aria-hidden="true"></div>
-                                <img src="assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="hero-emblem-img" width="280" height="280">
-                                <div class="emblem-caption">
-                                    <span class="emblem-tag">✧ Visual Emblem</span>
-                                    <p>The Living Word, The Quill, and The Cosmic Symphony</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <ul class="hero-stats" aria-label="Core Pillars">
-                        <li class="stat-card">
-                            <span class="stat-value">The Constellation</span>
-                            <span class="stat-label">Unifying fragmented communities into relational wholeness</span>
-                        </li>
-                        <li class="stat-card">
-                            <span class="stat-value">Narrative Continuum</span>
-                            <span class="stat-label">Reality as an interconnected tapestry of grand stories</span>
-                        </li>
-                        <li class="stat-card">
-                            <span class="stat-value">Writers of Light</span>
-                            <span class="stat-label">Storytelling and collaborative words from the heart</span>
-                        </li>
-                        <li class="stat-card">
-                            <span class="stat-value">Earthcall Substrate</span>
-                            <span class="stat-label">Person-centered computational ontology &amp; engine</span>
-                        </li>
-                    </ul>
+            </div>
+        </section>
+
+        <section id="now" class="section">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">02 // Now</span>
+                    <h2 class="section-title">What currently has my attention.</h2>
+                    <p class="section-subtitle">Not a status report. More like the current weather inside the workshop.</p>
                 </div>
 
-                <a href="#d-story" class="scroll-indicator" aria-label="Scroll to Story">
-                    <span>The Story</span>
-                    <span class="scroll-chevron" aria-hidden="true"></span>
-                </a>
-            </section>
-
-            <!-- Dimension Story Section -->
-            <section id="d-story" class="section story-section">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">01 // Origin &amp; Vision</span>
-                        <h2 class="section-title">The Story of Dimension of Thought</h2>
-                        <p class="section-subtitle">From disconnected spheres of life to a digital embodiment of relationships.</p>
-                    </div>
-
-                    <div class="story-grid">
-                        <article class="story-card story-origin">
-                            <div class="story-card-tag">Origin Story</div>
-                            <h3 class="story-heading">Bringing Our Worlds Together</h3>
-                            <p class="story-quote">
-                                “Hey there. I'm Zach, the founder of Dimension of Thought. Originally, I created this space because the many communities in my life existed as isolated islands. My family didn't know my school very well, my school didn't know my church, and my church didn't know my family.”
-                            </p>
-                            <p>
-                                We live in a world where our identities are fractured across separate platforms and institutions. Over time, I realized this site’s true purpose: not merely to serve as a bulletin board, but to become a <strong>digital embodiment of life and relationships</strong>.
-                            </p>
-                            <div style="margin-top: auto; padding-top: 14px;">
-                                <a href="story.html" class="btn btn-primary btn-small">Read Full Story →</a>
-                            </div>
-                        </article>
-
-                        <article class="story-card story-construction">
-                            <div class="story-card-tag">Philosophy of Building</div>
-                            <h3 class="story-heading">Why We Publish the Construction Site</h3>
-                            <p class="story-quote">
-                                “You might wonder why so many ideas here are actively unfolding in the open. Ah, you'd be surprised at the reason why! It's because I believe there is much more to sharing than just polished and finished work.”
-                            </p>
-                            <p>
-                                I want to invite you directly into the process from the ground up. When you see the building being raised brick by brick, you are invited to become part of the vision. Every builder's heart matters.
-                            </p>
-                            <div class="story-footer-note">
-                                <span class="badge">Open Collaboration</span>
-                                <span>Soon, this will be our shared vision.</span>
-                            </div>
-                        </article>
-                    </div>
+                <div class="personal-now-grid">
+                    <article class="personal-now-card">
+                        <h3>Earthcall</h3>
+                        <p>Building a computational world from first principles: beings, relations, Laws, rendering, persistence, and authored behavior.</p>
+                    </article>
+                    <article class="personal-now-card">
+                        <h3>Embodied systems</h3>
+                        <p>Robotics, perception, geometry, control, and the question of how software reaches out into physical space.</p>
+                    </article>
+                    <article class="personal-now-card">
+                        <h3>Writing & worldbuilding</h3>
+                        <p>Fiction, essays, screenwriting, imagined civilizations, and language for things that are easier to see than to explain.</p>
+                    </article>
+                    <article class="personal-now-card">
+                        <h3>Dimension of Thought</h3>
+                        <p>Exploring how ideas and people can meet across boundaries without being flattened into one algorithmic stream.</p>
+                    </article>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Dimension Manifesto Section -->
-            <section id="d-manifesto" class="section manifesto-section">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">02 // Constitutional Manifesto</span>
-                        <h2 class="section-title">Elevating the Discussion</h2>
-                        <p class="section-subtitle">Beyond linear boxes and into the depth of the human person.</p>
-                    </div>
-
-                    <blockquote class="manifesto-pull-quote">
-                        “Here, we don't just think about how things work. We think about the very reality in which they work in the first place. True knowledge is knowledge that can be acted upon, brought into our lives, and makes life more beautiful and good. Good art is not merely to be admired, but to be lived.”
-                    </blockquote>
-
-                    <div class="manifesto-grid">
-                        <article class="manifesto-card">
-                            <div class="manifesto-icon">▢ ➔ ✧</div>
-                            <h3>Beyond Lines and Squares</h3>
-                            <p>
-                                Currently, the digital landscape operates almost exclusively in straight lines and rigid squares. We are breaking traditional social tools down to reshape them around the human soul.
-                            </p>
-                        </article>
-
-                        <article class="manifesto-card">
-                            <div class="manifesto-icon">♾</div>
-                            <h3>The Holistic Narrative Continuum</h3>
-                            <p>
-                                Reality is a unified, grand story where mathematical truth, moral beauty, human sorrow, scientific discovery, and community fellowship harmonize into one continuum.
-                            </p>
-                        </article>
-
-                        <article class="manifesto-card">
-                            <div class="manifesto-icon">♥</div>
-                            <h3>Bringing Digital Closer to Real Life</h3>
-                            <p>
-                                Software must serve the Person—elevating our minds, strengthening our communities, and releasing the profound potential within each person.
-                            </p>
-                        </article>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 24px;">
-                        <a href="manifesto.html" class="btn btn-primary">Explore The Full Manifesto &amp; Creed →</a>
-                    </div>
+        <section class="section">
+            <div class="container">
+                <span class="section-tag">03 // Why this site exists</span>
+                <h2 class="personal-note">I wanted one place where the whole constellation could remain visible.</h2>
+                <div class="site-purpose">
+                    <p>
+                        A technical portfolio naturally compresses a person into projects, skills, and evidence.
+                        Those things matter, so they now have their own dedicated home. But this site is allowed to be wider:
+                        part workshop, part library, part map, part unfinished autobiography. If you only want the engineering,
+                        the portfolio is one click away. If you want the rest of me, keep wandering.
+                    </p>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Dimension Library Section -->
-            <section id="d-library" class="section library-section">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">03 // The Library &amp; Archives</span>
-                        <h2 class="section-title">Essays, Research &amp; Inquiries</h2>
-                        <p class="section-subtitle">Thoughtful investigations into ontology, faith, moral philosophy, and human narrative.</p>
-                    </div>
-
-                    <div class="essays-grid">
-                        <article class="essay-card" data-category="ontology">
-                            <div class="essay-meta">
-                                <span class="essay-tag">Epistemology · Relational Ontology</span>
-                                <span class="essay-read-time">9 min read</span>
-                            </div>
-                            <h3 class="essay-title"><a href="posts/you-dont-prove-persons.html">You Don't Prove Persons</a></h3>
-                            <p class="essay-subtitle">The Category Error Hiding Inside "There's No Scientific Evidence for God"</p>
-                            <p class="essay-excerpt">
-                                Applying empirical object-metrics to personal reality is a profound category error. You do not dissect a person to prove their love; you enter relation.
-                            </p>
-                            <div class="essay-card-footer">
-                                <span class="essay-author">By Zachary Zhang</span>
-                                <a href="posts/you-dont-prove-persons.html" class="btn btn-small btn-primary">Read Full Essay →</a>
-                            </div>
-                        </article>
-
-                        <article class="essay-card" data-category="reflections">
-                            <div class="essay-meta">
-                                <span class="essay-tag">Narrative &amp; Vocation</span>
-                                <span class="essay-read-time">9 min read</span>
-                            </div>
-                            <h3 class="essay-title"><a href="posts/central-valley-ucla.html">The Tale of the Central Valley &amp; UCLA's Quiet Revolution</a></h3>
-                            <p class="essay-subtitle">Highway 99, California's Agricultural Spine, and the Pursuit of Purpose</p>
-                            <p class="essay-excerpt">
-                                Imagine driving down Highway 99 through California's Central Valley. Connecting the soil of hard labor to the lecture halls of UCLA reveals a quiet revolution of human purpose.
-                            </p>
-                            <div class="essay-card-footer">
-                                <span class="essay-author">By Zachary Zhang</span>
-                                <a href="posts/central-valley-ucla.html" class="btn btn-small btn-primary">Read Full Essay →</a>
-                            </div>
-                        </article>
-
-                        <article class="essay-card" data-category="ontology">
-                            <div class="essay-meta">
-                                <span class="essay-tag">Metaphysics &amp; Systems</span>
-                                <span class="essay-read-time">8 min read</span>
-                            </div>
-                            <h3 class="essay-title"><a href="posts/narrative-continuum.html">The Holistic Narrative Continuum</a></h3>
-                            <p class="essay-subtitle">Why Reality is an Overarching Symphony of Smaller Stories</p>
-                            <p class="essay-excerpt">
-                                Reality is not a collection of isolated, colliding atoms in empty space. It is a grand narrative where every person, relation, and discovery forms an unbreakable continuum.
-                            </p>
-                            <div class="essay-card-footer">
-                                <span class="essay-author">By Zachary Zhang</span>
-                                <a href="posts/narrative-continuum.html" class="btn btn-small btn-primary">Read Full Essay →</a>
-                            </div>
-                        </article>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 36px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-                        <a href="library.html" class="btn btn-secondary">View All Essays in The Library Archive →</a>
-                        <a href="studio.html" class="btn btn-primary">✍️ Open Drafting Studio →</a>
-                    </div>
+        <section class="section contact-section">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">04 // Keep wandering</span>
+                    <h2 class="section-title">Pick another trail.</h2>
                 </div>
-            </section>
-
-            <!-- Dimension Ecosystem Section -->
-            <section id="d-ecosystem" class="section ecosystem-section">
-                <div class="container">
-                    <div class="section-header left">
-                        <span class="section-tag">04 // Ecosystem &amp; Initiatives</span>
-                        <h2 class="section-title">Where Thought Meets Action</h2>
-                        <p class="section-subtitle">The software, communities, and creative services powering the Dimension.</p>
-                    </div>
-
-                    <div class="initiatives-grid">
-                        <article class="initiative-card initiative-highlight">
-                            <div class="initiative-badge">Computational Substrate</div>
-                            <h3>Earthcall</h3>
-                            <p class="initiative-lead">A Person-centered ontology that orders the software engine attached to it.</p>
-                            <p>Earthcall is the technical and mathematical embodiment of Dimension of Thought’s philosophy, establishing the Person as the fundamental ontological foundation.</p>
-                            <div class="initiative-actions">
-                                <a href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-small">GitHub Repository ↗</a>
-                                <a href="ecosystem.html" class="btn btn-ghost btn-small">Explore Substrate →</a>
-                            </div>
-                        </article>
-
-                        <article class="initiative-card">
-                            <div class="initiative-badge">Community Service</div>
-                            <h3>Writers of Light</h3>
-                            <p class="initiative-lead">Experienced writers ready to help you flesh out the words of your heart.</p>
-                            <p>Free editorial and collaborative writing assistance for stories, personal messages, and philosophical essays. Starting with the heart, not with economy.</p>
-                            <div class="initiative-actions">
-                                <a href="ecosystem.html" class="btn btn-secondary btn-small">Learn More →</a>
-                            </div>
-                        </article>
-
-                        <article class="initiative-card">
-                            <div class="initiative-badge">Discussion Forum</div>
-                            <h3>Living Through Dialogue</h3>
-                            <p class="initiative-lead">Conversational circles exploring life, science, faith, and art at their deepest levels.</p>
-                            <p>A haven away from algorithmically polarized feeds, integrating scientific analysis, emotional nuance, artistic beauty, and spiritual wisdom.</p>
-                            <div class="initiative-actions">
-                                <a href="ecosystem.html" class="btn btn-secondary btn-small">Join Circle →</a>
-                            </div>
-                        </article>
-                    </div>
+                <div class="hero-cta-group">
+                    <a href="portfolio.html" class="btn btn-primary">Engineering Portfolio</a>
+                    <a href="story.html" class="btn btn-secondary">Read the Story</a>
+                    <a href="library.html" class="btn btn-secondary">Browse the Library</a>
+                    <a href="ecosystem.html" class="btn btn-secondary">Explore the Ecosystem</a>
+                    <a href="contact.html" class="btn btn-ghost">Say hello</a>
                 </div>
-            </section>
-
-            <!-- Dimension Contact Section -->
-            <section id="d-contact" class="section contact-section">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">05 // Community &amp; Connection</span>
-                        <h2 class="section-title">Join the Dimension of Thought</h2>
-                        <p class="section-subtitle">Start a conversation, share a reflection, or collaborate with us.</p>
-                    </div>
-
-                    <div class="contact-wrapper">
-                        <div class="contact-card-main">
-                            <div class="contact-links-grid">
-                                <div class="contact-item-card">
-                                    <div class="contact-item-info">
-                                        <span class="item-label">Direct Email</span>
-                                        <a href="mailto:zhangzachary834@gmail.com" class="item-link">zhangzachary834@gmail.com</a>
-                                    </div>
-                                    <button class="btn btn-small btn-primary copy-email-btn" data-email="zhangzachary834@gmail.com">Copy Email</button>
-                                </div>
-                                <div class="contact-item-card">
-                                    <div class="contact-item-info">
-                                        <span class="item-label">GitHub</span>
-                                        <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="item-link">zhangzachary834-commits</a>
-                                    </div>
-                                    <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Explore ↗</a>
-                                </div>
-                                <div class="contact-item-card">
-                                    <div class="contact-item-info">
-                                        <span class="item-label">LinkedIn</span>
-                                        <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="item-link">zachary-of-zhang</a>
-                                    </div>
-                                    <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-secondary">Connect ↗</a>
-                                </div>
-                            </div>
-
-                            <div class="quick-composer">
-                                <h3>Share a Thought or Reflection</h3>
-                                <p class="composer-desc">Send a message directly to Zach regarding an essay, Writers of Light, or the platform.</p>
-                                <form id="dim-email-form" class="composer-form">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="d-form-name">Your Name</label>
-                                            <input type="text" id="d-form-name" name="name" placeholder="Your Name" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="d-form-topic">Area of Interest</label>
-                                            <select id="d-form-topic" name="topic">
-                                                <option value="General Discussion">General Thought &amp; Connection</option>
-                                                <option value="Writers of Light">Writers of Light</option>
-                                                <option value="Essay Feedback">Essay Feedback</option>
-                                                <option value="Earthcall Substrate">Earthcall Substrate</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="d-form-subject">Subject</label>
-                                        <input type="text" id="d-form-subject" name="subject" placeholder="Thoughts on..." required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="d-form-message">Your Message</label>
-                                        <textarea id="d-form-message" name="message" rows="4" placeholder="Share your words here..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-submit">Open Pre-filled Email <span aria-hidden="true">→</span></button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </main>
 
-    
-    <!-- Global Command Palette Modal (Cmd + K) -->
-    <div id="palette-modal" class="palette-modal" role="dialog" aria-modal="true" aria-label="Command Palette" hidden>
-        <div class="palette-backdrop" id="palette-backdrop"></div>
-        <div class="palette-window">
-            <div class="palette-input-line">
-                <span class="palette-search-icon" aria-hidden="true">🔍</span>
-                <input type="text" id="palette-input" class="palette-input" placeholder="Search projects, simulators, essays, specs... (e.g. 'sat', 'specs', 'cv')" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                <span class="palette-kbd-badge">ESC</span>
-            </div>
-            <div class="palette-results" id="palette-results">
-                <!-- Dynamic Results Injected Here -->
-            </div>
-            <div class="palette-footer">
-                <span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span>
-                <span><kbd>Enter</kbd> select</span>
-                <span><kbd>ESC</kbd> close</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Print-Ready Résumé / CV Modal -->
-    <div id="resume-modal" class="project-drawer-modal" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title" hidden>
-        <div class="project-drawer-backdrop" id="resume-backdrop"></div>
-        <div class="project-drawer-content" style="max-width: 860px;">
-            <div class="drawer-header">
-                <div>
-                    <span class="drawer-tag">Curriculum Vitae // Computer Science &amp; Engineering</span>
-                    <h2 id="resume-modal-title" class="drawer-title">Zachary Zhang</h2>
-                    <p class="drawer-role">Computer Science &amp; Engineering · Systems Architect</p>
-                </div>
-                <div class="drawer-actions">
-                    <button type="button" class="btn btn-small btn-primary" onclick="window.print()">Print / Export PDF 🖨️</button>
-                    <button type="button" id="resume-close-btn" class="drawer-close-btn" aria-label="Close CV">✕</button>
-                </div>
-            </div>
-            <div class="drawer-body cv-printable-body">
-                <div class="cv-section">
-                    <h3 class="cv-section-title">Education</h3>
-                    <p><strong>University of California, Merced (UC Merced)</strong> — B.S. Computer Science &amp; Engineering</p>
-                </div>
-                <div class="cv-section">
-                    <h3 class="cv-section-title">Core Systems &amp; Research</h3>
-                    <div class="cv-entry">
-                        <h4>Earthcall Substrate (Creator &amp; Architect)</h4>
-                        <p class="cv-meta">C++20 · WebGPU (WGSL) · WebAssembly · Embedded React · Python Shared-Memory IPC</p>
-                        <p>Designed a Person-centered computational ontology ordering an attached graphics/simulation vessel. Authored Rete-style OntoMath law evaluation networks without hardcoded entity domain classes.</p>
-                    </div>
-                    <div class="cv-entry">
-                        <h4>Robotics Perception &amp; JAKA Teleoperation Pipeline</h4>
-                        <p class="cv-meta">OpenVLA-OFT (7B VLA) · PyTorch · Intel RealSense D435i · AprilTag 3 · Remote CUDA</p>
-                        <p>Constructed an end-to-end vision-language-action pipeline on remote CUDA clusters for real-time 6-DOF JAKA manipulator teleoperation with sub-100ms inference and automated AprilTag frame calibration.</p>
-                    </div>
-                    <div class="cv-entry">
-                        <h4>Continuous 3D SAT Collision Detection Engine</h4>
-                        <p class="cv-meta">Modern C++20 · Computational Geometry · Linear Algebra</p>
-                        <p>Engineered a continuous Separating Axis Theorem (SAT) collision engine evaluating face normals and edge cross-products for convex polyhedra with zero runtime heap allocations in inner loops.</p>
-                    </div>
-                    <div class="cv-entry">
-                        <h4>TeacherOps</h4>
-                        <p class="cv-meta">FastAPI · SQLite · Human-in-the-Loop Operations</p>
-                        <p>Built an operational coordination hub for family tutoring services with strict human-in-the-loop verification gates.</p>
-                    </div>
-                </div>
-                <div class="cv-section">
-                    <h3 class="cv-section-title">Technical Proficiencies</h3>
-                    <p><strong>Languages &amp; Substrates:</strong> C++20, WebGPU (WGSL), Python 3.12+, TypeScript, JavaScript, SQL, WebAssembly, CMake, Bash.</p>
-                    <p><strong>Mathematics:</strong> Linear Algebra, Convex Geometry, Multivariable Calculus, Discrete Mathematics, Rete Algorithm Networks.</p>
-                    <p><strong>Contact:</strong> zhangzachary834@gmail.com · github.com/zhangzachary834-commits · linkedin.com/in/zachary-of-zhang</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Terminal Modal -->
-    
-    <!-- Project Technical Spec Slide-Out Drawer -->
-    <div id="project-drawer-modal" class="project-drawer-modal" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
-        <div class="project-drawer-backdrop" id="project-drawer-backdrop"></div>
-        <div class="project-drawer-content" id="project-drawer-content">
-            <div class="drawer-header">
-                <div class="drawer-meta">
-                    <span class="drawer-tag">02 // Deep-Dive Architecture Spec</span>
-                    <h2 id="drawer-title" class="drawer-title">Project Title</h2>
-                    <p id="drawer-role" class="drawer-role">Systems &amp; Ontology</p>
-                </div>
-                <div class="drawer-actions">
-                    <a id="drawer-github-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-small btn-primary drawer-gh-btn" style="display:none;">GitHub Repo ↗</a>
-                    <button type="button" id="drawer-close-btn" class="drawer-close-btn" title="Close Spec Sheet (ESC)" aria-label="Close specification sheet">✕</button>
-                </div>
-            </div>
-
-            <div class="drawer-body" id="drawer-body">
-                <!-- Dynamic Interactive Project Content Injected Here -->
-            </div>
-        </div>
-    </div>
-
-    <div id="terminal-modal" class="terminal-modal" role="dialog" aria-modal="true" aria-labelledby="terminal-title" hidden>
-        <div class="terminal-backdrop" id="terminal-backdrop"></div>
-        <div class="terminal-window">
-            <div class="terminal-header">
-                <div class="terminal-controls">
-                    <button type="button" class="control-dot close-dot" id="terminal-close-btn" title="Close" aria-label="Close terminal"></button>
-                    <span class="control-dot min-dot" aria-hidden="true"></span>
-                    <span class="control-dot max-dot" aria-hidden="true"></span>
-                </div>
-                <div class="terminal-title" id="terminal-title">zachary@personal-substrate — cli</div>
-                <div class="terminal-hint">ESC to close · ` to toggle</div>
-            </div>
-            <div class="terminal-body" id="terminal-body">
-                <div class="terminal-output" id="terminal-output">
-                    <p class="term-line term-welcome">✧ Zachary Zhang // Dimension of Thought CLI</p>
-                    <p class="term-line term-sub">Type <span class="term-cmd-highlight">help</span> for commands. Try <span class="term-cmd-highlight">mode personal</span> or <span class="term-cmd-highlight">mode dimension</span>.</p>
-                </div>
-                <div class="terminal-input-line">
-                    <label class="term-prompt" for="terminal-input">guest@zachary:~$</label>
-                    <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast-notification" class="toast-notification" role="status" aria-live="polite">
-        <span class="toast-icon" aria-hidden="true">✓</span>
-        <span id="toast-message" class="toast-message">Copied to clipboard.</span>
-    </div>
-
-    <!-- Back to top button -->
-    <button id="back-to-top" class="back-to-top-btn" title="Back to top" aria-label="Back to top">↑</button>
-
-    <!-- Footer -->
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-left">
                 <div class="footer-brand-row">
-                    <img src="assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
-                    <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
+                    <img src="assets/dimension-emblem.jpg" alt="Dimension of Thought emblem" class="footer-emblem" width="28" height="28">
+                    <p class="footer-copy">&copy; 2026 Zachary Zhang</p>
                 </div>
-                <p class="footer-tagline">Systems, Ontology, and the Constellation of Life &amp; Community.</p>
+                <p class="footer-tagline">A personal home for worlds built in code, story, thought, and relationship.</p>
             </div>
-            <nav class="footer-links" aria-label="Footer Navigation">
-                <a href="#p-home" class="footer-link-personal">Portfolio</a>
-                <a href="#d-home" class="footer-link-dimension">Dimension of Thought</a>
-                <a href="library.html">The Library</a>
+            <nav class="home-footer-links" aria-label="Footer navigation">
+                <a href="portfolio.html">Engineering</a>
+                <a href="story.html">Story</a>
+                <a href="library.html">Library</a>
+                <a href="manifesto.html">Dimension of Thought</a>
                 <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             </nav>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        (() => {
+            const root = document.documentElement;
+            const btn = document.getElementById('theme-toggle-btn');
+            const icon = document.getElementById('theme-icon');
+            const saved = localStorage.getItem('zachary-theme');
+            if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+
+            const syncIcon = () => {
+                icon.textContent = root.dataset.theme === 'light' ? '☀' : '☽';
+            };
+            syncIcon();
+
+            btn.addEventListener('click', () => {
+                root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('zachary-theme', root.dataset.theme);
+                syncIcon();
+            });
+        })();
+    </script>
 </body>
 </html>
