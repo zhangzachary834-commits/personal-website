@@ -7,15 +7,128 @@
  */
 
 function escapeHtml(str) {
-    if (str === null || str === undefined) return "";
-    return String(str)
+    return String(str ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 }
 
+function escapeAttribute(str) {
+    return escapeHtml(str)
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function sanitizeUrl(rawUrl) {
+    const value = String(rawUrl ?? "").trim();
+    if (!value) return "#";
+
+    // Reject executable/opaque schemes while keeping normal web, mail, hash,
+    // and relative URLs used by the static site and exported essays.
+    if (/^(?:javascript|vbscript|data):/i.test(value)) return "#";
+    if (/^[a-z][a-z0-9+.-]*:/i.test(value) && !/^(?:https?|mailto):/i.test(value)) return "#";
+
+    return escapeAttribute(value);
+}
+
+function parseMarkdown(md) {
+    if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
+
+    const NL = String.fromCharCode(10);
+    const dropCaps = [];
+
+    // Preserve the one explicitly supported inline HTML construct, but never
+    // preserve arbitrary raw HTML from authored Markdown.
+    let html = String(md).replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, (match, text) => {
+        const token = `@@DROPCAP_${dropCaps.length}@@`;
+        dropCaps.push(escapeHtml(text));
+        return token;
+    });
+
+    // Escape author input before adding our own controlled markup. This keeps
+    // the live preview and exported article generator from becoming an XSS sink.
+    html = escapeHtml(html);
+
+    html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+        return "<pre><code>" + code.trim() + "</code></pre>";
+    });
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+    html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
+    html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
+    html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
+    html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
+    html = html.replace(/^&gt; (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
+    html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
+    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) =>
+        `<img src="${sanitizeUrl(url)}" alt="${escapeAttribute(alt)}" style="max-width:100%; border-radius:8px; margin:20px 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);">`
+    );
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, url) =>
+        `<a href="${sanitizeUrl(url)}" class="inline-link" target="_blank" rel="noopener noreferrer">${label}</a>`
+    );
+    html = html.replace(/\[\[(.*?)\]\]/g, (match, concept) =>
+        `<a href="#" class="wiki-link" data-concept="${escapeAttribute(concept)}" title="Concept Node: ${escapeAttribute(concept)}">[[ ${concept} ]]</a>`
+    );
+    html = html.replace(/\[ \]/g, '<input type="checkbox" disabled style="margin-right:8px;">');
+    html = html.replace(/\[x\]/gi, '<input type="checkbox" checked disabled style="margin-right:8px;">');
+    html = html.replace(/@@DROPCAP_(\d+)@@/g, (match, index) =>
+        `<span class="drop-cap">${dropCaps[Number(index)] ?? ""}</span>`
+    );
+
+    const rawBlocks = html.split(NL + NL);
+    const formattedBlocks = rawBlocks.map((block) => {
+        block = block.trim();
+        if (!block) return "";
+        if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
+
+        if (block.startsWith("|")) {
+            const rows = block.split(NL).filter(line => line.trim().startsWith("|"));
+            let tableHTML = "<table style='width:100%; border-collapse:collapse; margin:20px 0; font-size:0.95em;'>";
+            rows.forEach((row, idx) => {
+                if (row.match(/^\|[\s-:|]+\|$/)) return;
+                const cells = row.split("|").slice(1, -1).map(c => c.trim());
+                tableHTML += "<tr>";
+                cells.forEach(cell => {
+                    const tag = idx === 0 ? "th" : "td";
+                    const style = idx === 0
+                        ? "border-bottom:2px solid var(--line-strong); padding:12px 8px; text-align:left; font-weight:600;"
+                        : "border-bottom:1px solid var(--line); padding:12px 8px;";
+                    tableHTML += `<${tag} style="${style}">${cell}</${tag}>`;
+                });
+                tableHTML += "</tr>";
+            });
+            tableHTML += "</table>";
+            return tableHTML;
+        }
+
+        if (block.startsWith("- ") || block.startsWith("* ")) {
+            const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
+            return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
+        }
+
+        if (/^\d+\.\s+/.test(block)) {
+            const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
+            return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
+        }
+
+        return "<p>" + block.split(NL).join("<br>") + "</p>";
+    });
+
+    return formattedBlocks.join(NL + NL);
+}
+
+function slugify(text) {
+    return (text || "")
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-") || "my-essay";
+}
+
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { slugify, parseMarkdown, escapeHtml };
+    module.exports = { slugify, parseMarkdown, escapeHtml, escapeAttribute, sanitizeUrl };
 }
 
 if (typeof document !== "undefined") {
@@ -380,20 +493,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const catLabel = catLabels[art.category] || "Original Inquiry";
             const readTime = art.readTime || "5 min read";
             const author = art.author || "Zachary Zhang";
-            const previewUrl = "posts/" + (art.slug || "article") + ".html";
+            const previewUrl = "studio.html?load=" + encodeURIComponent(String(articleId));
+            const excerpt = art.excerpt || (art.content ? art.content.slice(0, 180) + "..." : "Open the locally saved draft.");
 
             card.innerHTML = `
                 <div class="essay-meta">
-                    <span class="essay-tag">${catLabel}</span>
-                    <span class="essay-read-time">${readTime}</span>
+                    <span class="essay-tag">${escapeHtml(catLabel)}</span>
+                    <span class="essay-read-time">${escapeHtml(readTime)}</span>
                 </div>
-                <h3 class="essay-title"><a href="${previewUrl}">${art.title || "Untitled Essay"}</a></h3>
-                <p class="essay-subtitle">${art.subtitle || ""}</p>
-                <p class="essay-excerpt">${art.excerpt || (art.content ? art.content.slice(0, 180) + "..." : "Read the complete drafted inquiry.")}</p>
+                <h3 class="essay-title"><a href="${sanitizeUrl(previewUrl)}">${escapeHtml(art.title || "Untitled Essay")}</a></h3>
+                <p class="essay-subtitle">${escapeHtml(art.subtitle || "")}</p>
+                <p class="essay-excerpt">${escapeHtml(excerpt)}</p>
                 <div class="essay-card-footer">
-                    <span class="essay-author">By ${author}</span>
+                    <span class="essay-author">By ${escapeHtml(author)}</span>
                     <div style="display:flex;gap:8px;align-items:center;">
-                        <a href="${previewUrl}" class="btn btn-small btn-primary">Read Full Essay →</a>
+                        <a href="${sanitizeUrl(previewUrl)}" class="btn btn-small btn-primary">Open Local Draft →</a>
                     </div>
                 </div>
             `;
@@ -1058,7 +1172,7 @@ Message:
 ${message}
 
 ---
-Sent via zacharyzhang.dev`;
+Sent via Dimension of Thought`;
             window.location.href = `mailto:zhangzachary834@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
         });
     }
@@ -1537,6 +1651,10 @@ Sent via Dimension of Thought Platform`;
         earthcall: () => {
             print("Earthcall Substrate", "term-cmd-highlight");
             print("Person-centered computational ontology with a C++20/WebGPU vessel.");
+            print("Formation Rete: Sweep → Vocabulary → AdapterRoad → LawDirect", "term-cyan");
+            print("Measured: 131,072 repeated relation queries → 0; 4.02× hostile stress speedup.", "term-gold");
+            print("Real Chess: 42 Laws graduated to Direct; p95 20.07ms → 11.16ms.", "term-accent");
+            print("Frontier: Prophetic relevant-change invalidation + incremental route/event maintenance.");
             print("Repository: https://github.com/zhangzachary834-commits/Earthcall");
         },
         projects: () => {
@@ -2242,12 +2360,12 @@ Sent via Dimension of Thought Platform`;
 
                 card.innerHTML = `
                     <div class="draft-title-row">
-                        <span class="draft-card-title">${d.title || "Untitled Draft"}</span>
+                        <span class="draft-card-title">${escapeHtml(d.title || "Untitled Draft")}</span>
                         ${d.isPublished ? '<span class="badge" style="background:var(--teal);color:#07080d;font-weight:700;">Published</span>' : '<span class="badge">Draft</span>'}
                     </div>
                     <div class="draft-meta-row">
-                        <span>${d.category || "ontology"}</span>
-                        <span>${updatedTime}</span>
+                        <span>${escapeHtml(d.category || "ontology")}</span>
+                        <span>${escapeHtml(updatedTime)}</span>
                     </div>
                     <div class="draft-actions-row">
                         <button type="button" class="btn btn-secondary btn-small load-draft-btn" style="flex:1;">Open</button>
@@ -2382,14 +2500,14 @@ Sent via Dimension of Thought Platform`;
     <title>${escapeHtml(draft.title)} — Dimension of Thought</title>
     <meta name="description" content="${escapeHtml(draft.subtitle || draft.excerpt || "")}">
     <meta name="author" content="${escapeHtml(draft.author || "Zachary Zhang")}">
-    <link rel="canonical" href="https://zhangzachary834-commits.github.io/posts/${draft.slug}.html">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/${draft.slug}.html">
 
     <meta property="og:type" content="article">
     <meta property="og:title" content="${escapeHtml(draft.title)} — Dimension of Thought">
     <meta property="og:description" content="${escapeHtml(draft.subtitle || "")}">
     <meta property="og:image" content="../assets/dimension-emblem.jpg">
 
-    <link rel="icon" type="image/jpeg" href="../assets/favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="../assets/dimension-emblem.jpg">
     <link rel="stylesheet" href="../style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2483,7 +2601,7 @@ ${compiledBody}
         <div class="container footer-container">
             <div class="footer-left">
                 <div class="footer-brand-row">
-                    <img src="../assets/favicon.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
+                    <img src="../assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
                     <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
                 </div>
                 <p class="footer-tagline">Systems, Ontology, and the Constellation of Life &amp; Community.</p>
@@ -2557,7 +2675,7 @@ ${currentDraft.content}`;
             publishBtn.addEventListener("click", async () => {
                 commitCurrentDraft();
                 if (!currentDraft.title || !currentDraft.content) {
-                    alert("Please provide at least a title and body text before publishing.");
+                    alert("Please provide at least a title and body text before saving.");
                     return;
                 }
 
@@ -2597,14 +2715,14 @@ ${currentDraft.content}`;
                         const writable = await handle.createWritable();
                         await writable.write(htmlContent);
                         await writable.close();
-                        showToast(`Successfully published to ${handle.name}!`);
+                        showToast(`Saved locally and exported to ${handle.name}.`);
                     } else {
                         const blob = new Blob([htmlContent], { type: "text/html" });
                         const link = document.createElement("a");
                         link.href = URL.createObjectURL(blob);
                         link.download = defaultName;
                         link.click();
-                        showToast("Published file downloaded.");
+                        showToast("Saved locally; HTML file downloaded.");
                     }
                 } catch (err) {
                     if (err.name !== 'AbortError') {
@@ -3396,11 +3514,11 @@ ${currentDraft.content}`;
                 tooltip.style.left = (pos.canvasX + 15) + "px";
                 tooltip.style.top = (pos.canvasY - 15) + "px";
                 tooltip.innerHTML = `
-                    <div style="font-size:0.72rem;color:${hoveredNode.color};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${catNames[hoveredNode.category] || hoveredNode.category}
+                    <div style="font-size:0.72rem;color:${escapeAttribute(hoveredNode.color)};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
+                        ${escapeHtml(catNames[hoveredNode.category] || hoveredNode.category)}
                     </div>
-                    <strong style="color:var(--gold);font-size:0.95rem;">${hoveredNode.title}</strong>
-                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${hoveredNode.subtitle}</div>` : ""}
+                    <strong style="color:var(--gold);font-size:0.95rem;">${escapeHtml(hoveredNode.title)}</strong>
+                    ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${escapeHtml(hoveredNode.subtitle)}</div>` : ""}
                 `;
             } else {
                 canvas.style.cursor = isDraggingCanvas ? "grabbing" : "grab";
@@ -4530,14 +4648,63 @@ ${currentDraft.content}`;
                                     <span class="drawer-metric-label">Unified Math Language</span>
                                 </div>
                                 <div class="drawer-metric-card">
-                                    <span class="drawer-metric-val">Rete Laws</span>
-                                    <span class="drawer-metric-label">Runtime Law Compilation</span>
+                                    <span class="drawer-metric-val">42 Direct</span>
+                                    <span class="drawer-metric-label">Chess Laws Graduated</span>
                                 </div>
                                 <div class="drawer-metric-card">
-                                    <span class="drawer-metric-val">React / WASM</span>
-                                    <span class="drawer-metric-label">Creator Console Surface</span>
+                                    <span class="drawer-metric-val">4.02×</span>
+                                    <span class="drawer-metric-label">Hostile Law-Direct Stress Speedup</span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="drawer-section">
+                            <span class="drawer-section-title">Formation Rete // Law-Direct Relevance Compiler</span>
+                            <p class="drawer-lead-text">
+                                Lower tiers discover relevance; higher tiers compile it. Once a current positive category road is proved,
+                                Earthcall can retain the concrete bearers and evaluate only the live residual condition instead of asking
+                                the relation graph the same structural question every pulse.
+                            </p>
+                            <div class="drawer-metrics-grid">
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">131,072 → 0</span><span class="drawer-metric-label">Repeated Relation Queries</span></div>
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">16.9M → 0</span><span class="drawer-metric-label">Returned Relation References</span></div>
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">10.94 → 9.61 ms</span><span class="drawer-metric-label">Real Chess Median</span></div>
+                                <div class="drawer-metric-card"><span class="drawer-metric-val">20.07 → 11.16 ms</span><span class="drawer-metric-label">Real Chess p95</span></div>
+                            </div>
+                            <div class="drawer-sim-box">
+                                <pre style="margin:0;overflow:auto;color:var(--teal);font:0.8rem/1.7 var(--font-mono);"><code>GENERAL FLOOR
+Sweep → Vocabulary → AdapterRoad
+                         │
+                         └── prove stable relevance
+                                  ↓
+                              LawDirect
+                                  ↓
+                       concrete bearers + live residual
+
+proved category hot path:
+Θ(P · L · M · D) → Θ(P · L · M)</code></pre>
+                            </div>
+                            <div class="drawer-cards-grid">
+                                <div class="drawer-info-card">
+                                    <h4>Relevant-change invalidation</h4>
+                                    <p>Next: use Prophetic abstract interpretation to decide whether a change can affect a proof before invalidating categories, direct routes, or Relation/Formations.</p>
+                                </div>
+                                <div class="drawer-info-card">
+                                    <h4>Incremental route repair</h4>
+                                    <p>BFS/Dijkstra-style discovery should repair only paths whose proof or cost went stale, instead of restarting from the entire Being graph.</p>
+                                </div>
+                                <div class="drawer-info-card">
+                                    <h4>Self-refining event topology</h4>
+                                    <p>Broad EventBus boundaries can compile into narrower dependency channels, then be recompiled as Prophetic knowledge becomes more precise.</p>
+                                </div>
+                                <div class="drawer-info-card">
+                                    <h4>OntoMath delta synthesis</h4>
+                                    <p>Stable Relation/Formation subsystems can compile into explicit delta-transfer functions, preserving a complete opcode/PropertyPath fallback for bootstrap and uncertainty.</p>
+                                </div>
+                            </div>
+                            <p style="margin:0;">
+                                <a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Analysis/LAW_DIRECT_TRAVERSAL_COMPLEXITY_AND_CI_RESULTS_2026-09-19.md" target="_blank" rel="noopener noreferrer" style="color:var(--gold);font-family:var(--font-mono);font-size:0.82rem;">Read the full measured O-complexity analysis ↗</a>
+                            </p>
                         </div>
 
                         <div class="drawer-section">
@@ -5709,6 +5876,10 @@ class VesselEngine {
                 const response = await fetch(LIVE_ENDPOINT, {
                     method: "GET",
                     mode: "cors",
+                    // Newer browsers may gate public HTTPS → loopback access behind
+                    // Local Network Access permission. This hint is ignored where
+                    // unsupported and the existing demo fallback remains authoritative.
+                    targetAddressSpace: "loopback",
                     cache: "no-store",
                     signal: controller.signal,
                     headers: { "Accept": "application/json" }
