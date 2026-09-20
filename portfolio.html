@@ -415,12 +415,116 @@
                         <div class="evidence-grid">
                             <article class="evidence-card"><span class="evidence-label">Runtime semantics</span><h4>Laws + Rete-style evaluation</h4><p>People author conditions and mathematical operations at runtime. The C++ substrate evaluates those Laws instead of forcing every behavior into a bespoke hardcoded path.</p></article>
                             <article class="evidence-card"><span class="evidence-label">Identity &amp; persistence</span><h4>Stable beings across save → hydration</h4><p>Identity, property paths, authored state, Persons, Zones, and dependencies are treated as first-class persistence problems rather than serialized afterthoughts.</p></article>
-                            <article class="evidence-card"><span class="evidence-label">Rendering &amp; geometry</span><h4>WebGPU, WGSL, SDFs, meshes</h4><p>The vessel includes a modern GPU rendering path, authored geometry, implicit surfaces, spatial interaction, and the infrastructure needed to make ontology visible.</p></article>
+                            <article class="evidence-card"><span class="evidence-label">Rendering &amp; geometry</span><h4>WebGPU, WGSL, SDFs, causal appearance</h4><p>The vessel includes authored geometry, implicit surfaces, and bounded OntoMath color fields compiled into WGSL at the SDF hit point — an early step toward making visible appearance descend from authored causes rather than renderer-only tricks.</p></article>
                             <article class="evidence-card"><span class="evidence-label">Person-facing authoring</span><h4>Tools become part of the world</h4><p>Creator tools, locomotion, selection, morphing, and other interactions are being moved toward First-Mover/Law semantics rather than remaining privileged UI exceptions.</p></article>
                             <article class="evidence-card"><span class="evidence-label">Interop</span><h4>Native, web, Python, foreign channels</h4><p>C++20, embedded React/Vite, WASM, Python processes, and external systems meet through explicit interfaces instead of collapsing into one opaque application layer.</p></article>
                             <article class="evidence-card"><span class="evidence-label">Engineering process</span><h4>Tests, CI, review, and many agents</h4><p>A multi-agent workflow is useful only when architecture remains coherent. Tests, bounded tasks, code review, and explicit invariants are how the project keeps many contributors aligned.</p></article>
                         </div>
                     </div>
+
+                    <section class="manifestation-showcase" aria-labelledby="manifestation-showcase-title">
+                        <div class="manifestation-hero">
+                            <div>
+                                <span class="section-tag">Graphics Architecture // The Uncanny Valley Cathedral</span>
+                                <h3 id="manifestation-showcase-title">From “it works” to “I want to stay here and look at it.”</h3>
+                                <p class="manifestation-lede">
+                                    Earthcall’s first detailed Cathedral exposed a new class of bug: it was beautiful enough at distance
+                                    that walking closer made its shortcuts feel false. I turned that aesthetic failure into an architectural
+                                    question — if Earthcall claims that beings should be represented according to what they are, then visible
+                                    structure should descend from authored causes that the world can actually inspect and change.
+                                </p>
+                                <div class="manifestation-equation" aria-label="Causal rendering flow">
+                                    <span>causal rendering</span>
+                                    <code>being → OntoMath field → WGSL → surface sample → pixel</code>
+                                    <small>the pixel is a manifestation of authored structure, not the hidden author of it</small>
+                                </div>
+                            </div>
+
+                            <aside class="manifestation-person-witness" aria-label="Person-side acceptance criterion">
+                                <span class="manifestation-witness-kicker">Person-level witness</span>
+                                <blockquote>“Nearness should reward inspection.”</blockquote>
+                                <p>
+                                    The milestone was not merely passing another renderer test. After the color-field work landed,
+                                    I started opening Earthcall because I wanted to <em>look at the world</em>, not only feel good that the engine worked.
+                                </p>
+                            </aside>
+                        </div>
+
+                        <div class="manifestation-arc" aria-label="Cathedral rendering arc">
+                            <article>
+                                <span>01</span>
+                                <h4>The place became worth approaching.</h4>
+                                <p>The Cathedral crossed Earthcall from isolated primitives into a dense authored environment: colonnades, nave, celestial SDF structures, ornament, and a strong focal axis.</p>
+                            </article>
+                            <article>
+                                <span>02</span>
+                                <h4>Approach exposed the scale cliff.</h4>
+                                <p>Low-resolution face textures and fake relief survived at distance, then collapsed under close inspection. The fix raised authorable texture resolution and reduced giant world-space stretching — but the deeper problem remained.</p>
+                            </article>
+                            <article>
+                                <span>03</span>
+                                <h4>Manifestation Integrity.</h4>
+                                <p>I connected the failure back to Earthcall’s README: pigment can truthfully be pigment, but carved relief should not exist only as painted darkness. Appearance should be derived from the structure that actually bears its meaning.</p>
+                            </article>
+                            <article>
+                                <span>04</span>
+                                <h4>Use the form pipeline for color.</h4>
+                                <p>My architectural call was simple: use the same field-oriented mathematical pipeline that renders an SDF’s form to render its coloration by field. That became a generic <code>Material.colorExpr</code> path rather than a Cathedral-only shader hack.</p>
+                            </article>
+                            <article class="is-live">
+                                <span>05</span>
+                                <h4>Living color fields.</h4>
+                                <p>Bounded OntoMath expressions now compile into WGSL <code>sdfColor(p)</code> and evaluate at the raymarched field-space hit point. The result survives approach without a texel-resolution cliff and supports multiple distinct field grammars.</p>
+                            </article>
+                        </div>
+
+                        <div class="manifestation-details">
+                            <article class="manifestation-code-card">
+                                <span class="manifestation-card-kicker">Implemented path</span>
+                                <h4>One authored expression, carried to the GPU.</h4>
+                                <div class="manifestation-code-flow" aria-label="OntoMath material compilation path">
+                                    <code>Material.colorExpr</code>
+                                    <span>→</span>
+                                    <code>OntoMath::Piecewise</code>
+                                    <span>→</span>
+                                    <code>sdfwgsl::compile()</code>
+                                    <span>→</span>
+                                    <code>sdfColor(p)</code>
+                                </div>
+                                <p>
+                                    The expression lives on the authored Material, survives persistence, and is compiled for the renderer.
+                                    Geometry and appearance remain distinct capabilities while sharing the same mathematical substrate.
+                                </p>
+                            </article>
+
+                            <article class="manifestation-code-card frontier">
+                                <span class="manifestation-card-kicker">What the demos proved</span>
+                                <h4>A grammar, not one rainbow shader.</h4>
+                                <p>
+                                    The field testbed now exercises stratified piecewise bands, quantized steps, turbulent marble-like fields,
+                                    radial falloffs, periodic lattices, Chladni-style nodal structure, and cardinal half-space splits.
+                                    A pond and monumental Cathedral forms use the same implicit substrate for very different visual language.
+                                </p>
+                            </article>
+                        </div>
+
+                        <div class="manifestation-thesis">
+                            <div>
+                                <span class="manifestation-card-kicker">My engineering thesis</span>
+                                <strong>Compile appearance from being.</strong>
+                                <p>
+                                    The renderer can approximate, cache, raymarch, rasterize, and optimize — but meaningful visible structure
+                                    should remain traceable to authored causes. The next visual frontier is to extend the same principle into
+                                    roughness, metallic response, emission, microstructure, lighting, reflections, and indirect illumination.
+                                </p>
+                            </div>
+                            <div class="manifestation-links">
+                                <a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/agent%20intercom/communication-threads/Cathedral%20Uncanny%20Valley%20Saga%209-18-26%20-%20GPT-5.6%20Sol.md" target="_blank" rel="noopener noreferrer">Read the Cathedral saga ↗</a>
+                                <a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/OntoMath_Driven_Material_Fields/OntoMath_Driven_Material_Fields.md" target="_blank" rel="noopener noreferrer">Material-field task ↗</a>
+                                <a href="https://github.com/zhangzachary834-commits/Earthcall/blob/sync-from-earthcall-main/docs/Agenda/Tasks/Specific%20Tasks/Notorious_Bench_Causal_Gothic_Linenfold_Witness/Notorious_Bench_Causal_Gothic_Linenfold_Witness.md" target="_blank" rel="noopener noreferrer">Notorious Bench witness ↗</a>
+                            </div>
+                        </div>
+                    </section>
 
                     <section class="relevance-showcase" aria-labelledby="relevance-showcase-title">
                         <div class="relevance-hero">
