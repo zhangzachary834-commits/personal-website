@@ -14,6 +14,106 @@ function escapeHtml(str) {
         .replace(/>/g, "&gt;");
 }
 
+function slugify(text) {
+    if (text === null || text === undefined) return "my-essay";
+    text = String(text).trim();
+    if (!text || !/[a-zA-Z0-9]/.test(text)) return "my-essay";
+    return text.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-');
+}
+
+function parseMarkdown(md) {
+    if (!md) return "<p class='lead-text' style='color: var(--muted); font-style: italic;'>Start typing in the editor on the left to see your formatted essay live here.</p>";
+
+    const NL = String.fromCharCode(10);
+    let html = md;
+
+    // Protect dropcaps
+    html = html.replace(/<span class=["']drop-cap["']>([\s\S]*?)<\/span>/gi, "___DROPCAP_$1___");
+
+    // Code blocks
+    html = html.replace(new RegExp("```([a-z]*)" + NL + "([\\s\\S]*?)```", "g"), (match, lang, code) => {
+        return "<pre><code>" + escapeHtml(code.trim()) + "</code></pre>";
+    });
+
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+    // Headings
+    html = html.replace(/^#### (.*$)/gim, "<h5>$1</h5>");
+    html = html.replace(/^### (.*$)/gim, "<h4>$1</h4>");
+    html = html.replace(/^## (.*$)/gim, "<h3>$1</h3>");
+    html = html.replace(/^# (.*$)/gim, "<h2>$1</h2>");
+
+    // Blockquotes
+    html = html.replace(/^\> (.*$)/gim, "<blockquote><p>$1</p></blockquote>");
+
+    // Horizontal Rule
+    html = html.replace(/^(?:---|[*]{3}|___)$/gim, "<hr class='essay-divider'>");
+
+    // Bold / Italic / Strikethrough
+    html = html.replace(/\*\*([^\*]+)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*([^\*]+)\*/g, "<em>$1</em>");
+    html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
+
+    // Images! Need this before links
+    html = html.replace(/!\[([^\]]+)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; display: block; margin: 1em auto; border-radius: 4px;">');
+
+    // Wiki Links
+    html = html.replace(/\[\[([^\]]+)\]\]/g, '<a href="#" class="wiki-link" data-concept="$1" title="Concept Node: $1">[[ $1 ]]</a>');
+
+    // Standard Links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="inline-link" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    // Checkboxes
+    html = html.replace(/\[ \]\s+(.*)/g, '<input type="checkbox" disabled style="margin-right:8px;"> $1');
+    html = html.replace(/\[x\]\s+(.*)/gi, '<input type="checkbox" checked disabled style="margin-right:8px;"> $1');
+
+    // Restore dropcaps
+    html = html.replace(/___DROPCAP_([\s\S]*?)___/g, '<span class="drop-cap">$1</span>');
+
+    const rawBlocks = html.split(NL + NL);
+    const formattedBlocks = rawBlocks.map((block) => {
+        block = block.trim();
+        if (!block) return "";
+        if (/^<(h[2-6]|blockquote|pre|hr|img)/i.test(block)) return block;
+
+        // Parse tables
+        if (block.startsWith("|")) {
+            const lines = block.split(NL).filter(line => line.trim().startsWith("|"));
+            if (lines.length > 2) {
+                let tableHtml = "<table>";
+                lines.forEach((line, i) => {
+                    if (i === 1 && line.includes("---")) return; // skip divider
+                    const cells = line.split("|").slice(1, -1).map(c => c.trim());
+                    tableHtml += "<tr>";
+                    cells.forEach(c => {
+                        tableHtml += i === 0 ? "<th>" + c + "</th>" : "<td>" + c + "</td>";
+                    });
+                    tableHtml += "</tr>";
+                });
+                tableHtml += "</table>";
+                return tableHtml;
+            }
+        }
+
+        if (block.startsWith("- ") || block.startsWith("* ")) {
+            const items = block.split(NL).map(line => line.replace(/^[-*]\s+/, "")).filter(Boolean);
+            return "<ul>" + items.map(it => "<li>" + it + "</li>").join("") + "</ul>";
+        }
+
+        if (/^\d+\.\s+/.test(block)) {
+            const items = block.split(NL).map(line => line.replace(/^\d+\.\s+/, "")).filter(Boolean);
+            return "<ol>" + items.map(it => "<li>" + it + "</li>").join("") + "</ol>";
+        }
+
+        return "<p>" + block.split(NL).join("<br>") + "</p>";
+    });
+
+    return formattedBlocks.join(NL + NL);
+}
+
 if (typeof module !== "undefined" && module.exports) {
     module.exports = { slugify, parseMarkdown, escapeHtml };
 }

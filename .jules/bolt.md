@@ -4,3 +4,6 @@
 ## 2026-08-16 - Layout Thrashing in Animation Loop
 **Learning:** `canvas.getBoundingClientRect()` causes layout thrashing and is very expensive when called 60 times a second inside a `requestAnimationFrame` loop like `drawConstellation`.
 **Action:** Cache the result of `getBoundingClientRect()` inside a variable and update it only when necessary (e.g. on window resize or scroll).
+## 2026-09-20 - Math.hypot Performance Bottleneck
+**Learning:** In Javascript, `Math.hypot` is a known performance bottleneck in tight loops (like physics simulations or rendering). Writing out the Euclidean distance manually `Math.sqrt(dx*dx + dy*dy)` results in a significant performance improvement due to the overhead of variable arguments parsing and internal safety checks inside `Math.hypot`.
+**Action:** When working on physics or rendering loops on the web, always prefer explicit `Math.sqrt(dx * dx + dy * dy)` over `Math.hypot(dx, dy)`.
