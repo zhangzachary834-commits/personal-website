@@ -86,22 +86,159 @@
             color: var(--muted);
         }
         .home-hero-aside {
-            padding: 28px;
+            position: relative;
+            min-height: 470px;
+            padding: 0;
+            overflow: hidden;
+            isolation: isolate;
             border: 1px solid var(--line);
             border-radius: var(--radius-lg);
-            background: var(--bg-card);
+            background:
+                radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 28%),
+                radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--teal) 10%, transparent), transparent 34%),
+                var(--bg-card);
             box-shadow: var(--shadow);
         }
-        .home-hero-aside .aside-label {
+        .constellation-label {
+            position: absolute;
+            top: 22px;
+            left: 24px;
+            z-index: 5;
             font-family: var(--font-mono);
             color: var(--gold);
-            font-size: .8rem;
+            font-size: .78rem;
             text-transform: uppercase;
             letter-spacing: .08em;
         }
-        .home-hero-aside p {
+        .constellation-hint {
+            position: absolute;
+            right: 24px;
+            top: 22px;
+            z-index: 5;
+            color: var(--dim);
+            font-size: .78rem;
+        }
+        .constellation-field {
+            position: absolute;
+            inset: 64px 18px 18px;
+        }
+        .constellation-field::before,
+        .constellation-field::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .constellation-field::before {
+            width: 72%;
+            aspect-ratio: 1;
+            opacity: .5;
+        }
+        .constellation-field::after {
+            width: 46%;
+            aspect-ratio: 1;
+            opacity: .35;
+        }
+        .constellation-lines {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            pointer-events: none;
+        }
+        .constellation-lines line {
+            stroke: var(--line-strong);
+            stroke-width: .55;
+            stroke-dasharray: 2 3;
+            opacity: .72;
+        }
+        .constellation-core {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 3;
+            width: 118px;
+            height: 118px;
+            display: grid;
+            place-items: center;
+            transform: translate(-50%, -50%);
+            border: 1px solid var(--line-strong);
+            border-radius: 50%;
+            background: var(--bg-card);
+            box-shadow: 0 0 0 10px color-mix(in srgb, var(--gold) 5%, transparent), 0 18px 50px rgba(0,0,0,.2);
+        }
+        .constellation-core::before {
+            content: "";
+            position: absolute;
+            inset: -18px;
+            z-index: -1;
+            border-radius: 50%;
+            border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+            animation: constellation-breathe 4.5s ease-in-out infinite;
+        }
+        .constellation-core img {
+            width: 62px;
+            height: 62px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .constellation-core span {
+            position: absolute;
+            top: calc(100% + 10px);
+            white-space: nowrap;
+            font-family: var(--font-mono);
             color: var(--muted);
-            margin-top: 12px;
+            font-size: .7rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .constellation-node {
+            position: absolute;
+            z-index: 4;
+            width: 132px;
+            padding: 10px 12px;
+            transform: translate(-50%, -50%);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: transform var(--ease), border-color var(--ease), background var(--ease), box-shadow var(--ease);
+        }
+        .constellation-node:hover,
+        .constellation-node:focus-visible {
+            transform: translate(-50%, -50%) translateY(-4px);
+            border-color: var(--gold);
+            background: var(--bg-card-hover);
+            box-shadow: 0 10px 28px rgba(0,0,0,.16);
+        }
+        .constellation-node strong {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: .94rem;
+            line-height: 1.1;
+        }
+        .constellation-node small {
+            display: block;
+            margin-top: 2px;
+            font-family: var(--font-mono);
+            color: var(--dim);
+            font-size: .61rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+        .constellation-node.engineering { left: 20%; top: 23%; }
+        .constellation-node.thought { left: 80%; top: 23%; }
+        .constellation-node.story { left: 20%; top: 77%; }
+        .constellation-node.writing { left: 80%; top: 77%; }
+        @keyframes constellation-breathe {
+            0%, 100% { transform: scale(.94); opacity: .35; }
+            50% { transform: scale(1.07); opacity: .85; }
         }
         .door-grid {
             display: grid;
@@ -194,6 +331,17 @@
         @media (max-width: 560px) {
             .personal-now-grid { grid-template-columns: 1fr; }
             .home-title { font-size: clamp(3rem, 16vw, 4.6rem); }
+            .home-hero-aside { min-height: 410px; }
+            .constellation-field { inset: 62px 8px 12px; }
+            .constellation-node { width: 112px; padding: 9px 10px; }
+            .constellation-node strong { font-size: .86rem; }
+            .constellation-node small { font-size: .54rem; }
+            .constellation-core { width: 96px; height: 96px; }
+            .constellation-core img { width: 52px; height: 52px; }
+            .constellation-hint { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .constellation-core::before { animation: none; }
         }
     </style>
 </head>
@@ -240,13 +388,39 @@
                     </div>
                 </div>
 
-                <aside class="home-hero-aside">
-                    <span class="aside-label">About this place</span>
-                    <p>
-                        This is not a résumé with extra scenery. It is the larger map.
-                        The engineering portfolio is one region of it; Earthcall, Dimension of Thought,
-                        fiction, essays, experiments, and the rest belong here too.
-                    </p>
+                <aside class="home-hero-aside" aria-label="Constellation map of Zachary's work">
+                    <span class="constellation-label">The constellation</span>
+                    <span class="constellation-hint" aria-hidden="true">choose a world ↗</span>
+                    <div class="constellation-field">
+                        <svg class="constellation-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                            <line x1="50" y1="50" x2="20" y2="23"></line>
+                            <line x1="50" y1="50" x2="80" y2="23"></line>
+                            <line x1="50" y1="50" x2="20" y2="77"></line>
+                            <line x1="50" y1="50" x2="80" y2="77"></line>
+                        </svg>
+
+                        <a class="constellation-core" href="#worlds" aria-label="Enter Zachary's constellation">
+                            <img src="assets/dimension-emblem.jpg" alt="">
+                            <span>Zachary · center</span>
+                        </a>
+
+                        <a class="constellation-node engineering" href="portfolio.html">
+                            <strong>Engineering</strong>
+                            <small>systems · Earthcall</small>
+                        </a>
+                        <a class="constellation-node thought" href="manifesto.html">
+                            <strong>Thought</strong>
+                            <small>vision · philosophy</small>
+                        </a>
+                        <a class="constellation-node story" href="story.html">
+                            <strong>Story</strong>
+                            <small>person · journey</small>
+                        </a>
+                        <a class="constellation-node writing" href="library.html">
+                            <strong>Writing</strong>
+                            <small>essays · worlds</small>
+                        </a>
+                    </div>
                 </aside>
             </div>
         </section>
