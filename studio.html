@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Drafting Studio — Dimension of Thought</title>
-    <meta name="description" content="Draft, compose, preview, and publish essays and articles in the Dimension of Thought studio.">
+    <title>Dimension of Thought Studio — Write &amp; Draw</title>
+    <meta name="description" content="A creative studio for writing, drawing, composing, and shaping ideas inside Dimension of Thought.">
     <meta name="author" content="Zachary Zhang">
     <meta name="robots" content="noindex, nofollow">
 
     <link rel="icon" type="image/jpeg" href="assets/dimension-emblem.jpg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="studio-draw.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -32,6 +33,14 @@
                     <span class="studio-brand-glyph">✍️</span>
                     <span class="studio-brand-text">Article Studio</span>
                 </div>
+                <div class="studio-mode-toggle" role="tablist" aria-label="Studio creative mode">
+                    <button type="button" class="studio-mode-btn active" id="studio-write-mode-btn" role="tab" aria-selected="true">
+                        <span aria-hidden="true">✎</span><span>Write</span>
+                    </button>
+                    <button type="button" class="studio-mode-btn" id="studio-draw-mode-btn" role="tab" aria-selected="false">
+                        <span aria-hidden="true">✦</span><span>Draw</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Center: Live Save Status & Word Count Metrics -->
@@ -45,6 +54,14 @@
                     <span class="metric-dot">•</span>
                     <span id="metric-read-time">0 min read</span>
                 </div>
+            </div>
+
+            <div class="draw-nav-center" id="draw-nav-center" hidden>
+                <div class="draw-nav-pill">
+                    <span class="draw-live-dot" aria-hidden="true"></span>
+                    <span id="draw-nav-status-text">Artwork saved locally</span>
+                </div>
+                <div class="draw-nav-pill">1600 × 1000 canvas</div>
             </div>
 
             <!-- Right: Studio Controls, View Switches & Publishing Actions -->
@@ -265,6 +282,148 @@
         </div>
     </main>
 
+    <main class="draw-studio-workspace" id="draw-studio-workspace" hidden>
+        <section class="draw-studio-shell" aria-labelledby="draw-studio-title">
+            <header class="draw-studio-heading">
+                <div>
+                    <span class="draw-studio-eyebrow">Visual Thought // 2D Atelier</span>
+                    <h1 id="draw-studio-title">Draw what words cannot hold.</h1>
+                    <p>A quiet canvas for sketches, diagrams, symbols, creatures, maps, and luminous accidents.</p>
+                </div>
+                <div class="draw-heading-actions">
+                    <button type="button" class="btn btn-secondary btn-small" id="draw-save-btn">Save locally</button>
+                    <button type="button" class="btn btn-primary btn-small" id="draw-export-btn">Export PNG</button>
+                </div>
+            </header>
+
+            <div class="draw-editor-shell">
+                <aside class="draw-toolrail" aria-label="Drawing tools">
+                    <button type="button" class="draw-tool-btn active" data-draw-tool="brush" title="Brush (B)">
+                        <span class="draw-tool-icon" aria-hidden="true">✎</span>
+                        <span class="draw-tool-label">Brush</span>
+                    </button>
+                    <button type="button" class="draw-tool-btn" data-draw-tool="eraser" title="Eraser (E)">
+                        <span class="draw-tool-icon" aria-hidden="true">◇</span>
+                        <span class="draw-tool-label">Erase</span>
+                    </button>
+                    <button type="button" class="draw-tool-btn" data-draw-tool="pan" title="Pan canvas (P)">
+                        <span class="draw-tool-icon" aria-hidden="true">✥</span>
+                        <span class="draw-tool-label">Pan</span>
+                    </button>
+
+                    <button type="button" class="draw-tool-btn" id="draw-grid-btn" aria-pressed="false" title="Toggle ambient grid">
+                        <span class="draw-tool-icon" aria-hidden="true">▦</span>
+                        <span class="draw-tool-label">Grid</span>
+                    </button>
+                    <button type="button" class="draw-tool-btn danger" id="draw-clear-btn" title="Clear artwork">
+                        <span class="draw-tool-icon" aria-hidden="true">×</span>
+                        <span class="draw-tool-label">Clear</span>
+                    </button>
+                </aside>
+
+                <section class="draw-canvas-column" aria-label="Art canvas">
+                    <div class="draw-control-strip" role="toolbar" aria-label="Brush controls">
+                        <div class="draw-control-group">
+                            <span class="draw-control-label">Color</span>
+                            <input class="draw-color-input" id="draw-color" type="color" value="#d8b46e" aria-label="Brush color">
+                            <div class="draw-swatches" aria-label="Color palette">
+                                <button class="draw-swatch active" type="button" data-draw-color="#d8b46e" style="--swatch:#d8b46e" aria-label="Gold"></button>
+                                <button class="draw-swatch" type="button" data-draw-color="#6ee7d8" style="--swatch:#6ee7d8" aria-label="Teal"></button>
+                                <button class="draw-swatch" type="button" data-draw-color="#a855f7" style="--swatch:#a855f7" aria-label="Violet"></button>
+                                <button class="draw-swatch" type="button" data-draw-color="#fb7185" style="--swatch:#fb7185" aria-label="Rose"></button>
+                                <button class="draw-swatch" type="button" data-draw-color="#f7f3eb" style="--swatch:#f7f3eb" aria-label="Ivory"></button>
+                                <button class="draw-swatch" type="button" data-draw-color="#181510" style="--swatch:#181510" aria-label="Ink"></button>
+                            </div>
+                        </div>
+
+                        <div class="draw-control-group">
+                            <label class="draw-control-label" for="draw-size">Size</label>
+                            <input class="draw-range" id="draw-size" type="range" min="1" max="80" value="12">
+                            <span class="draw-value" id="draw-size-value">12px</span>
+                        </div>
+
+                        <div class="draw-control-group">
+                            <label class="draw-control-label" for="draw-opacity">Flow</label>
+                            <input class="draw-range" id="draw-opacity" type="range" min="0.08" max="1" step="0.04" value="0.92">
+                            <span class="draw-value" id="draw-opacity-value">92%</span>
+                        </div>
+
+                        <div class="draw-control-group">
+                            <button type="button" class="draw-icon-action" id="draw-undo-btn" title="Undo (Cmd/Ctrl+Z)" disabled>↶</button>
+                            <button type="button" class="draw-icon-action" id="draw-redo-btn" title="Redo (Shift+Cmd/Ctrl+Z)" disabled>↷</button>
+                        </div>
+
+                        <div class="draw-control-group">
+                            <button type="button" class="draw-icon-action" id="draw-zoom-out-btn" title="Zoom out">−</button>
+                            <button type="button" class="draw-icon-action" id="draw-zoom-reset-btn" title="Reset zoom">100</button>
+                            <button type="button" class="draw-icon-action" id="draw-zoom-in-btn" title="Zoom in">+</button>
+                            <button type="button" class="draw-icon-action" id="draw-reset-view-btn" title="Center canvas">◎</button>
+                        </div>
+                    </div>
+
+                    <div class="draw-stage tool-brush" id="draw-stage">
+                        <div class="draw-artboard" id="draw-artboard">
+                            <canvas id="draw-canvas" width="1600" height="1000" aria-label="2D drawing canvas"></canvas>
+                        </div>
+                        <div class="draw-brush-cursor" id="draw-brush-cursor" aria-hidden="true"></div>
+                    </div>
+
+                    <footer class="draw-statusbar">
+                        <div class="draw-status-left">
+                            <span class="draw-live-dot" aria-hidden="true"></span>
+                            <span id="draw-tool-readout">Tool: Brush</span>
+                            <span id="draw-stroke-readout">0 strokes</span>
+                        </div>
+                        <div class="draw-status-right">
+                            <span id="draw-zoom-readout">Zoom 82%</span>
+                            <span>1600 × 1000</span>
+                            <span>Ctrl/Cmd + wheel to zoom</span>
+                        </div>
+                    </footer>
+                </section>
+
+                <aside class="draw-inspector" aria-label="Brush and canvas settings">
+                    <section class="draw-inspector-section">
+                        <span class="draw-inspector-kicker">Current instrument</span>
+                        <div class="draw-brush-preview-wrap">
+                            <div class="draw-brush-preview" aria-hidden="true">
+                                <span class="draw-brush-preview-dot" id="draw-brush-preview-dot"></span>
+                            </div>
+                            <div class="draw-brush-summary" id="draw-brush-summary">
+                                <strong>Round Brush</strong>
+                                <span>12px · 92% opacity</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="draw-inspector-section">
+                        <span class="draw-inspector-kicker">Canvas atmosphere</span>
+                        <div class="draw-inspector-row">
+                            <label for="draw-paper-color">Paper</label>
+                            <input class="draw-paper-input" id="draw-paper-color" type="color" value="#11131c" aria-label="Canvas background color">
+                        </div>
+                        <div class="draw-inspector-row">
+                            <span>Export</span>
+                            <span>PNG · 1600×1000</span>
+                        </div>
+                        <p class="draw-save-note" id="draw-save-note">Artwork is saved in this browser.</p>
+                    </section>
+
+                    <section class="draw-inspector-section">
+                        <span class="draw-inspector-kicker">Keyboard constellation</span>
+                        <div class="draw-shortcuts">
+                            <kbd>B</kbd><span>Brush</span>
+                            <kbd>E</kbd><span>Eraser</span>
+                            <kbd>P</kbd><span>Pan</span>
+                            <kbd>[ ]</kbd><span>Brush size</span>
+                            <kbd>⌘ Z</kbd><span>Undo</span>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </section>
+    </main>
+
     <!-- Slide-out Drafts Manager Drawer -->
     <div class="drafts-drawer-backdrop" id="drafts-drawer-backdrop" hidden></div>
     <aside class="drafts-drawer" id="drafts-drawer" hidden aria-label="Saved Drafts Manager">
@@ -338,5 +497,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="studio-draw.js"></script>
 </body>
 </html>
