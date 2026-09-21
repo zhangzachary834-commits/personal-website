@@ -5684,3 +5684,170 @@ body.zen-mode .studio-editor-pane {
 .manifesto-longform .chapter-block::before {
     content: "ARTICLE " counter(longform-chapter, upper-roman);
 }
+
+
+/* Manifesto Constitutional Axiom Triptych */
+.principles-banner {
+    position: relative;
+    margin-top: 32px !important;
+    padding: 34px 30px 30px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 38%),
+        radial-gradient(circle at 90% 100%, color-mix(in srgb, var(--teal) 8%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 88%, transparent);
+    box-shadow: 0 22px 58px rgba(0,0,0,.14);
+    overflow: hidden;
+}
+.principles-banner::before {
+    content: "CONSTITUTIONAL AXIOMS";
+    display: block;
+    margin-bottom: 8px;
+    color: var(--teal);
+    font-family: var(--font-mono);
+    font-size: .66rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+}
+.principles-banner > h3 {
+    margin: 0 0 26px !important;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3vw, 2.45rem);
+    font-weight: 600;
+    letter-spacing: -.02em;
+}
+.principles-columns {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+.principles-columns::before {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 34px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line-strong), var(--gold), var(--line-strong), transparent);
+    opacity: .6;
+    pointer-events: none;
+}
+.principle-item {
+    position: relative;
+    z-index: 1;
+    min-height: 250px;
+    padding: 24px 22px 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background:
+        linear-gradient(165deg, color-mix(in srgb, var(--bg-card) 94%, transparent), color-mix(in srgb, var(--bg) 82%, transparent));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+    transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease), background var(--ease);
+}
+.principle-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--line-strong);
+    box-shadow: 0 18px 38px rgba(0,0,0,.18), 0 0 24px color-mix(in srgb, var(--glow) 30%, transparent);
+    background:
+        linear-gradient(165deg, color-mix(in srgb, var(--bg-card-hover) 94%, transparent), color-mix(in srgb, var(--bg) 78%, transparent));
+}
+.principle-num {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin-bottom: 22px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--bg-elev);
+    color: var(--gold-2);
+    font-family: var(--font-mono);
+    font-size: .76rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--glow) 42%, transparent), 0 0 24px color-mix(in srgb, var(--glow) 46%, transparent);
+}
+.principle-item:nth-child(2) .principle-num {
+    color: var(--teal);
+    border-color: color-mix(in srgb, var(--teal) 48%, transparent);
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--teal) 8%, transparent), 0 0 24px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+.principle-item:nth-child(3) .principle-num {
+    color: #c084fc;
+    border-color: rgba(192,132,252,.38);
+    box-shadow: 0 0 0 7px rgba(168,85,247,.07), 0 0 24px rgba(168,85,247,.14);
+}
+.principle-item h4 {
+    margin: 0 0 12px;
+    color: var(--ink);
+    font-family: var(--font-heading);
+    font-size: clamp(1.35rem, 2vw, 1.68rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -.015em;
+    text-wrap: balance;
+}
+.principle-item p {
+    margin: 0 !important;
+    color: var(--muted) !important;
+    font-family: var(--font-serif) !important;
+    font-size: 1.02rem !important;
+    line-height: 1.68 !important;
+    text-wrap: pretty;
+}
+.principle-item::after {
+    content: "";
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 999px 999px 0 0;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: .55;
+}
+.principle-item:nth-child(2)::after {
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+}
+.principle-item:nth-child(3)::after {
+    background: linear-gradient(90deg, transparent, #a855f7, transparent);
+}
+[data-theme="light"] .principle-item {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+}
+@media (max-width: 820px) {
+    .principles-banner {
+        padding: 28px 22px 24px;
+    }
+    .principles-columns {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .principles-columns::before {
+        left: 23px;
+        right: auto;
+        top: 28px;
+        bottom: 28px;
+        width: 1px;
+        height: auto;
+        background: linear-gradient(180deg, transparent, var(--line-strong), var(--gold), var(--line-strong), transparent);
+    }
+    .principle-item {
+        min-height: 0;
+        padding: 20px 20px 22px 76px;
+    }
+    .principle-num {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+    }
+}
