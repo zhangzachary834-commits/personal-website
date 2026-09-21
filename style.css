@@ -5680,3 +5680,7 @@ body.zen-mode .studio-editor-pane {
         font-size: 3.35em;
     }
 }
+
+.manifesto-longform .chapter-block::before {
+    content: "ARTICLE " counter(longform-chapter, upper-roman);
+}
