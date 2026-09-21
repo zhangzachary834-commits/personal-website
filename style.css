@@ -5143,3 +5143,540 @@ body.zen-mode .studio-editor-pane {
         margin-top: 4px;
     }
 }
+
+
+/* ==========================================================================
+   Longform Editorial Reading System
+   Essays, story chapters, manifesto prose, and other text-first pages
+   ========================================================================== */
+
+.page-hero {
+    position: relative;
+    z-index: 1;
+    padding: calc(var(--nav-height) + 78px) 0 70px;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+}
+.page-hero::before {
+    content: "";
+    position: absolute;
+    width: min(760px, 72vw);
+    height: min(420px, 48vw);
+    left: 50%;
+    top: 42%;
+    transform: translate(-50%, -50%);
+    background:
+        radial-gradient(ellipse at center, color-mix(in srgb, var(--gold) 13%, transparent), transparent 62%),
+        radial-gradient(ellipse at 65% 45%, color-mix(in srgb, var(--teal) 8%, transparent), transparent 60%);
+    filter: blur(12px);
+    pointer-events: none;
+    opacity: .9;
+}
+.page-hero::after {
+    content: "✦";
+    position: absolute;
+    left: 50%;
+    bottom: -13px;
+    transform: translateX(-50%);
+    width: 34px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    color: var(--gold);
+    font-size: .78rem;
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+}
+.page-hero > .container {
+    position: relative;
+    z-index: 2;
+}
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 28px;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: .74rem;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+}
+.page-breadcrumb a {
+    color: var(--muted);
+    transition: color var(--ease);
+}
+.page-breadcrumb a:hover { color: var(--gold); }
+.page-breadcrumb-sep {
+    color: var(--gold);
+    opacity: .5;
+}
+.page-title {
+    max-width: 920px;
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 6vw, 5.7rem);
+    font-weight: 600;
+    line-height: .99;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+}
+.page-subtitle {
+    max-width: 760px;
+    margin-top: 20px;
+    color: var(--muted);
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 2.1vw, 1.52rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+}
+.page-hero .essay-meta {
+    margin-bottom: 18px !important;
+    padding: 0;
+    border: 0;
+}
+.page-hero .essay-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 11px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--glow) 56%, transparent);
+}
+.page-hero .essay-read-time {
+    color: var(--dim);
+    letter-spacing: .035em;
+}
+.essay-author-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 24px !important;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .9rem;
+}
+.essay-author-bar strong {
+    color: var(--ink);
+    font-weight: 650;
+}
+.essay-dot {
+    color: var(--gold);
+    opacity: .7;
+}
+
+/* The reading column is deliberately narrower than the page hero.
+   Long lines make prose feel like documentation; this feels like a book. */
+.essay-prose,
+.longform-shell {
+    width: min(100%, 760px);
+    margin-inline: auto;
+}
+.essay-prose {
+    position: relative;
+    padding: 18px 0 12px;
+    color: color-mix(in srgb, var(--ink) 88%, var(--muted));
+    font-family: var(--font-serif);
+    font-size: clamp(1.08rem, 1.35vw, 1.18rem);
+    line-height: 1.82;
+    letter-spacing: .002em;
+}
+.essay-prose::before,
+.essay-prose::after {
+    content: "";
+    display: block;
+    width: 82px;
+    height: 1px;
+    margin: 2px auto 42px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    box-shadow: 0 0 18px var(--glow);
+}
+.essay-prose::after {
+    margin: 52px auto 8px;
+}
+.essay-prose p {
+    margin: 0 0 1.48em;
+    text-wrap: pretty;
+}
+.essay-prose > p:not(.lead-text):first-of-type::first-letter {
+    float: left;
+    margin: .11em .12em 0 0;
+    color: var(--gold-2);
+    font-family: var(--font-heading);
+    font-size: 4.15em;
+    font-weight: 600;
+    line-height: .72;
+    text-shadow: 0 0 28px var(--glow);
+}
+.essay-prose .lead-text {
+    position: relative;
+    margin: 0 0 2.25em !important;
+    padding: 0 0 1.45em 24px;
+    border-left: 2px solid var(--gold);
+    color: var(--ink) !important;
+    font-family: var(--font-serif);
+    font-size: clamp(1.22rem, 2vw, 1.48rem) !important;
+    font-weight: 500 !important;
+    line-height: 1.65 !important;
+}
+.essay-prose .lead-text::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: min(240px, 44%);
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+}
+.essay-prose h2,
+.essay-prose h3,
+.essay-prose h4,
+.essay-prose h5 {
+    color: var(--ink);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -.018em;
+    text-wrap: balance;
+}
+.essay-prose h2 {
+    margin: 2.7em 0 .8em;
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+.essay-prose h3 {
+    margin: 2.45em 0 .75em;
+    font-size: clamp(1.72rem, 3vw, 2.3rem);
+}
+.essay-prose h4 {
+    position: relative;
+    margin: 2.65em 0 .8em;
+    padding-top: 1.05em;
+    font-size: clamp(1.48rem, 2.4vw, 1.92rem);
+}
+.essay-prose h4::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 54px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--gold), var(--teal));
+    box-shadow: 0 0 14px var(--glow);
+}
+.essay-prose h5 {
+    margin: 2em 0 .65em;
+    font-size: 1.25rem;
+}
+.essay-prose strong {
+    color: var(--ink);
+    font-weight: 680;
+}
+.essay-prose em { color: color-mix(in srgb, var(--gold-2) 76%, var(--ink)); }
+.essay-prose a:not(.btn) {
+    color: var(--teal);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .18em;
+    text-decoration-color: color-mix(in srgb, var(--teal) 45%, transparent);
+    transition: color var(--ease), text-decoration-color var(--ease);
+}
+.essay-prose a:not(.btn):hover {
+    color: var(--gold-2);
+    text-decoration-color: var(--gold);
+}
+.essay-prose blockquote,
+.chapter-block blockquote {
+    position: relative;
+    margin: 2.35em -32px;
+    padding: 30px 34px 30px 42px;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    background:
+        linear-gradient(105deg, color-mix(in srgb, var(--glow) 72%, transparent), transparent 68%),
+        color-mix(in srgb, var(--bg-card) 74%, transparent);
+    box-shadow: 0 20px 55px rgba(0,0,0,.12);
+    color: var(--ink);
+    font-family: var(--font-heading);
+    font-size: clamp(1.28rem, 2.4vw, 1.72rem);
+    font-style: italic;
+    line-height: 1.5;
+    text-wrap: pretty;
+}
+.essay-prose blockquote::before,
+.chapter-block blockquote::before {
+    content: "“";
+    position: absolute;
+    left: 13px;
+    top: 7px;
+    color: var(--gold);
+    font-family: Georgia, serif;
+    font-size: 3.7rem;
+    font-style: normal;
+    line-height: 1;
+    opacity: .42;
+}
+.essay-prose blockquote p { margin: 0; }
+.essay-prose ul,
+.essay-prose ol {
+    margin: .4em 0 1.65em 1.15em;
+    padding-left: .95em;
+}
+.essay-prose li {
+    margin: .48em 0;
+    padding-left: .25em;
+}
+.essay-prose li::marker { color: var(--gold); }
+.essay-divider {
+    position: relative;
+    width: 100%;
+    height: 34px;
+    margin: 3.3em 0 2.6em;
+    border: 0;
+    overflow: visible;
+}
+.essay-divider::before {
+    content: "✦  ·  ✧  ·  ✦";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .35em;
+    opacity: .8;
+}
+.essay-prose img {
+    display: block;
+    width: min(100%, 940px);
+    height: auto;
+    margin: 2.35em auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+}
+.essay-prose table {
+    width: 100%;
+    margin: 2em 0;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-size: .94rem;
+    line-height: 1.55;
+}
+.essay-prose th,
+.essay-prose td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+}
+.essay-prose th {
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+/* Existing essay reflection cards become a deliberate closing chamber. */
+.essay-prose > .essay-divider + div,
+.essay-prose > hr.essay-divider + div {
+    position: relative;
+    overflow: hidden;
+    border-color: var(--line-strong) !important;
+    background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 45%),
+        linear-gradient(135deg, color-mix(in srgb, var(--glow) 48%, transparent), transparent 56%),
+        var(--bg-card) !important;
+    box-shadow: 0 18px 45px rgba(0,0,0,.16);
+}
+.essay-prose > .essay-divider + div::before,
+.essay-prose > hr.essay-divider + div::before {
+    content: "AFTERWORD // CONTINUE THE DIALOGUE";
+    display: block;
+    margin-bottom: 13px;
+    color: var(--teal);
+    font-family: var(--font-mono);
+    font-size: .67rem;
+    letter-spacing: .11em;
+}
+
+/* Story + manifesto: chapter pages should feel ceremonial rather than card-like. */
+.longform-shell {
+    counter-reset: longform-chapter;
+}
+.chapter-block {
+    counter-increment: longform-chapter;
+    position: relative;
+    margin: 0 0 74px;
+    padding: 38px 44px 42px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--bg-card) 86%, transparent), color-mix(in srgb, var(--bg) 70%, transparent));
+    box-shadow: 0 18px 50px rgba(0,0,0,.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.chapter-block::before {
+    content: "CHAPTER " counter(longform-chapter, upper-roman);
+    display: block;
+    margin-bottom: 12px;
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: .67rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+}
+.chapter-block::after {
+    content: "";
+    position: absolute;
+    left: 44px;
+    right: 44px;
+    bottom: -38px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+.chapter-block:last-of-type::after { display: none; }
+.chapter-block > h3:first-child {
+    margin: 0 0 22px;
+    color: var(--ink);
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.4vw, 2.55rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+}
+.chapter-block > p {
+    margin: 0 0 1.35em;
+    color: color-mix(in srgb, var(--ink) 86%, var(--muted));
+    font-family: var(--font-serif);
+    font-size: clamp(1.06rem, 1.35vw, 1.16rem);
+    line-height: 1.8;
+    text-wrap: pretty;
+}
+.chapter-block > p:first-of-type {
+    color: var(--ink);
+    font-size: clamp(1.14rem, 1.6vw, 1.27rem);
+}
+.chapter-block > p:first-of-type::first-letter {
+    float: left;
+    margin: .12em .12em 0 0;
+    color: var(--gold-2);
+    font-family: var(--font-heading);
+    font-size: 3.7em;
+    font-weight: 600;
+    line-height: .72;
+}
+.chapter-block strong { color: var(--ink); }
+.chapter-block .principles-banner {
+    margin-top: 30px !important;
+}
+
+/* Manifesto pull quote gets the visual gravity of an opening invocation. */
+.manifesto-pull-quote {
+    position: relative;
+    margin: 0 auto 64px;
+    padding: 38px 44px 40px;
+    border: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 44%),
+        radial-gradient(circle at 92% 84%, color-mix(in srgb, var(--teal) 8%, transparent), transparent 42%),
+        var(--bg-card);
+    box-shadow: 0 24px 65px rgba(0,0,0,.15), 0 0 34px color-mix(in srgb, var(--glow) 34%, transparent);
+    text-align: center;
+}
+.manifesto-pull-quote::before {
+    content: "✦";
+    display: block;
+    margin-bottom: 13px;
+    color: var(--gold);
+    font-style: normal;
+    font-size: .95rem;
+}
+.manifesto-pull-quote::after {
+    content: "DIMENSION OF THOUGHT // FOUNDATIONAL TEXT";
+    display: block;
+    margin-top: 18px;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: .64rem;
+    font-style: normal;
+    letter-spacing: .12em;
+}
+
+/* Fine-grained reading comfort in light mode. */
+[data-theme="light"] .chapter-block,
+[data-theme="light"] .essay-prose blockquote,
+[data-theme="light"] .chapter-block blockquote,
+[data-theme="light"] .manifesto-pull-quote {
+    box-shadow: 0 18px 45px rgba(76, 58, 28, .07);
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        padding-top: calc(var(--nav-height) + 52px);
+        padding-bottom: 54px;
+    }
+    .page-title {
+        font-size: clamp(2.55rem, 12vw, 4rem) !important;
+        line-height: 1;
+    }
+    .page-subtitle {
+        font-size: 1.12rem;
+    }
+    .page-hero .essay-meta,
+    .essay-author-bar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+    .essay-dot { display: none; }
+    .essay-prose {
+        width: 100%;
+        font-size: 1.04rem;
+        line-height: 1.76;
+    }
+    .essay-prose blockquote,
+    .chapter-block blockquote {
+        margin-inline: 0;
+        padding: 26px 24px 26px 34px;
+    }
+    .essay-prose .lead-text {
+        padding-left: 18px;
+    }
+    .chapter-block {
+        margin-bottom: 52px;
+        padding: 28px 24px 30px;
+    }
+    .chapter-block::after {
+        left: 24px;
+        right: 24px;
+        bottom: -27px;
+    }
+    .manifesto-pull-quote {
+        padding: 30px 24px 32px;
+        text-align: left;
+    }
+}
+
+@media (max-width: 520px) {
+    .page-breadcrumb {
+        margin-bottom: 22px;
+        font-size: .67rem;
+    }
+    .page-hero::after { display: none; }
+    .essay-prose > p:not(.lead-text):first-of-type::first-letter,
+    .chapter-block > p:first-of-type::first-letter {
+        font-size: 3.35em;
+    }
+}
