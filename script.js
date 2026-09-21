@@ -806,13 +806,19 @@ document.addEventListener("DOMContentLoaded", () => {
             cell.push(i);
         }
 
-        for (let i = 0; i < stars.length; i++) {
-            const a = stars[i];
-            const col = Math.floor(a.x / maxDist);
-            const row = Math.floor(a.y / maxDist);
-            for (let dc = -1; dc <= 1; dc++) {
-                for (let dr = -1; dr <= 1; dr++) {
-                    const cell = grid.get((col + dc + 5000) + (row + dr + 5000) * 10000);
+        for (const [key, cellNodes] of grid.entries()) {
+            const neighborKeys = [
+                key - 10001, key - 10000, key - 9999,
+                key - 1, key, key + 1,
+                key + 9999, key + 10000, key + 10001
+            ];
+
+            for (let idx = 0; idx < cellNodes.length; idx++) {
+                const i = cellNodes[idx];
+                const a = stars[i];
+
+                for (let nIdx = 0; nIdx < neighborKeys.length; nIdx++) {
+                    const cell = grid.get(neighborKeys[nIdx]);
                     if (!cell) continue;
                     for (let k = 0; k < cell.length; k++) {
                         const j = cell[k];
@@ -3386,22 +3392,21 @@ ${currentDraft.content}`;
             }
 
             for (const [key, cellNodes] of grid.entries()) {
-                const cx = (key % 10000) - 5000;
-                const cy = Math.floor(key / 10000) - 5000;
-                const neighbors = [
-                    [cx, cy],
-                    [cx + 1, cy],
-                    [cx - 1, cy + 1],
-                    [cx, cy + 1],
-                    [cx + 1, cy + 1]
+                // Avoid extracting and repacking cx/cy by computing neighbor keys directly.
+                const neighborKeys = [
+                    key,
+                    key + 1,
+                    key + 9999, // cx - 1, cy + 1 => key - 1 + 10000
+                    key + 10000, // cx, cy + 1 => key + 10000
+                    key + 10001 // cx + 1, cy + 1 => key + 1 + 10000
                 ];
 
                 for (let i = 0; i < cellNodes.length; i++) {
                     const n1 = cellNodes[i];
-                    for (const [nx, ny] of neighbors) {
-                        const neighborNodes = grid.get((nx + 5000) + (ny + 5000) * 10000);
+                    for (let nIdx = 0; nIdx < neighborKeys.length; nIdx++) {
+                        const neighborNodes = grid.get(neighborKeys[nIdx]);
                         if (!neighborNodes) continue;
-                        const sameCell = nx === cx && ny === cy;
+                        const sameCell = nIdx === 0;
                         const first = sameCell ? i + 1 : 0;
 
                         for (let j = first; j < neighborNodes.length; j++) {
