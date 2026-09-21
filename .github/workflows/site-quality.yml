@@ -1,4 +1,4 @@
-name: Site quality
+name: Personal website CI
 
 on:
   push:
@@ -6,24 +6,90 @@ on:
       - main
       - 'sol/**'
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: personal-website-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  verify:
+  quality:
+    name: Tests, audits, and generated-file integrity
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
-      - run: npm ci
-      - run: npm test
-      - name: Verify generated metadata is synchronized
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run repository quality gate
+        run: npm run check
+
+      - name: Verify generated metadata is committed
+        run: git diff --exit-code
+
+      - name: Parse-check JavaScript
+        shell: bash
         run: |
-          npm run sync-metadata
-          git diff --exit-code
-      - run: npm run audit
-      - run: npm run audit:assets
+          node --check script.js
+          find scripts -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+
+  http-smoke:
+    name: Serve and smoke-test every HTML page
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Start local static server
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/personal-website-http.log 2>&1 &
+          echo $! > /tmp/personal-website-http.pid
+
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+
+          cat /tmp/personal-website-http.log
+          exit 1
+
+      - name: Smoke-test public routes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl --fail --silent --show-error http://127.0.0.1:4173/ > /dev/null
+
+          while IFS= read -r page; do
+            route="${page#./}"
+            echo "GET /${route}"
+            curl --fail --silent --show-error "http://127.0.0.1:4173/${route}" > /dev/null
+          done < <(
+            find . -type f -name '*.html' \
+              -not -path './node_modules/*' \
+              -not -path './.git/*' \
+              | sort
+          )
+
+      - name: Show server log on failure
+        if: failure()
+        run: cat /tmp/personal-website-http.log || true
