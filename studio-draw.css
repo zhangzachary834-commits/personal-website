@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Dimension of Thought Studio — 2D Art Atelier
+   ========================================================================== */
+
+.draw-studio-workspace {
+    flex: 1; min-height: 0; position: relative; z-index: 1; overflow: hidden; padding: 18px;
+}
+.draw-studio-shell {
+    height: 100%; max-width: 1580px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden;
+    border: 1px solid var(--line-strong); border-radius: 24px;
+    background:
+        radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--gold) 11%, transparent), transparent 31%),
+        radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 34%),
+        color-mix(in srgb, var(--bg-elev) 88%, transparent);
+    box-shadow: 0 30px 90px rgba(0,0,0,.36), 0 0 50px color-mix(in srgb, var(--glow) 22%, transparent);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.draw-studio-heading {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 18px 22px; border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-card) 84%, transparent);
+}
+.draw-studio-eyebrow {
+    display: block; margin-bottom: 3px; color: var(--teal); font-family: var(--font-mono);
+    font-size: .66rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+}
+.draw-studio-heading h1 {
+    margin: 0; font-family: var(--font-heading); font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+    font-weight: 600; line-height: 1.05; letter-spacing: -.02em;
+}
+.draw-studio-heading p { margin: 4px 0 0; color: var(--muted); font-size: .88rem; }
+.draw-heading-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.draw-editor-shell {
+    flex: 1; min-height: 0; display: grid; grid-template-columns: 72px minmax(0, 1fr) 232px;
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+}
+.draw-toolrail {
+    position: relative; z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 9px;
+    padding: 14px 10px; border-right: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+}
+.draw-toolrail::after {
+    content: ""; width: 28px; height: 1px; margin: 3px 0;
+    background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+.draw-tool-btn {
+    width: 48px; min-height: 48px; display: grid; place-items: center; gap: 1px; padding: 6px 3px;
+    border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--muted);
+    cursor: pointer; transition: transform var(--ease), color var(--ease), border-color var(--ease), background var(--ease), box-shadow var(--ease);
+}
+.draw-tool-btn:hover { transform: translateY(-2px); color: var(--ink); border-color: var(--line); background: var(--bg-card); }
+.draw-tool-btn.active {
+    color: var(--gold-2); border-color: var(--line-strong);
+    background: radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--gold) 18%, transparent), transparent 60%), var(--bg-card);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--glow) 45%, transparent);
+}
+.draw-tool-btn.danger:hover, .draw-tool-btn.confirm-clear {
+    color: #fb7185; border-color: rgba(244,63,94,.42); background: rgba(244,63,94,.09);
+}
+.draw-tool-icon { font-size: 1rem; line-height: 1; }
+.draw-tool-label { font-family: var(--font-mono); font-size: .54rem; letter-spacing: .035em; text-transform: uppercase; }
+
+.draw-canvas-column { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.draw-control-strip {
+    flex: 0 0 auto; min-height: 56px; display: flex; align-items: center; gap: 14px; padding: 8px 14px;
+    border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg-card) 84%, transparent); overflow-x: auto;
+}
+.draw-control-group { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.draw-control-group + .draw-control-group { padding-left: 14px; border-left: 1px solid var(--line); }
+.draw-control-label {
+    color: var(--dim); font-family: var(--font-mono); font-size: .62rem; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+}
+.draw-color-input, .draw-paper-input {
+    width: 32px; height: 32px; padding: 2px; border: 1px solid var(--line-strong);
+    border-radius: 50%; background: transparent; cursor: pointer; overflow: hidden;
+}
+.draw-color-input::-webkit-color-swatch-wrapper, .draw-paper-input::-webkit-color-swatch-wrapper { padding: 0; }
+.draw-color-input::-webkit-color-swatch, .draw-paper-input::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.draw-swatches { display: flex; align-items: center; gap: 5px; }
+.draw-swatch {
+    width: 20px; height: 20px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%;
+    background: var(--swatch); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    transition: transform var(--ease), box-shadow var(--ease);
+}
+.draw-swatch:hover, .draw-swatch.active { transform: scale(1.16); box-shadow: 0 0 0 2px var(--bg-elev), 0 0 0 3px var(--gold); }
+.draw-range { width: 108px; accent-color: var(--gold); cursor: pointer; }
+.draw-value { min-width: 38px; color: var(--muted); font-family: var(--font-mono); font-size: .68rem; }
+.draw-icon-action {
+    min-width: 36px; height: 34px; padding: 0 9px; display: inline-grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 9px; background: var(--bg-card); color: var(--ink);
+    cursor: pointer; font-size: .82rem; transition: border-color var(--ease), color var(--ease), background var(--ease), transform var(--ease);
+}
+.draw-icon-action:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--gold); color: var(--gold-2); background: var(--glow); }
+.draw-icon-action:disabled { opacity: .35; cursor: not-allowed; }
+
+.draw-stage {
+    --draw-paper: #11131c; position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none;
+    background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--gold) 6%, transparent), transparent 31%),
+        radial-gradient(circle at 82% 70%, color-mix(in srgb, var(--teal) 6%, transparent), transparent 30%),
+        #080910;
+}
+.draw-stage::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+    background-size: 30px 30px; opacity: 0; transition: opacity var(--ease);
+}
+.draw-stage.show-grid::before { opacity: 1; }
+.draw-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 100px rgba(0,0,0,.42); }
+.draw-artboard {
+    position: absolute; left: 50%; top: 50%; width: min(1120px, 82vw); aspect-ratio: 8 / 5;
+    transform: translate(-50%, -50%); transform-origin: center center; border: 1px solid rgba(255,255,255,.14);
+    border-radius: 10px; background: var(--draw-paper);
+    box-shadow: 0 35px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.025), 0 0 44px color-mix(in srgb, var(--glow) 18%, transparent);
+    overflow: hidden; will-change: transform;
+}
+#draw-canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.draw-stage.tool-pan, .draw-stage.tool-pan #draw-canvas { cursor: grab; }
+.draw-stage.tool-pan.is-panning, .draw-stage.tool-pan.is-panning #draw-canvas { cursor: grabbing; }
+.draw-stage.tool-eraser #draw-canvas { cursor: none; }
+.draw-brush-cursor {
+    position: absolute; z-index: 8; left: 0; top: 0; width: 18px; height: 18px; margin-left: -9px; margin-top: -9px;
+    border: 1px solid rgba(255,255,255,.9); border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.7), 0 0 14px rgba(255,255,255,.18);
+    pointer-events: none; opacity: 0; transform: translate3d(-100px,-100px,0);
+}
+.draw-stage.cursor-visible .draw-brush-cursor { opacity: .82; }
+
+.draw-statusbar {
+    flex: 0 0 auto; min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 6px 14px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+    color: var(--dim); font-family: var(--font-mono); font-size: .64rem;
+}
+.draw-status-left, .draw-status-right { display: flex; align-items: center; gap: 12px; }
+.draw-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 9px var(--teal); }
+
+.draw-inspector {
+    min-width: 0; padding: 16px; border-left: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-elev) 90%, transparent); overflow-y: auto;
+}
+.draw-inspector-section { padding: 0 0 17px; margin-bottom: 17px; border-bottom: 1px solid var(--line); }
+.draw-inspector-section:last-child { border-bottom: 0; margin-bottom: 0; }
+.draw-inspector-kicker {
+    display: block; margin-bottom: 9px; color: var(--dim); font-family: var(--font-mono);
+    font-size: .61rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+}
+.draw-brush-preview-wrap { display: flex; align-items: center; gap: 12px; }
+.draw-brush-preview {
+    width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 14px;
+    background: linear-gradient(45deg, rgba(255,255,255,.03) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.03) 75%),
+                linear-gradient(45deg, rgba(255,255,255,.03) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.03) 75%);
+    background-position: 0 0, 6px 6px; background-size: 12px 12px;
+}
+.draw-brush-preview-dot {
+    width: 18px; height: 18px; border-radius: 50%; background: var(--preview-color, var(--gold));
+    opacity: var(--preview-opacity, 1); box-shadow: 0 0 16px color-mix(in srgb, var(--preview-color, var(--gold)) 55%, transparent);
+}
+.draw-brush-summary strong { display: block; color: var(--ink); font-family: var(--font-serif); font-size: .98rem; }
+.draw-brush-summary span { color: var(--muted); font-family: var(--font-mono); font-size: .65rem; }
+.draw-inspector-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.draw-inspector-row label, .draw-inspector-row span { color: var(--muted); font-size: .76rem; }
+.draw-shortcuts { display: grid; grid-template-columns: auto 1fr; gap: 7px 10px; color: var(--muted); font-size: .73rem; }
+.draw-shortcuts kbd {
+    min-width: 28px; padding: 2px 6px; border: 1px solid var(--line); border-bottom-color: var(--line-strong);
+    border-radius: 6px; background: var(--bg-card); color: var(--ink); font-family: var(--font-mono); font-size: .62rem; text-align: center;
+}
+.draw-save-note { margin-top: 9px; color: var(--teal); font-family: var(--font-mono); font-size: .64rem; opacity: .8; }
+
+.studio-mode-toggle {
+    display: inline-flex; align-items: center; gap: 2px; margin-left: 8px; padding: 3px;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--bg-card);
+}
+.studio-mode-btn {
+    display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font-sans); font-size: .76rem; font-weight: 650;
+    transition: color var(--ease), background var(--ease), box-shadow var(--ease);
+}
+.studio-mode-btn.active { color: #0c0b08; background: linear-gradient(135deg, var(--gold-2), var(--gold)); box-shadow: 0 3px 12px var(--glow); }
+.draw-nav-center { display: flex; align-items: center; gap: 8px; }
+.draw-nav-pill {
+    display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--bg-card); color: var(--dim); font-family: var(--font-mono); font-size: .7rem;
+}
+body.studio-mode-draw .studio-nav-center,
+body.studio-mode-draw .studio-view-toggle,
+body.studio-mode-draw #open-drafts-drawer-btn,
+body.studio-mode-draw #open-templates-btn,
+body.studio-mode-draw .dropdown-wrapper,
+body.studio-mode-draw #publish-article-btn { display: none !important; }
+
+@media (max-width: 1120px) {
+    .draw-editor-shell { grid-template-columns: 68px minmax(0, 1fr); }
+    .draw-inspector { display: none; }
+    .draw-artboard { width: min(1000px, 80vw); }
+}
+@media (max-width: 780px) {
+    .draw-studio-workspace { padding: 8px; }
+    .draw-studio-shell { border-radius: 16px; }
+    .draw-studio-heading { align-items: flex-start; padding: 14px 16px; }
+    .draw-studio-heading p { display: none; }
+    .draw-editor-shell { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+    .draw-toolrail { flex-direction: row; justify-content: center; padding: 7px 10px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .draw-toolrail::after { display: none; }
+    .draw-tool-btn { width: auto; min-width: 52px; min-height: 42px; padding-inline: 8px; }
+    .draw-control-strip { min-height: 52px; padding-inline: 10px; }
+    .draw-artboard { width: 88vw; }
+    .studio-mode-toggle { margin-left: 2px; }
+    .studio-mode-btn { padding-inline: 8px; }
+    .draw-status-right { display: none; }
+}
+@media (max-width: 560px) {
+    .draw-studio-heading h1 { font-size: 1.35rem; }
+    .draw-heading-actions .btn { padding: 6px 9px; font-size: .72rem; }
+    .draw-swatches { display: none; }
+    .draw-control-group + .draw-control-group { padding-left: 9px; }
+    .draw-range { width: 82px; }
+    .draw-tool-label { display: none; }
+    .draw-tool-btn { min-width: 42px; width: 42px; }
+}
