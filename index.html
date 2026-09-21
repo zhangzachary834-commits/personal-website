@@ -347,6 +347,8 @@
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
+    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
 
     <header class="navbar" id="navbar">
         <div class="nav-container">
@@ -540,6 +542,8 @@
         </section>
     </main>
 
+    <button id="back-to-top" class="back-to-top-btn" title="Back to top" aria-label="Back to top">↑</button>
+
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-left">
@@ -560,24 +564,15 @@
     </footer>
 
     <script>
-        (() => {
-            const root = document.documentElement;
-            const btn = document.getElementById('theme-toggle-btn');
-            const icon = document.getElementById('theme-icon');
-            const saved = localStorage.getItem('zachary-theme');
-            if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
-
-            const syncIcon = () => {
-                icon.textContent = root.dataset.theme === 'light' ? '☀' : '☽';
-            };
-            syncIcon();
-
-            btn.addEventListener('click', () => {
-                root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
-                localStorage.setItem('zachary-theme', root.dataset.theme);
-                syncIcon();
-            });
-        })();
+        // Preserve the landing page's former theme preference on first load,
+        // then hand theme + ambient interactions to the shared site engine.
+        if (!localStorage.getItem('dimension-theme')) {
+            const legacyTheme = localStorage.getItem('zachary-theme');
+            if (legacyTheme === 'light' || legacyTheme === 'dark') {
+                localStorage.setItem('dimension-theme', legacyTheme);
+            }
+        }
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
