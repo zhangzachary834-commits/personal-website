@@ -1284,7 +1284,7 @@ Sent via Dimension of Thought Platform`;
         "read persons", "read valley", "read continuum", "read sadako", "read dignity",
         "read music", "read discipleship", "read kpop", "read evowth",
         "cat earthcall", "cat robotics", "cat jaka", "cat sat", "cat teacherops", "cat bridge",
-        "goto home", "goto story", "goto manifesto", "goto library", "goto ecosystem", "goto contact", "goto studio",
+        "goto home", "goto story", "goto manifesto", "goto library", "goto ecosystem", "goto contact", "goto studio", "writers",
         "open p-home", "open p-now", "open p-earthcall", "open p-work", "open p-about", "open p-skills", "open p-contact"
     ];
 
@@ -1744,9 +1744,9 @@ Sent via Dimension of Thought Platform`;
             }
         },
         writers: () => {
-            print("Writers of Light", "term-cmd-highlight");
-            print("Experienced writers ready to help you flesh out the words of your heart.");
-            print("Completely free — starting with the heart, not with economy.");
+            print("Opening Writers of Light…", "term-cmd-highlight");
+            closeTerminal();
+            window.location.href = "writers-of-light.html";
         },
         contact: () => {
             print("Email:    zhangzachary834@gmail.com");
