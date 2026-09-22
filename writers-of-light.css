@@ -14,7 +14,7 @@
 }
 .wol-principle {
     padding:20px; border:1px solid var(--line); border-radius:var(--radius-md);
-    background:color-mix(in srgb, var(--bg-card) 82%, transparent); backdrop-filter:blur(14px);
+    background:color-mix(in srgb, var(--bg-card) 72%, transparent); backdrop-filter:blur(14px);
 }
 .wol-principle strong { display:block; margin-bottom:6px; font-family:var(--font-serif); font-size:1.08rem; }
 .wol-principle span { color:var(--muted); font-size:.9rem; line-height:1.55; }
@@ -26,12 +26,12 @@
     border:1px solid var(--line-strong); border-radius:var(--radius-lg); overflow:hidden;
     background:
       radial-gradient(circle at 0% 0%, color-mix(in srgb,var(--gold) 8%,transparent), transparent 34%),
-      color-mix(in srgb,var(--bg-card) 90%,transparent);
+      color-mix(in srgb,var(--bg-card) 82%,transparent);
     box-shadow:var(--shadow); backdrop-filter:blur(18px);
 }
 .wol-panel-head {
     padding:22px 24px 18px; border-bottom:1px solid var(--line);
-    background:color-mix(in srgb,var(--bg-elev) 72%,transparent);
+    background:color-mix(in srgb,var(--bg-elev) 66%,transparent);
 }
 .wol-panel-kicker {
     display:block; margin-bottom:5px; color:var(--teal); font-family:var(--font-mono);
@@ -78,7 +78,7 @@
     position:relative; min-height:430px; padding:28px;
     border:1px solid var(--line); border-radius:var(--radius-md);
     background:
-      linear-gradient(180deg,color-mix(in srgb,var(--bg-elev) 92%,transparent),color-mix(in srgb,var(--bg-card) 96%,transparent));
+      linear-gradient(180deg,color-mix(in srgb,var(--bg-elev) 88%,transparent),color-mix(in srgb,var(--bg-card) 90%,transparent));
 }
 .wol-letter::before {
     content:"✦"; position:absolute; right:22px; top:18px; color:var(--gold); opacity:.65;
@@ -100,7 +100,7 @@
 
 .wol-how-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin-top:28px; }
 .wol-step {
-    position:relative; padding:24px 20px; border:1px solid var(--line); border-radius:var(--radius-md); background:var(--bg-card);
+    position:relative; padding:24px 20px; border:1px solid var(--line); border-radius:var(--radius-md); background:color-mix(in srgb,var(--bg-card) 74%,transparent); backdrop-filter:blur(12px);
 }
 .wol-step-num {
     display:inline-grid; place-items:center; width:38px; height:38px; margin-bottom:16px;
