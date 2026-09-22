@@ -10,3 +10,6 @@
 ## 2026-09-21 - Spatial Grid Neighbor Offset Optimization
 **Learning:** Even when using fixed-width integer packing for spatial grid keys (e.g., `key = (cx + 5000) + (cy + 5000) * 10000`), extracting `cx` and `cy` from the `key` and repacking them in the inner loop to find neighbors is computationally wasteful.
 **Action:** Since the map keys correspond directly to integer grids, neighbor grid cells can be accessed directly using static numerical offsets applied to the current cell's `key` (e.g., `key + 1`, `key + 10000`), eliminating inner loop coordinate extraction and parsing entirely.
+## 2026-10-25 - Avoid Array Allocations in High-Frequency Spatial Grid Loops
+**Learning:** Allocating an array of `neighborKeys` inside the inner loop of `grid.entries()` for spatial grids (like `drawConstellation` or `simulate` running at 60 FPS) generates significant garbage collection overhead, allocating tens of thousands of short-lived arrays per second.
+**Action:** Extract inline array allocations for neighbor offsets (e.g., `[-10001, -10000, -9999, -1, 0, 1, 9999, 10000, 10001]`) outside the loop and reuse the static array, adding the offset to the `key` during iteration (`key + neighborOffsets[nIdx]`). This completely eliminates inner-loop array allocations.

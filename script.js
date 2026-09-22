@@ -914,19 +914,17 @@ document.addEventListener("DOMContentLoaded", () => {
             cell.push(i);
         }
 
-        for (const [key, cellNodes] of grid.entries()) {
-            const neighborKeys = [
-                key - 10001, key - 10000, key - 9999,
-                key - 1, key, key + 1,
-                key + 9999, key + 10000, key + 10001
-            ];
+        // ⚡ Bolt Optimization: Extracted static neighbor offsets array outside the
+        // high-frequency spatial grid loop to prevent GC allocation thrashing.
+        const neighborOffsets = [-10001, -10000, -9999, -1, 0, 1, 9999, 10000, 10001];
 
+        for (const [key, cellNodes] of grid.entries()) {
             for (let idx = 0; idx < cellNodes.length; idx++) {
                 const i = cellNodes[idx];
                 const a = stars[i];
 
-                for (let nIdx = 0; nIdx < neighborKeys.length; nIdx++) {
-                    const cell = grid.get(neighborKeys[nIdx]);
+                for (let nIdx = 0; nIdx < neighborOffsets.length; nIdx++) {
+                    const cell = grid.get(key + neighborOffsets[nIdx]);
                     if (!cell) continue;
                     for (let k = 0; k < cell.length; k++) {
                         const j = cell[k];
@@ -3524,20 +3522,19 @@ ${currentDraft.content}`;
                 node.vy += gdy * 0.0012;
             }
 
+            // ⚡ Bolt Optimization: Extracted static neighbor offsets array outside the
+            // high-frequency spatial grid loop to prevent GC allocation thrashing.
+            // Avoid extracting and repacking cx/cy by computing neighbor keys directly:
+            // 0: key, 1: key + 1
+            // 9999: cx - 1, cy + 1 => key - 1 + 10000
+            // 10000: cx, cy + 1 => key + 10000
+            // 10001: cx + 1, cy + 1 => key + 1 + 10000
+            const neighborOffsets = [0, 1, 9999, 10000, 10001];
             for (const [key, cellNodes] of grid.entries()) {
-                // Avoid extracting and repacking cx/cy by computing neighbor keys directly.
-                const neighborKeys = [
-                    key,
-                    key + 1,
-                    key + 9999, // cx - 1, cy + 1 => key - 1 + 10000
-                    key + 10000, // cx, cy + 1 => key + 10000
-                    key + 10001 // cx + 1, cy + 1 => key + 1 + 10000
-                ];
-
                 for (let i = 0; i < cellNodes.length; i++) {
                     const n1 = cellNodes[i];
-                    for (let nIdx = 0; nIdx < neighborKeys.length; nIdx++) {
-                        const neighborNodes = grid.get(neighborKeys[nIdx]);
+                    for (let nIdx = 0; nIdx < neighborOffsets.length; nIdx++) {
+                        const neighborNodes = grid.get(key + neighborOffsets[nIdx]);
                         if (!neighborNodes) continue;
                         const sameCell = nIdx === 0;
                         const first = sameCell ? i + 1 : 0;
