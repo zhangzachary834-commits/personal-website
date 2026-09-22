@@ -96,7 +96,8 @@
             background:
                 radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 28%),
                 radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--teal) 10%, transparent), transparent 34%),
-                var(--bg-card);
+                color-mix(in srgb, var(--bg-card) 82%, transparent);
+            backdrop-filter: blur(18px);
             box-shadow: var(--shadow);
         }
         .constellation-label {
@@ -214,7 +215,7 @@
         .constellation-node:focus-visible {
             transform: translate(-50%, -50%) translateY(-4px);
             border-color: var(--gold);
-            background: var(--bg-card-hover);
+            background: color-mix(in srgb, var(--bg-card-hover) 88%, transparent);
             box-shadow: 0 10px 28px rgba(0,0,0,.16);
         }
         .constellation-node strong {
@@ -252,7 +253,8 @@
             padding: 30px;
             border-radius: var(--radius-lg);
             border: 1px solid var(--line);
-            background: var(--bg-card);
+            background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+            backdrop-filter: blur(14px);
             transition: transform var(--ease), border-color var(--ease), background var(--ease);
             position: relative;
             overflow: hidden;
@@ -293,7 +295,8 @@
             padding: 22px;
             border: 1px solid var(--line);
             border-radius: var(--radius-md);
-            background: var(--bg-card);
+            background: color-mix(in srgb, var(--bg-card) 74%, transparent);
+            backdrop-filter: blur(12px);
         }
         .personal-now-card h3 {
             font-family: var(--font-serif);
