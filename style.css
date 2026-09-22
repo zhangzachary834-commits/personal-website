@@ -5851,3 +5851,132 @@ body.zen-mode .studio-editor-pane {
         margin: 0;
     }
 }
+
+
+/* Constellation Visibility Tuning — translucent card hierarchy
+   Keep content fully opaque; only soften the card surfaces so the living sky
+   remains visible behind the interface. */
+
+.stat-card,
+.now-card,
+.project-card,
+.about-grid .pillar-card,
+.skill-category-card,
+.story-card,
+.manifesto-card,
+.essay-card,
+.initiative-card {
+    background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+}
+
+.contact-item-card {
+    background: color-mix(in srgb, var(--bg-elev) 84%, transparent);
+}
+
+.portfolio-snapshot-card,
+.evidence-card {
+    background:
+        linear-gradient(
+            160deg,
+            color-mix(in srgb, var(--bg-card) 82%, transparent),
+            color-mix(in srgb, var(--bg-elev) 72%, transparent)
+        );
+}
+
+.depth-card {
+    background:
+        linear-gradient(
+            160deg,
+            color-mix(in srgb, var(--bg-card) 86%, transparent),
+            color-mix(in srgb, var(--bg-elev) 78%, transparent)
+        );
+}
+
+/* Long-form prose chambers need more reading contrast than summary cards. */
+.chapter-block {
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--bg-card) 82%, transparent),
+            color-mix(in srgb, var(--bg) 66%, transparent)
+        );
+}
+
+.manifesto-pull-quote {
+    background:
+        radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 44%),
+        radial-gradient(circle at 92% 84%, color-mix(in srgb, var(--teal) 8%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 84%, transparent);
+}
+
+.principles-banner {
+    background:
+        radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 38%),
+        radial-gradient(circle at 90% 100%, color-mix(in srgb, var(--teal) 8%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 80%, transparent);
+}
+
+.principle-item {
+    background:
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, var(--bg-card) 82%, transparent),
+            color-mix(in srgb, var(--bg) 68%, transparent)
+        );
+}
+
+.principle-item:hover {
+    background:
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, var(--bg-card-hover) 90%, transparent),
+            color-mix(in srgb, var(--bg) 74%, transparent)
+        );
+}
+
+/* Contact and composition surfaces stay calmer and more opaque for legibility. */
+.contact-card-main {
+    background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+}
+
+/* Studio library cards can show some sky, but not as much as public browse cards. */
+.draft-item-card,
+.template-card {
+    background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+}
+
+/* Hover should feel like the card condenses toward the visitor. */
+.stat-card:hover,
+.now-card:hover,
+.project-card:hover,
+.about-grid .pillar-card:hover,
+.skill-category-card:hover,
+.story-card:hover,
+.manifesto-card:hover,
+.essay-card:hover,
+.initiative-card:hover {
+    background: color-mix(in srgb, var(--bg-card-hover) 88%, transparent);
+}
+
+[data-theme="light"] .stat-card,
+[data-theme="light"] .now-card,
+[data-theme="light"] .project-card,
+[data-theme="light"] .about-grid .pillar-card,
+[data-theme="light"] .skill-category-card,
+[data-theme="light"] .story-card,
+[data-theme="light"] .manifesto-card,
+[data-theme="light"] .essay-card,
+[data-theme="light"] .initiative-card {
+    background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+}
+
+[data-theme="light"] .chapter-block,
+[data-theme="light"] .contact-card-main {
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+}
