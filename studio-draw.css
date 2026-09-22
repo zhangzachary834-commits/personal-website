@@ -11,14 +11,14 @@
     background:
         radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--gold) 11%, transparent), transparent 31%),
         radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 34%),
-        color-mix(in srgb, var(--bg-elev) 88%, transparent);
+        color-mix(in srgb, var(--bg-elev) 82%, transparent);
     box-shadow: 0 30px 90px rgba(0,0,0,.36), 0 0 50px color-mix(in srgb, var(--glow) 22%, transparent);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
 }
 .draw-studio-heading {
     flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px;
     padding: 18px 22px; border-bottom: 1px solid var(--line);
-    background: color-mix(in srgb, var(--bg-card) 84%, transparent);
+    background: color-mix(in srgb, var(--bg-card) 78%, transparent);
 }
 .draw-studio-eyebrow {
     display: block; margin-bottom: 3px; color: var(--teal); font-family: var(--font-mono);
@@ -38,7 +38,7 @@
 .draw-toolrail {
     position: relative; z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 9px;
     padding: 14px 10px; border-right: 1px solid var(--line);
-    background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+    background: color-mix(in srgb, var(--bg-elev) 84%, transparent);
 }
 .draw-toolrail::after {
     content: ""; width: 28px; height: 1px; margin: 3px 0;
