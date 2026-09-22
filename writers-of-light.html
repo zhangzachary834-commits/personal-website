@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writers of Light — Dimension of Thought</title>
+    <meta name="description" content="Writers of Light is a free collaborative writing sanctuary for helping people give faithful words to letters, stories, essays, testimony, and thoughts that are hard to articulate.">
+    <meta name="author" content="Zachary Zhang">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/writers-of-light.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Writers of Light — Dimension of Thought">
+    <meta property="og:description" content="Bring the unfinished words. Keep your voice. Shape them together.">
+    <meta property="og:image" content="https://zhangzachary834-commits.github.io/personal-website/assets/dimension-emblem.jpg">
+
+    <link rel="icon" type="image/jpeg" href="assets/dimension-emblem.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="writers-of-light.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
+    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
+
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left-brand">
+                <div class="mode-switcher-pill" role="tablist" aria-label="Site View Mode Switcher">
+                    <a href="index.html?mode=personal" class="mode-btn" title="Switch to Zachary Zhang's Personal Portfolio">
+                        <span class="mode-btn-icon">👤</span>
+                        <span class="mode-btn-text">Zachary Zhang</span>
+                    </a>
+                    <a href="index.html?mode=dimension" class="mode-btn active" title="Switch to Dimension of Thought Platform">
+                        <span class="mode-btn-icon">✧</span>
+                        <span class="mode-btn-text">Dimension of Thought</span>
+                    </a>
+                </div>
+            </div>
+
+            <nav class="nav-menu" aria-label="Primary">
+                <ul class="nav-links">
+                    <li><a href="index.html?mode=dimension" class="nav-link">Home</a></li>
+                    <li><a href="story.html" class="nav-link">Story</a></li>
+                    <li><a href="manifesto.html" class="nav-link">Manifesto</a></li>
+                    <li><a href="library.html" class="nav-link">The Library</a></li>
+                    <li><a href="ecosystem.html" class="nav-link active">Ecosystem</a></li>
+                    <li><a href="contact.html" class="nav-link">Dialogue</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light mode">
+                    <span id="theme-icon" aria-hidden="true">☽</span>
+                </button>
+                <button class="hamburger" id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <header class="page-hero wol-hero">
+            <div class="container">
+                <div class="page-breadcrumb">
+                    <a href="index.html?mode=dimension">Dimension of Thought</a>
+                    <span class="page-breadcrumb-sep">/</span>
+                    <a href="ecosystem.html">Ecosystem</a>
+                    <span class="page-breadcrumb-sep">/</span>
+                    <span>Writers of Light</span>
+                </div>
+                <div class="wol-hero-mark"><span aria-hidden="true">✦</span> COMMUNITY WRITING SANCTUARY</div>
+                <h1 class="page-title">Give words to the heart.</h1>
+                <p class="page-subtitle">
+                    Bring the unfinished thought, the difficult letter, the half-formed story, the testimony you cannot quite shape,
+                    or the essay that knows what it means before it knows how to say it. Writers of Light helps you articulate it
+                    without replacing your voice.
+                </p>
+                <div class="wol-hero-actions">
+                    <a href="#request" class="btn btn-primary">Bring something to the table ↓</a>
+                    <a href="#how-it-works" class="btn btn-secondary">How collaboration works</a>
+                </div>
+
+                <div class="wol-principle-strip">
+                    <div class="wol-principle">
+                        <strong>Your meaning comes first.</strong>
+                        <span>We begin with what you are actually trying to say, not with a template or an imposed style.</span>
+                    </div>
+                    <div class="wol-principle">
+                        <strong>Your voice remains yours.</strong>
+                        <span>Editing clarifies, structures, and strengthens. It should not make you disappear from your own words.</span>
+                    </div>
+                    <div class="wol-principle">
+                        <strong>Help is free.</strong>
+                        <span>The premise is service before economy: words worth saying should not remain trapped for lack of editorial help.</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="section" id="request">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">01 // Bring the unfinished thing</span>
+                    <h2 class="section-title">Start with whatever you actually have.</h2>
+                    <p class="section-subtitle">Fragments are welcome. You do not need to make the request polished before asking for help polishing it.</p>
+                </div>
+
+                <div class="wol-workbench">
+                    <section class="wol-panel">
+                        <div class="wol-panel-head">
+                            <span class="wol-panel-kicker">Collaboration request</span>
+                            <h2>What are you trying to bring into words?</h2>
+                            <p>This form autosaves only in this browser until you choose to open the pre-filled email.</p>
+                        </div>
+
+                        <form class="wol-form" id="wol-request-form">
+                            <div class="wol-form-grid">
+                                <div class="wol-field">
+                                    <label for="wol-name">Your name</label>
+                                    <input id="wol-name" type="text" autocomplete="name" placeholder="Name or preferred name">
+                                </div>
+                                <div class="wol-field">
+                                    <label for="wol-email">Reply email</label>
+                                    <input id="wol-email" type="email" autocomplete="email" placeholder="you@example.com">
+                                </div>
+
+                                <div class="wol-field">
+                                    <label for="wol-kind">What kind of writing?</label>
+                                    <select id="wol-kind">
+                                        <option value="Unwritten thought">An unwritten thought / idea</option>
+                                        <option value="Letter or message">A letter or important message</option>
+                                        <option value="Personal story">A personal story or testimony</option>
+                                        <option value="Essay or argument">An essay or argument</option>
+                                        <option value="Creative writing">Creative writing</option>
+                                        <option value="Editing an existing draft">Editing an existing draft</option>
+                                        <option value="Something else">Something else</option>
+                                    </select>
+                                </div>
+                                <div class="wol-field">
+                                    <label for="wol-tone">Desired tone</label>
+                                    <select id="wol-tone">
+                                        <option value="Natural">Natural / sounds like me</option>
+                                        <option value="Warm">Warm</option>
+                                        <option value="Clear">Clear and direct</option>
+                                        <option value="Reflective">Reflective</option>
+                                        <option value="Formal">Formal</option>
+                                        <option value="Poetic">Poetic</option>
+                                        <option value="Persuasive">Persuasive</option>
+                                        <option value="Not sure">Not sure yet</option>
+                                    </select>
+                                </div>
+
+                                <div class="wol-field full">
+                                    <label for="wol-title">Working title or purpose</label>
+                                    <input id="wol-title" type="text" placeholder="e.g. A letter to my younger brother / Why this experience mattered / Untitled">
+                                </div>
+
+                                <div class="wol-field full">
+                                    <label>What kind of help would be useful?</label>
+                                    <div class="wol-help-types">
+                                        <label class="wol-help-chip"><input type="checkbox" name="wol-help" value="Finding the words"><span>Find the words</span></label>
+                                        <label class="wol-help-chip"><input type="checkbox" name="wol-help" value="Structure and organization"><span>Structure it</span></label>
+                                        <label class="wol-help-chip"><input type="checkbox" name="wol-help" value="Clarity and line editing"><span>Clarify it</span></label>
+                                        <label class="wol-help-chip"><input type="checkbox" name="wol-help" value="Preserving voice while polishing"><span>Preserve my voice</span></label>
+                                        <label class="wol-help-chip"><input type="checkbox" name="wol-help" value="Thinking it through together"><span>Think it through</span></label>
+                                    </div>
+                                </div>
+
+                                <div class="wol-field full">
+                                    <label for="wol-context">What does this need to carry?</label>
+                                    <textarea id="wol-context" placeholder="Who is this for? Why does it matter? What happened? What are you trying to communicate or protect?"></textarea>
+                                </div>
+
+                                <div class="wol-field full">
+                                    <label for="wol-draft">Your rough words, fragments, notes, or current draft</label>
+                                    <textarea id="wol-draft" rows="9" placeholder="Paste the messy version. Bullet points, fragments, unfinished sentences, and raw notes are completely fine."></textarea>
+                                    <span class="wol-help">You do not have to make this presentable first. The unfinishedness is part of what the collaboration is for.</span>
+                                </div>
+
+                                <div class="wol-field full">
+                                    <label for="wol-preserve">What must remain yours?</label>
+                                    <textarea id="wol-preserve" placeholder="A phrase you care about, a theological or moral conviction, a memory, a fact, a kind of humor, a specific emotional truth, or simply: 'Please make sure this still sounds like me.'"></textarea>
+                                </div>
+
+                                <div class="wol-field full">
+                                    <label for="wol-outcome">What would a good outcome look like?</label>
+                                    <textarea id="wol-outcome" placeholder="e.g. I want to finally send this letter / I want a coherent first draft / I want feedback without losing my style."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="wol-form-actions">
+                                <button class="btn btn-primary" type="submit">Open collaboration email →</button>
+                                <button class="btn btn-secondary" type="button" id="wol-copy-btn">Copy request</button>
+                                <button class="btn btn-ghost" type="button" id="wol-clear-btn">Clear local draft</button>
+                                <span class="wol-save-state" id="wol-save-state">Saved privately in this browser</span>
+                            </div>
+                        </form>
+                    </section>
+
+                    <aside class="wol-panel wol-preview" aria-label="Live Writers of Light request preview">
+                        <div class="wol-panel-head">
+                            <span class="wol-panel-kicker">Lamplight preview</span>
+                            <h3>Your handoff, before you send it</h3>
+                            <p>See whether the request actually represents what you mean.</p>
+                        </div>
+                        <div class="wol-preview-body">
+                            <div class="wol-letter">
+                                <span class="wol-letter-label">Writers of Light // Request</span>
+                                <h3 id="wol-preview-title" class="wol-empty">Untitled request</h3>
+                                <div class="wol-letter-meta" id="wol-preview-meta">Unwritten thought · Natural tone</div>
+
+                                <div class="wol-letter-section">
+                                    <strong>What this needs to carry</strong>
+                                    <p id="wol-preview-context" class="wol-empty">Tell us what this piece needs to carry, who it is for, and why it matters.</p>
+                                </div>
+                                <div class="wol-letter-section">
+                                    <strong>Rough words</strong>
+                                    <p id="wol-preview-draft" class="wol-empty">Your rough words can be unfinished, fragmented, or just a few sentences.</p>
+                                </div>
+                                <div class="wol-letter-section">
+                                    <strong>What must remain yours</strong>
+                                    <p id="wol-preview-preserve" class="wol-empty">Name the phrases, beliefs, memories, facts, or emotional truths that must remain yours.</p>
+                                </div>
+                                <div class="wol-letter-section">
+                                    <strong>Help requested</strong>
+                                    <p id="wol-preview-help" class="wol-empty">Choose the kinds of help you want.</p>
+                                </div>
+                            </div>
+                            <div class="wol-count" id="wol-word-count">0 words entrusted so far</div>
+                            <button type="button" class="btn btn-primary" id="wol-send-btn" style="width:100%;margin-top:16px;">Open this request in email →</button>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="how-it-works">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">02 // The collaboration</span>
+                    <h2 class="section-title">Not ghostwriting your personhood.</h2>
+                    <p class="section-subtitle">The aim is not to manufacture impressive prose. It is to help a real person become more fully audible.</p>
+                </div>
+
+                <div class="wol-how-grid">
+                    <article class="wol-step">
+                        <span class="wol-step-num">01</span>
+                        <h3>You bring the reality.</h3>
+                        <p>The story, conviction, relationship, experience, argument, need, or half-sentence begins with you.</p>
+                    </article>
+                    <article class="wol-step">
+                        <span class="wol-step-num">02</span>
+                        <h3>We listen for the center.</h3>
+                        <p>Before polishing sentences, we identify what the piece is actually trying to preserve and communicate.</p>
+                    </article>
+                    <article class="wol-step">
+                        <span class="wol-step-num">03</span>
+                        <h3>We shape together.</h3>
+                        <p>Structure, wording, clarity, rhythm, and editing are offered in service of the meaning—not as a replacement for it.</p>
+                    </article>
+                    <article class="wol-step">
+                        <span class="wol-step-num">04</span>
+                        <h3>You remain the author.</h3>
+                        <p>You decide what is true to your voice, what changes, what stays, and whether the finished words ever leave the room.</p>
+                    </article>
+                </div>
+
+                <div class="wol-promise">
+                    <p>“Experienced writers ready to help you flesh out the words of your heart” only means something if the heart remains recognizable when the writing is finished.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <button id="back-to-top" class="back-to-top-btn" title="Back to top" aria-label="Back to top">↑</button>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-brand-row">
+                    <img src="assets/dimension-emblem.jpg" alt="Dimension of Thought emblem" class="footer-emblem" width="28" height="28">
+                    <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
+                </div>
+                <p class="footer-tagline">Writers of Light — giving faithful words to what matters.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer Navigation">
+                <a href="ecosystem.html">Ecosystem</a>
+                <a href="library.html">The Library</a>
+                <a href="studio.html">Studio</a>
+                <a href="contact.html">Dialogue</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="writers-of-light.js"></script>
+</body>
+</html>
