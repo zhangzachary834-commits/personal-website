@@ -558,6 +558,114 @@ document.addEventListener("DOMContentLoaded", () => {
     let mousePos = { x: -1000, y: -1000, active: false };
     let cachedConstellationRect = null;
 
+    // Keep one living sky while the visitor moves between pages in this tab.
+    // Refreshing deliberately starts a new sky; a new tab/session has no snapshot.
+    const CONSTELLATION_SESSION_KEY = "dimension_constellation_state_v1";
+    const CONSTELLATION_STATE_VERSION = 1;
+
+    function constellationNavigationType() {
+        try {
+            const entry = performance.getEntriesByType?.("navigation")?.[0];
+            return entry?.type || "navigate";
+        } catch (_) {
+            return "navigate";
+        }
+    }
+
+    function clearConstellationSession() {
+        try {
+            sessionStorage.removeItem(CONSTELLATION_SESSION_KEY);
+        } catch (_) {}
+    }
+
+    function saveConstellationSession() {
+        if (!canvas || !stars.length) return;
+        try {
+            const rect = cachedConstellationRect || canvas.getBoundingClientRect();
+            const snapshot = {
+                version: CONSTELLATION_STATE_VERSION,
+                width: rect.width || 1,
+                height: rect.height || 1,
+                time,
+                stars,
+                bgStars,
+                nebulae
+            };
+            sessionStorage.setItem(CONSTELLATION_SESSION_KEY, JSON.stringify(snapshot));
+        } catch (_) {
+            // Storage can be unavailable in strict/private browser modes.
+        }
+    }
+
+    function restoreConstellationSession() {
+        if (!canvas) return false;
+        try {
+            const raw = sessionStorage.getItem(CONSTELLATION_SESSION_KEY);
+            if (!raw) return false;
+
+            const snapshot = JSON.parse(raw);
+            if (
+                !snapshot ||
+                snapshot.version !== CONSTELLATION_STATE_VERSION ||
+                !Array.isArray(snapshot.stars) ||
+                !Array.isArray(snapshot.bgStars) ||
+                !Array.isArray(snapshot.nebulae)
+            ) {
+                clearConstellationSession();
+                return false;
+            }
+
+            const rect = cachedConstellationRect || canvas.getBoundingClientRect();
+            const oldW = Number(snapshot.width) || rect.width || 1;
+            const oldH = Number(snapshot.height) || rect.height || 1;
+            const scaleX = (rect.width || 1) / oldW;
+            const scaleY = (rect.height || 1) / oldH;
+            const radiusScale = Math.sqrt(Math.max(0.01, scaleX * scaleY));
+
+            const scalePoint = (item, scaleRadius = false) => {
+                const next = { ...item };
+                if (Number.isFinite(Number(next.x))) next.x = Number(next.x) * scaleX;
+                if (Number.isFinite(Number(next.y))) next.y = Number(next.y) * scaleY;
+                if (scaleRadius && Number.isFinite(Number(next.r))) next.r = Number(next.r) * radiusScale;
+                return next;
+            };
+
+            stars = snapshot.stars.map((item) => scalePoint(item));
+            bgStars = snapshot.bgStars.map((item) => scalePoint(item));
+            nebulae = snapshot.nebulae.map((item) => scalePoint(item, true));
+            time = Number.isFinite(Number(snapshot.time)) ? Number(snapshot.time) : 0;
+            return stars.length > 0;
+        } catch (_) {
+            clearConstellationSession();
+            return false;
+        }
+    }
+
+    function rescaleConstellationGeometry(oldW, oldH, newW, newH) {
+        if (!oldW || !oldH || !newW || !newH || !stars.length) return;
+        const scaleX = newW / oldW;
+        const scaleY = newH / oldH;
+        const radiusScale = Math.sqrt(Math.max(0.01, scaleX * scaleY));
+
+        for (const item of stars) {
+            item.x *= scaleX;
+            item.y *= scaleY;
+        }
+        for (const item of bgStars) {
+            item.x *= scaleX;
+            item.y *= scaleY;
+        }
+        for (const item of nebulae) {
+            item.x *= scaleX;
+            item.y *= scaleY;
+            item.r *= radiusScale;
+        }
+    }
+
+    if (constellationNavigationType() === "reload") {
+        clearConstellationSession();
+    }
+
     function resizeConstellation() {
         if (!canvas) return;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1124,15 +1232,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (canvas && ctx && !reduceMotion) {
         resizeConstellation();
-        initStars();
-        drawConstellation();
-        window.addEventListener("resize", () => {
-            resizeConstellation();
+        if (!restoreConstellationSession()) {
             initStars();
+        }
+        drawConstellation();
+
+        window.addEventListener("resize", () => {
+            const oldRect = cachedConstellationRect || canvas.getBoundingClientRect();
+            const oldW = oldRect.width || 1;
+            const oldH = oldRect.height || 1;
+            resizeConstellation();
+            const newRect = cachedConstellationRect || canvas.getBoundingClientRect();
+            rescaleConstellationGeometry(oldW, oldH, newRect.width || 1, newRect.height || 1);
+            saveConstellationSession();
         });
+
         window.addEventListener("scroll", () => {
             if (canvas) cachedConstellationRect = canvas.getBoundingClientRect();
         }, { passive: true });
+
+        // pagehide is reliable for ordinary same-tab navigation, including Safari.
+        // A subsequent reload clears this snapshot before initialization.
+        window.addEventListener("pagehide", saveConstellationSession);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") saveConstellationSession();
+        });
+
+        // When returning through the browser back/forward cache, the old page's JS
+        // may still be alive. Pull the latest sky from the session so geometry
+        // stays continuous instead of jumping backward in time.
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted && restoreConstellationSession()) {
+                cachedConstellationRect = canvas.getBoundingClientRect();
+            }
+        });
     }
 
     // -------------------------------------------------------------------------
