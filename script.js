@@ -6187,3 +6187,168 @@ class VesselEngine {
     initLibraryConstellation();
 });
 }
+
+
+/* === LUMINOUS CONSTELLATION FX PASS · 2026-09-23 === */
+(() => {
+    "use strict";
+
+    const CARD_SELECTOR = [
+        ".stat-card",
+        ".now-card",
+        ".project-card",
+        ".pillar-card",
+        ".skill-category-card",
+        ".story-card",
+        ".manifesto-card",
+        ".essay-card",
+        ".initiative-card",
+        ".contact-item-card",
+        ".contact-card-main",
+        ".timeline-card",
+        ".experience-card",
+        ".education-card",
+        ".engineering-card",
+        ".portfolio-card"
+    ].join(",");
+
+    const HEADING_SELECTOR = [
+        ".hero-title",
+        ".section-title",
+        ".drawer-title",
+        ".cv-section-title"
+    ].join(",");
+
+    const EMPHASIS_SELECTOR = [
+        ".hero-title em",
+        ".section-title em",
+        ".hero-bio strong",
+        ".project-card strong",
+        ".initiative-card strong"
+    ].join(",");
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+    function makeDecorativeSpan(className) {
+        const span = document.createElement("span");
+        span.className = className;
+        span.setAttribute("aria-hidden", "true");
+        return span;
+    }
+
+    function installCardFx(card, index) {
+        if (card.classList.contains("fx-reactive-card")) return;
+
+        card.classList.add("fx-reactive-card");
+        card.style.setProperty("--fx-seed", String(index % 11));
+
+        const atmosphere = makeDecorativeSpan("fx-card-atmosphere");
+        const rim = makeDecorativeSpan("fx-card-rim");
+        card.append(atmosphere, rim);
+
+        if (!finePointer.matches || reduceMotion.matches) return;
+
+        let frame = 0;
+        let nextX = 50;
+        let nextY = 50;
+
+        const paint = () => {
+            frame = 0;
+            card.style.setProperty("--fx-x", nextX.toFixed(2) + "%");
+            card.style.setProperty("--fx-y", nextY.toFixed(2) + "%");
+        };
+
+        card.addEventListener("pointermove", (event) => {
+            const rect = card.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+
+            nextX = ((event.clientX - rect.left) / rect.width) * 100;
+            nextY = ((event.clientY - rect.top) / rect.height) * 100;
+
+            if (!frame) frame = requestAnimationFrame(paint);
+        }, { passive: true });
+
+        card.addEventListener("pointerleave", () => {
+            nextX = 50;
+            nextY = 50;
+            if (!frame) frame = requestAnimationFrame(paint);
+        }, { passive: true });
+    }
+
+    function installHeadingFx(heading) {
+        if (heading.classList.contains("fx-luminous-heading")) return;
+        heading.classList.add("fx-luminous-heading");
+
+        const rule = makeDecorativeSpan("fx-title-constellation");
+        heading.appendChild(rule);
+    }
+
+    function installRevealObserver(targets) {
+        if (reduceMotion.matches || !("IntersectionObserver" in window)) {
+            targets.forEach((node) => node.classList.add("fx-entered"));
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) continue;
+                entry.target.classList.add("fx-entered");
+                observer.unobserve(entry.target);
+            }
+        }, {
+            threshold: 0.16,
+            rootMargin: "0px 0px -8% 0px"
+        });
+
+        targets.forEach((node) => observer.observe(node));
+    }
+
+    function bootLuminousConstellationFx() {
+        if (document.documentElement.dataset.luminousFx === "ready") return;
+        document.documentElement.dataset.luminousFx = "ready";
+
+        const cards = [...document.querySelectorAll(CARD_SELECTOR)];
+        cards.forEach(installCardFx);
+
+        const headings = [...document.querySelectorAll(HEADING_SELECTOR)];
+        headings.forEach(installHeadingFx);
+
+        const emphasis = [...document.querySelectorAll(EMPHASIS_SELECTOR)]
+            .filter((node) => !node.closest("[hidden]"));
+        emphasis.forEach((node) => node.classList.add("fx-word-bloom"));
+
+        installRevealObserver([...headings, ...emphasis]);
+
+        /* The site can swap between personal and Dimension modes without reload.
+           A tiny mutation observer makes newly-exposed/dynamically-authored cards
+           inherit the same visual system automatically. */
+        const observer = new MutationObserver((mutations) => {
+            let needsScan = false;
+
+            for (const mutation of mutations) {
+                if (mutation.type === "childList" && mutation.addedNodes.length) {
+                    needsScan = true;
+                    break;
+                }
+            }
+
+            if (!needsScan) return;
+
+            document.querySelectorAll(CARD_SELECTOR).forEach((card, index) => installCardFx(card, index));
+            document.querySelectorAll(HEADING_SELECTOR).forEach(installHeadingFx);
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootLuminousConstellationFx, { once: true });
+    } else {
+        bootLuminousConstellationFx();
+    }
+})();
+/* === END LUMINOUS CONSTELLATION FX PASS === */
