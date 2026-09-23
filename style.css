@@ -5980,3 +5980,361 @@ body.zen-mode .studio-editor-pane {
 [data-theme="light"] .contact-card-main {
     background: color-mix(in srgb, var(--bg-card) 92%, transparent);
 }
+
+
+/* === LUMINOUS CONSTELLATION FX PASS · 2026-09-23 === */
+/*
+   A deliberately restrained "living instrument" layer:
+   cursor-responsive prismatic rims, spectral card depth, and typographic
+   constellation accents. Decorative-only and reduced-motion aware.
+*/
+
+:root {
+    --fx-amber: 216, 180, 110;
+    --fx-cyan: 110, 231, 216;
+    --fx-violet: 168, 85, 247;
+    --fx-rose: 244, 114, 182;
+}
+
+/* Shared reactive card substrate */
+:is(
+    .stat-card,
+    .now-card,
+    .project-card,
+    .pillar-card,
+    .skill-category-card,
+    .story-card,
+    .manifesto-card,
+    .essay-card,
+    .initiative-card,
+    .contact-item-card,
+    .contact-card-main,
+    .timeline-card,
+    .experience-card,
+    .education-card,
+    .engineering-card,
+    .portfolio-card
+).fx-reactive-card {
+    isolation: isolate;
+    contain: paint;
+    will-change: box-shadow, border-color;
+    transition:
+        border-color 320ms cubic-bezier(.16, 1, .3, 1),
+        box-shadow 420ms cubic-bezier(.16, 1, .3, 1),
+        filter 420ms cubic-bezier(.16, 1, .3, 1);
+}
+
+:is(
+    .stat-card,
+    .now-card,
+    .project-card,
+    .pillar-card,
+    .skill-category-card,
+    .story-card,
+    .manifesto-card,
+    .essay-card,
+    .initiative-card,
+    .contact-item-card,
+    .contact-card-main,
+    .timeline-card,
+    .experience-card,
+    .education-card,
+    .engineering-card,
+    .portfolio-card
+).fx-reactive-card:hover {
+    border-color: color-mix(in srgb, var(--gold) 48%, var(--teal) 24%, transparent);
+    box-shadow:
+        0 26px 70px rgba(0, 0, 0, .34),
+        0 0 0 1px rgba(var(--fx-amber), .05),
+        0 0 30px rgba(var(--fx-cyan), .075),
+        0 0 64px rgba(var(--fx-violet), .055);
+}
+
+/* Mouse-following inner atmosphere. This is a real child rather than a pseudo
+   element so it never collides with the site's pre-existing spotlight layer. */
+.fx-card-atmosphere,
+.fx-card-rim {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.fx-card-atmosphere {
+    z-index: 3;
+    opacity: 0;
+    background:
+        radial-gradient(
+            300px circle at var(--fx-x, 50%) var(--fx-y, 50%),
+            rgba(var(--fx-cyan), .105),
+            rgba(var(--fx-amber), .06) 26%,
+            rgba(var(--fx-violet), .035) 44%,
+            transparent 68%
+        );
+    mix-blend-mode: screen;
+    transition: opacity 300ms ease;
+}
+
+.fx-reactive-card:hover > .fx-card-atmosphere {
+    opacity: 1;
+}
+
+[data-theme="light"] .fx-card-atmosphere {
+    mix-blend-mode: multiply;
+    opacity: 0;
+    background:
+        radial-gradient(
+            320px circle at var(--fx-x, 50%) var(--fx-y, 50%),
+            rgba(14, 153, 204, .055),
+            rgba(242, 133, 41, .05) 30%,
+            rgba(147, 51, 234, .025) 48%,
+            transparent 70%
+        );
+}
+
+[data-theme="light"] .fx-reactive-card:hover > .fx-card-atmosphere {
+    opacity: .9;
+}
+
+/* Hairline spectral rim. The conic field quietly rotates, but only the one-pixel
+   shell is visible. */
+.fx-card-rim {
+    z-index: 4;
+    inset: -1px;
+    padding: 1px;
+    opacity: .16;
+    background:
+        conic-gradient(
+            from 210deg,
+            transparent 0deg 44deg,
+            rgba(var(--fx-amber), .82) 62deg,
+            transparent 88deg 150deg,
+            rgba(var(--fx-cyan), .72) 177deg,
+            transparent 206deg 274deg,
+            rgba(var(--fx-violet), .72) 300deg,
+            transparent 332deg 360deg
+        );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    transition: opacity 280ms ease, filter 320ms ease;
+    animation: fx-rim-breathe 8s ease-in-out infinite;
+}
+
+.fx-reactive-card:hover > .fx-card-rim {
+    opacity: .82;
+    filter: drop-shadow(0 0 7px rgba(var(--fx-cyan), .18));
+}
+
+/* A tiny "star" lives exactly where the pointer meets the card. */
+.fx-card-rim::after {
+    content: "";
+    position: absolute;
+    left: var(--fx-x, 50%);
+    top: var(--fx-y, 50%);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    opacity: 0;
+    background: var(--star);
+    transform: translate(-50%, -50%) scale(.5);
+    box-shadow:
+        0 0 5px 1px rgba(var(--fx-amber), .9),
+        0 0 13px 3px rgba(var(--fx-cyan), .38),
+        0 0 22px 5px rgba(var(--fx-violet), .15);
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.fx-reactive-card:hover > .fx-card-rim::after {
+    opacity: .92;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+@keyframes fx-rim-breathe {
+    0%, 100% { filter: saturate(.9) brightness(.9); }
+    50% { filter: saturate(1.12) brightness(1.12); }
+}
+
+/* Card titles gain a restrained optical "charge" rather than a loud neon glow. */
+.fx-reactive-card :is(h2, h3, h4, .project-title, .initiative-lead, .item-link) {
+    transition:
+        color 240ms ease,
+        text-shadow 320ms ease,
+        letter-spacing 320ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.fx-reactive-card:hover :is(h2, h3, h4, .project-title) {
+    text-shadow:
+        0 0 18px rgba(var(--fx-amber), .13),
+        0 0 34px rgba(var(--fx-cyan), .08);
+    letter-spacing: .006em;
+}
+
+.fx-reactive-card:hover :is(.initiative-lead, .item-link) {
+    text-shadow: 0 0 16px rgba(var(--fx-cyan), .11);
+}
+
+/* Major headings receive a quiet constellation rule that grows in when the
+   heading enters the viewport. */
+.fx-luminous-heading {
+    position: relative;
+}
+
+.fx-title-constellation {
+    position: absolute;
+    left: 0;
+    bottom: -.28em;
+    width: clamp(54px, 14%, 116px);
+    height: 1px;
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: 0;
+    transform: scaleX(.18);
+    transform-origin: left center;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--fx-amber), .95),
+        rgba(var(--fx-cyan), .82) 48%,
+        rgba(var(--fx-violet), .5),
+        transparent
+    );
+    box-shadow: 0 0 12px rgba(var(--fx-cyan), .16);
+    transition:
+        transform 900ms cubic-bezier(.16, 1, .3, 1),
+        opacity 650ms ease;
+}
+
+.section-header:not(.left) .fx-title-constellation {
+    left: 50%;
+    transform: translateX(-50%) scaleX(.18);
+    transform-origin: center center;
+}
+
+.fx-luminous-heading.fx-entered > .fx-title-constellation {
+    opacity: .82;
+    transform: scaleX(1);
+}
+
+.section-header:not(.left) .fx-luminous-heading.fx-entered > .fx-title-constellation {
+    transform: translateX(-50%) scaleX(1);
+}
+
+.fx-title-constellation::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--star);
+    transform: translate(-50%, -50%);
+    box-shadow:
+        0 0 6px rgba(var(--fx-amber), .95),
+        0 0 12px rgba(var(--fx-cyan), .55);
+    animation: fx-star-travel 5.8s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+
+@keyframes fx-star-travel {
+    0%, 18% { left: 0; opacity: 0; }
+    26% { opacity: 1; }
+    72% { opacity: .9; }
+    82%, 100% { left: 100%; opacity: 0; }
+}
+
+/* The already-gradient hero/section emphasis gets a spectral "breath", not a
+   second competing gradient animation. */
+:is(.hero-title, .section-title) em {
+    filter:
+        drop-shadow(0 0 0 rgba(var(--fx-cyan), 0))
+        drop-shadow(0 0 0 rgba(var(--fx-violet), 0));
+    transition: filter 360ms ease, letter-spacing 360ms ease;
+}
+
+:is(.hero-title, .section-title):hover em {
+    filter:
+        drop-shadow(0 0 9px rgba(var(--fx-cyan), .2))
+        drop-shadow(0 0 20px rgba(var(--fx-violet), .11));
+    letter-spacing: .008em;
+}
+
+/* A one-time focus bloom when important words arrive on screen. */
+.fx-word-bloom {
+    transition: filter 900ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.fx-word-bloom:not(.fx-entered) {
+    filter: blur(3px) brightness(.85);
+}
+
+.fx-word-bloom.fx-entered {
+    filter: blur(0) brightness(1);
+}
+
+/* Small typographic delight that also makes keyboard/selection interactions feel
+   designed rather than browser-default. */
+::selection {
+    background: rgba(var(--fx-amber), .28);
+    color: var(--ink);
+    text-shadow: 0 0 10px rgba(var(--fx-cyan), .16);
+}
+
+/* Very subtle living sheen on badges and section tags. */
+:is(.section-tag, .initiative-badge, .project-badge, .drawer-tag) {
+    background-image:
+        linear-gradient(110deg, transparent 0 38%, rgba(255,255,255,.12) 47%, transparent 56%),
+        linear-gradient(var(--glow), var(--glow));
+    background-size: 240% 100%, 100% 100%;
+    background-position: 140% 0, 0 0;
+    transition: background-position 650ms cubic-bezier(.16, 1, .3, 1), box-shadow 320ms ease;
+}
+
+:is(.section-tag, .initiative-badge, .project-badge, .drawer-tag):hover {
+    background-position: -40% 0, 0 0;
+    box-shadow: 0 0 18px rgba(var(--fx-amber), .08);
+}
+
+/* Respect users who prefer less movement and spare low-precision/touch devices
+   from cursor-only ornament. */
+@media (hover: none), (pointer: coarse) {
+    .fx-card-rim::after {
+        display: none;
+    }
+
+    .fx-reactive-card > .fx-card-atmosphere {
+        background:
+            radial-gradient(circle at 72% 18%, rgba(var(--fx-cyan), .055), transparent 36%),
+            radial-gradient(circle at 18% 82%, rgba(var(--fx-amber), .045), transparent 34%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-card-rim,
+    .fx-title-constellation::after {
+        animation: none !important;
+    }
+
+    .fx-title-constellation,
+    .fx-word-bloom,
+    .fx-card-atmosphere,
+    .fx-card-rim {
+        transition-duration: 1ms !important;
+    }
+
+    .fx-word-bloom:not(.fx-entered) {
+        filter: none;
+    }
+
+    .fx-title-constellation {
+        opacity: .52;
+        transform: scaleX(1);
+    }
+
+    .section-header:not(.left) .fx-title-constellation {
+        transform: translateX(-50%) scaleX(1);
+    }
+}
+
+/* === END LUMINOUS CONSTELLATION FX PASS === */
