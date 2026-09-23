@@ -6193,6 +6193,10 @@ class VesselEngine {
 (() => {
     "use strict";
 
+    // script.js is also imported directly by Node-based unit tests.
+    // Keep this browser-only visual layer inert outside a DOM environment.
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+
     const CARD_SELECTOR = [
         ".stat-card",
         ".now-card",
