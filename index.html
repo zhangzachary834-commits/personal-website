@@ -304,6 +304,86 @@
             margin-bottom: 8px;
         }
         .personal-now-card p { color: var(--muted); font-size: .96rem; }
+
+        .project-atlas {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 34px;
+        }
+        .project-atlas-card {
+            grid-column: span 4;
+            position: relative;
+            min-height: 265px;
+            padding: 26px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background:
+                radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 30%),
+                color-mix(in srgb, var(--bg-card) 76%, transparent);
+            backdrop-filter: blur(14px);
+            overflow: hidden;
+            transition: transform var(--ease), border-color var(--ease), background var(--ease);
+        }
+        .project-atlas-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--line-strong);
+            background:
+                radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 34%),
+                var(--bg-card-hover);
+        }
+        .project-atlas-card.featured {
+            grid-column: span 6;
+            min-height: 300px;
+        }
+        .project-atlas-card .project-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            color: var(--teal);
+            font-size: .7rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .project-atlas-card .project-type::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 14px color-mix(in srgb, currentColor 55%, transparent);
+        }
+        .project-atlas-card h3 {
+            margin-top: 34px;
+            font-family: var(--font-heading);
+            font-size: clamp(1.7rem, 3vw, 2.45rem);
+            line-height: 1.04;
+        }
+        .project-atlas-card p {
+            margin-top: 12px;
+            color: var(--muted);
+            max-width: 56ch;
+        }
+        .project-atlas-card .project-thread {
+            display: block;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+            font-family: var(--font-mono);
+            color: var(--dim);
+            font-size: .72rem;
+            line-height: 1.55;
+            letter-spacing: .03em;
+        }
+        .project-atlas-card a.project-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--gold-2);
+            font-weight: 600;
+        }
+        .project-atlas-card a.project-link:hover { color: var(--gold); }
+
         .personal-note {
             max-width: 820px;
             font-family: var(--font-heading);
@@ -330,9 +410,14 @@
             .home-hero-grid { grid-template-columns: 1fr; }
             .door-grid { grid-template-columns: 1fr; }
             .personal-now-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .project-atlas-card,
+            .project-atlas-card.featured { grid-column: span 6; }
         }
         @media (max-width: 560px) {
             .personal-now-grid { grid-template-columns: 1fr; }
+            .project-atlas { grid-template-columns: 1fr; }
+            .project-atlas-card,
+            .project-atlas-card.featured { grid-column: 1; min-height: 0; }
             .home-title { font-size: clamp(3rem, 16vw, 4.6rem); }
             .home-hero-aside { min-height: 410px; }
             .constellation-field { inset: 62px 8px 12px; }
@@ -362,6 +447,7 @@
             <nav class="personal-nav" aria-label="Primary navigation">
                 <a href="#worlds">My Worlds</a>
                 <a href="#now">Now</a>
+                <a href="#projects">Projects</a>
                 <a href="story.html">Story</a>
                 <a href="library.html">Writing</a>
                 <a href="portfolio.html">Engineering</a>
@@ -513,9 +599,91 @@
             </div>
         </section>
 
+        <section id="projects" class="section">
+            <div class="container">
+                <div class="section-header left">
+                    <span class="section-tag">03 // Long-Horizon Worlds</span>
+                    <h2 class="section-title">The projects have names.</h2>
+                    <p class="section-subtitle">
+                        Some are software. Some are stories. Some are attempts to build places for people.
+                        All of them circle the same question: what becomes possible when technology, imagination,
+                        meaning, and relationship are allowed to belong to one world?
+                    </p>
+                </div>
+
+                <div class="project-atlas" aria-label="Selected long-horizon projects">
+                    <article class="project-atlas-card featured">
+                        <span class="project-type">Computational world</span>
+                        <h3>Earthcall</h3>
+                        <p>
+                            A general computational ontology and world substrate built around Singulars, Relations,
+                            Properties, Laws, authored mathematics, rendering, persistence, and person-centered worlds.
+                            It is where many of my engineering questions stop being diagrams and become executable.
+                        </p>
+                        <span class="project-thread">THREAD // ontology · systems architecture · graphics · simulation · AI-assisted engineering</span>
+                        <a class="project-link" href="portfolio.html">Enter the engineering deep dive →</a>
+                    </article>
+
+                    <article class="project-atlas-card featured">
+                        <span class="project-type">Intellectual &amp; relational ecosystem</span>
+                        <h3>Dimension of Thought</h3>
+                        <p>
+                            A long-running attempt to create a place where ideas, art, people, disciplines, and lived
+                            experience can meet without being compressed into isolated feeds or flattened categories.
+                        </p>
+                        <span class="project-thread">THREAD // philosophy · writing · dialogue · community · semantic worlds</span>
+                        <a class="project-link" href="manifesto.html">Read the vision →</a>
+                    </article>
+
+                    <article class="project-atlas-card">
+                        <span class="project-type">Novel cycle</span>
+                        <h3>The Redemption of Invynceth</h3>
+                        <p>
+                            A fiction project and imagined world concerned with redemption, civilization, identity,
+                            conflict, and the possibility that broken worlds can be remade rather than merely escaped.
+                        </p>
+                        <span class="project-thread">THREAD // fiction · worldbuilding · civilization · character · redemption</span>
+                        <a class="project-link" href="library.html">Browse the writing world →</a>
+                    </article>
+
+                    <article class="project-atlas-card">
+                        <span class="project-type">Worldmaking horizon</span>
+                        <h3>Ourverse</h3>
+                        <p>
+                            A broader worldbuilding horizon around Earthcall: not merely rendering scenes, but asking
+                            how authored worlds can carry ontology, history, relation, creativity, and lived continuity.
+                        </p>
+                        <span class="project-thread">THREAD // virtual worlds · authorship · continuity · simulation · imagination</span>
+                    </article>
+
+                    <article class="project-atlas-card">
+                        <span class="project-type">Human-centered initiative</span>
+                        <h3>Lifescapes</h3>
+                        <p>
+                            An exploration of how technology and designed environments might become more relational,
+                            incarnational, and life-giving—less like abstract software floating above people, and more
+                            like places that help people inhabit the world together.
+                        </p>
+                        <span class="project-thread">THREAD // place · relationship · human flourishing · design · community</span>
+                    </article>
+
+                    <article class="project-atlas-card">
+                        <span class="project-type">Sound &amp; moving image</span>
+                        <h3>Music, film &amp; visual worlds</h3>
+                        <p>
+                            Composition, screenwriting, filmmaking, visual design, and experiments in translating ideas
+                            into atmosphere. Sometimes an argument needs prose. Sometimes it needs a world, a score,
+                            a cut, a color field, or a moment that can only be felt.
+                        </p>
+                        <span class="project-thread">THREAD // composition · screenwriting · visual art · film · atmosphere</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
         <section class="section">
             <div class="container">
-                <span class="section-tag">03 // Why this site exists</span>
+                <span class="section-tag">04 // Why this site exists</span>
                 <h2 class="personal-note">I wanted one place where the whole constellation could remain visible.</h2>
                 <div class="site-purpose">
                     <p>
@@ -531,7 +699,7 @@
         <section class="section contact-section">
             <div class="container">
                 <div class="section-header left">
-                    <span class="section-tag">04 // Keep wandering</span>
+                    <span class="section-tag">05 // Keep wandering</span>
                     <h2 class="section-title">Pick another trail.</h2>
                 </div>
                 <div class="hero-cta-group">
