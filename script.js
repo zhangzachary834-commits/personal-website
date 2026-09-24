@@ -916,7 +916,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // ⚡ Bolt Optimization: Extracted static neighbor offsets array outside the
         // high-frequency spatial grid loop to prevent GC allocation thrashing.
-        const neighborOffsets = [-10001, -10000, -9999, -1, 0, 1, 9999, 10000, 10001];
+        const neighborOffsets = [0, 1, 9999, 10000, 10001];
 
         for (const [key, cellNodes] of grid.entries()) {
             for (let idx = 0; idx < cellNodes.length; idx++) {
@@ -926,9 +926,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 for (let nIdx = 0; nIdx < neighborOffsets.length; nIdx++) {
                     const cell = grid.get(key + neighborOffsets[nIdx]);
                     if (!cell) continue;
-                    for (let k = 0; k < cell.length; k++) {
+                    const first = (nIdx === 0) ? idx + 1 : 0;
+                    for (let k = first; k < cell.length; k++) {
                         const j = cell[k];
-                        if (j <= i) continue;
                         const b = stars[j];
                         const dx = a.x - b.x;
                         const dy = a.y - b.y;

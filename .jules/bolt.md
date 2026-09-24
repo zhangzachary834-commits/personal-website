@@ -13,3 +13,6 @@
 ## 2026-10-25 - Avoid Array Allocations in High-Frequency Spatial Grid Loops
 **Learning:** Allocating an array of `neighborKeys` inside the inner loop of `grid.entries()` for spatial grids (like `drawConstellation` or `simulate` running at 60 FPS) generates significant garbage collection overhead, allocating tens of thousands of short-lived arrays per second.
 **Action:** Extract inline array allocations for neighbor offsets (e.g., `[-10001, -10000, -9999, -1, 0, 1, 9999, 10000, 10001]`) outside the loop and reuse the static array, adding the offset to the `key` during iteration (`key + neighborOffsets[nIdx]`). This completely eliminates inner-loop array allocations.
+## 2024-05-19 - Spatial Grid Pairwise Lookup Optimization
+**Learning:** Checking all 9 neighboring cells in a spatial grid for pairwise distance calculations performs redundant symmetric calculations.
+**Action:** Use a "half-kernel" of 5 neighbor checks (`[0, 1, 9999, 10000, 10001]`) and start the inner loop index offset at `idx + 1` for the self-cell (`nIdx === 0`) to accurately compute pairs in roughly half the time.
