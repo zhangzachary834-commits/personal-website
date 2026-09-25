@@ -1354,9 +1354,43 @@
                             </p>
                             <div class="story-footer-note">
                                 <span class="badge">Open Collaboration</span>
-                                <span>Soon, this will be our shared vision.</span>
+                                <span>The construction site is live below.</span>
                             </div>
                         </article>
+                    </div>
+
+                    <div class="build-pulse" data-build-pulse aria-label="Live public build pulse">
+                        <div class="build-pulse-header">
+                            <div>
+                                <span class="build-pulse-eyebrow"><span class="build-pulse-live-dot" aria-hidden="true"></span> Public build pulse</span>
+                                <h3>The construction site, live.</h3>
+                                <p>Recent bricks from Earthcall and this website, pulled from public GitHub history instead of hand-curated screenshots.</p>
+                            </div>
+                            <div class="build-pulse-actions">
+                                <a class="btn btn-secondary btn-small" href="https://github.com/zhangzachary834-commits/Earthcall" target="_blank" rel="noopener noreferrer">Open Earthcall ↗</a>
+                                <button type="button" class="btn btn-secondary btn-small build-pulse-refresh" data-build-refresh>Refresh pulse ↻</button>
+                            </div>
+                        </div>
+
+                        <div class="build-pulse-toolbar">
+                            <div class="build-pulse-filters" role="group" aria-label="Filter build activity">
+                                <button type="button" class="build-pulse-filter active" data-build-filter="all" aria-pressed="true">All</button>
+                                <button type="button" class="build-pulse-filter" data-build-filter="earthcall" aria-pressed="false">Earthcall</button>
+                                <button type="button" class="build-pulse-filter" data-build-filter="site" aria-pressed="false">This site</button>
+                            </div>
+                            <span class="build-pulse-status" data-build-pulse-status role="status" aria-live="polite">Reading the public construction site…</span>
+                        </div>
+
+                        <div class="build-pulse-feed" data-build-pulse-feed aria-busy="true">
+                            <div class="build-pulse-skeleton" aria-hidden="true"></div>
+                            <div class="build-pulse-skeleton" aria-hidden="true"></div>
+                            <div class="build-pulse-skeleton" aria-hidden="true"></div>
+                        </div>
+
+                        <div class="build-pulse-footer">
+                            <span>Public commit history · live from GitHub</span>
+                            <a href="contact.html">Bring an idea into the build →</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1741,5 +1775,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="build-pulse.js"></script>
 </body>
 </html>

@@ -6338,3 +6338,343 @@ body.zen-mode .studio-editor-pane {
 }
 
 /* === END LUMINOUS CONSTELLATION FX PASS === */
+
+
+/* ==========================================================================
+   Build Pulse — make "publish the construction site" literal
+   ========================================================================== */
+
+.build-pulse {
+    margin-top: 34px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(216, 180, 110, 0.10), transparent 34%),
+        var(--bg-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+.build-pulse::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,0.025), transparent 32%, rgba(216,180,110,0.025));
+}
+
+.build-pulse-header,
+.build-pulse-toolbar,
+.build-pulse-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.build-pulse-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 28px;
+    align-items: flex-start;
+    padding: 30px 32px 24px;
+}
+
+.build-pulse-header h3 {
+    margin: 8px 0 6px;
+    font-family: var(--font-heading);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.1;
+}
+
+.build-pulse-header p {
+    max-width: 720px;
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.build-pulse-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+}
+
+.build-pulse-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #62d394;
+    box-shadow: 0 0 0 4px rgba(98, 211, 148, 0.10), 0 0 18px rgba(98, 211, 148, 0.55);
+    animation: build-pulse-breathe 2.2s ease-in-out infinite;
+}
+
+.build-pulse-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.build-pulse-refresh:disabled {
+    opacity: 0.58;
+    cursor: wait;
+}
+
+.build-pulse-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 32px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.build-pulse-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.build-pulse-filter {
+    appearance: none;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    padding: 6px 12px;
+    font: 600 0.75rem/1 var(--font-mono);
+    cursor: pointer;
+    transition: color var(--ease), border-color var(--ease), background var(--ease), transform var(--ease);
+}
+
+.build-pulse-filter:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    transform: translateY(-1px);
+}
+
+.build-pulse-filter.active {
+    color: #0c0b08;
+    border-color: var(--gold);
+    background: linear-gradient(135deg, var(--gold-2), var(--gold));
+}
+
+.build-pulse-status {
+    color: var(--dim);
+    font: 0.72rem/1.4 var(--font-mono);
+    text-align: right;
+}
+
+.build-pulse-feed {
+    position: relative;
+    z-index: 1;
+    padding: 10px 32px 8px;
+}
+
+.build-pulse-item {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    min-height: 92px;
+}
+
+.build-pulse-rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.build-pulse-rail::after {
+    content: "";
+    position: absolute;
+    top: 25px;
+    bottom: -8px;
+    width: 1px;
+    background: linear-gradient(var(--line-strong), var(--line));
+}
+
+.build-pulse-item:last-child .build-pulse-rail::after {
+    display: none;
+}
+
+.build-pulse-node {
+    width: 9px;
+    height: 9px;
+    margin-top: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 5px var(--glow);
+    z-index: 1;
+}
+
+.build-pulse-item-body {
+    padding: 12px 0 18px;
+    border-bottom: 1px solid var(--line);
+    min-width: 0;
+}
+
+.build-pulse-item:last-child .build-pulse-item-body {
+    border-bottom: 0;
+}
+
+.build-pulse-item-top,
+.build-pulse-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.build-pulse-repo {
+    color: var(--gold);
+    font: 600 0.72rem/1.3 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.build-pulse-time {
+    color: var(--dim);
+    font: 0.7rem/1.3 var(--font-mono);
+    white-space: nowrap;
+}
+
+.build-pulse-message {
+    display: block;
+    margin: 7px 0 8px;
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    transition: color var(--ease);
+}
+
+.build-pulse-message:hover {
+    color: var(--gold);
+}
+
+.build-pulse-meta {
+    justify-content: flex-start;
+    color: var(--dim);
+    font: 0.7rem/1.3 var(--font-mono);
+}
+
+.build-pulse-meta code {
+    color: var(--muted);
+    background: var(--glow);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 2px 6px;
+}
+
+.build-pulse-skeleton {
+    height: 72px;
+    margin: 12px 0;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, transparent, var(--glow), transparent);
+    background-size: 220% 100%;
+    animation: build-pulse-shimmer 1.4s linear infinite;
+}
+
+.build-pulse-empty,
+.build-pulse-fallback-card {
+    display: block;
+    margin: 12px 0;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.02);
+    color: var(--muted);
+}
+
+.build-pulse-fallback-card {
+    transition: border-color var(--ease), transform var(--ease);
+}
+
+.build-pulse-fallback-card:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+}
+
+.build-pulse-fallback-card strong,
+.build-pulse-fallback-card span {
+    display: block;
+}
+
+.build-pulse-fallback-card strong {
+    color: var(--ink);
+    margin-bottom: 4px;
+}
+
+.build-pulse-fallback-card span {
+    color: var(--gold);
+    font-size: 0.82rem;
+}
+
+.build-pulse-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 32px 20px;
+    border-top: 1px solid var(--line);
+    color: var(--dim);
+    font: 0.72rem/1.4 var(--font-mono);
+}
+
+.build-pulse-footer a {
+    color: var(--gold);
+}
+
+@keyframes build-pulse-breathe {
+    0%, 100% { transform: scale(0.92); opacity: 0.78; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes build-pulse-shimmer {
+    from { background-position: 120% 0; }
+    to { background-position: -120% 0; }
+}
+
+@media (max-width: 760px) {
+    .build-pulse-header,
+    .build-pulse-toolbar,
+    .build-pulse-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .build-pulse-header,
+    .build-pulse-feed,
+    .build-pulse-toolbar,
+    .build-pulse-footer {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .build-pulse-actions {
+        justify-content: flex-start;
+    }
+
+    .build-pulse-status {
+        text-align: left;
+    }
+
+    .build-pulse-item-top {
+        align-items: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .build-pulse-live-dot,
+    .build-pulse-skeleton {
+        animation: none;
+    }
+}
