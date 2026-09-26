@@ -13,3 +13,6 @@
 ## 2026-10-25 - Avoid Array Allocations in High-Frequency Spatial Grid Loops
 **Learning:** Allocating an array of `neighborKeys` inside the inner loop of `grid.entries()` for spatial grids (like `drawConstellation` or `simulate` running at 60 FPS) generates significant garbage collection overhead, allocating tens of thousands of short-lived arrays per second.
 **Action:** Extract inline array allocations for neighbor offsets (e.g., `[-10001, -10000, -9999, -1, 0, 1, 9999, 10000, 10001]`) outside the loop and reuse the static array, adding the offset to the `key` during iteration (`key + neighborOffsets[nIdx]`). This completely eliminates inner-loop array allocations.
+## 2026-11-20 - Cache Edge Adjacency for O(1) Graph Traversal
+**Learning:** Checking neighbor status in a hot path with `Array.prototype.some` across all edges (`edges.some(e => ...`) executes O(E) operations, creating a severe bottleneck during graph updates or rendering. Building a neighbor `Set` per node achieves O(1) checks.
+**Action:** Replace dynamic array scanning with pre-computed `Set` caches (e.g. `node.neighbors.has(target)`) to verify graph adjacency in constant time. Always maintain adjacency sets alongside edge arrays when creating or removing connections.

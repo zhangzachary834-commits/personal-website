@@ -3178,6 +3178,16 @@ ${currentDraft.content}`;
                 });
             }
 
+            // Build neighbor cache for faster lookup in `isNeighbor`
+            nodes.forEach(n => n.neighbors = new Set());
+            edges.forEach(e => {
+                if (e.source && e.target) {
+                    e.source.neighbors.add(e.target);
+                    e.target.neighbors.add(e.source);
+                }
+            });
+
+
             // Update stats readout
             const essayCount = cards.length;
             const hubCount = Object.keys(categoryHubs).length;
@@ -3416,7 +3426,7 @@ ${currentDraft.content}`;
 
         function isNeighbor(a, b) {
             if (a === b) return true;
-            return edges.some(e => (e.source === a && e.target === b) || (e.source === b && e.target === a));
+            return a.neighbors && a.neighbors.has(b);
         }
 
         function matchesActiveFilter(node) {
