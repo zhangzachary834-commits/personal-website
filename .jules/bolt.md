@@ -16,3 +16,6 @@
 ## 2026-11-20 - Cache Edge Adjacency for O(1) Graph Traversal
 **Learning:** Checking neighbor status in a hot path with `Array.prototype.some` across all edges (`edges.some(e => ...`) executes O(E) operations, creating a severe bottleneck during graph updates or rendering. Building a neighbor `Set` per node achieves O(1) checks.
 **Action:** Replace dynamic array scanning with pre-computed `Set` caches (e.g. `node.neighbors.has(target)`) to verify graph adjacency in constant time. Always maintain adjacency sets alongside edge arrays when creating or removing connections.
+## 2026-11-21 - Bypass Math.sqrt using squared distance in linear interpolations
+**Learning:** Even when `dist = Math.sqrt(distSq)` is required later in an expression (e.g. `1 - (dist / maxDist)`), it may be clamped or bottom out at a minimum value. If the squared distance threshold corresponding to that minimum value is met, the square root can be skipped entirely.
+**Action:** When a distance calculation is clamped with `Math.max` or `Math.min`, determine the squared distance at which the cutoff happens. Check `distSq` against this squared threshold first to bypass `Math.sqrt` and assign the clamped value directly for distant objects.

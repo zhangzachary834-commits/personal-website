@@ -3269,12 +3269,20 @@ ${currentDraft.content}`;
 
                 if (!isFiltered || !isIsolated) return;
 
-                // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
+                // ⚡ Bolt Optimization: Bypass slow Math.sqrt for distant nodes by checking squared distance first
+                // Impact: Skips Math.sqrt() for node pairs further than 451.2px apart in the rendering loop
                 const dx = b.x - a.x;
                 const dy = b.y - a.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                const distSq = dx * dx + dy * dy;
                 const organicFade = Math.sin(time * 2.5 + a.orbitOffset + b.orbitOffset) * 0.25 + 0.75;
-                let alpha = Math.max(0.06, 1 - (dist / 480)) * organicFade;
+
+                let alpha;
+                if (distSq >= 203581.44) { // 451.2^2 (where 1 - dist/480 <= 0.06)
+                    alpha = 0.06 * organicFade;
+                } else {
+                    const dist = Math.sqrt(distSq);
+                    alpha = Math.max(0.06, 1 - (dist / 480)) * organicFade;
+                }
 
                 if (!isSearched && searchQuery) alpha *= 0.15;
 
