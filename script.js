@@ -523,9 +523,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Interactive Card Spotlight Hover Tracker
     // -------------------------------------------------------------------------
     function initCardSpotlights() {
-        const interactiveCards = document.querySelectorAll(
-            ".stat-card, .now-card, .project-card, .portfolio-snapshot-card, .evidence-card, .depth-card, .pillar-card, .skill-category-card, .story-card, .manifesto-card, .essay-card, .initiative-card, .contact-item-card, .draft-item-card, .template-card"
-        );
+        const interactiveCards = document.querySelectorAll([
+        '[class$="-card"]',
+        '[class*="-card "]',
+        ".chapter-block",
+        ".refusal-grid > article",
+        ".principle-item",
+        ".earthcall-proof-story",
+        ".manifestation-person-witness",
+        ".ontology-detail-box"
+    ].join(","));
 
         interactiveCards.forEach((card) => {
             if (card._hasSpotlight) return;
@@ -6209,28 +6216,22 @@ class VesselEngine {
     // Keep this browser-only visual layer inert outside a DOM environment.
     if (typeof window === "undefined" || typeof document === "undefined") return;
 
+    /*
+       Every present and future semantic card participates automatically.
+       The attribute selectors match any class token ending in "-card" whether
+       that token is the final class or followed by another space-separated class.
+       A few older card surfaces predate the naming convention and are included
+       explicitly.
+    */
     const CARD_SELECTOR = [
-        ".stat-card",
-        ".now-card",
-        ".project-card",
-        ".portfolio-snapshot-card",
-        ".evidence-card",
-        ".depth-card",
-        ".draft-item-card",
-        ".template-card",
-        ".pillar-card",
-        ".skill-category-card",
-        ".story-card",
-        ".manifesto-card",
-        ".essay-card",
-        ".initiative-card",
-        ".contact-item-card",
-        ".contact-card-main",
-        ".timeline-card",
-        ".experience-card",
-        ".education-card",
-        ".engineering-card",
-        ".portfolio-card"
+        '[class$="-card"]',
+        '[class*="-card "]',
+        ".chapter-block",
+        ".refusal-grid > article",
+        ".principle-item",
+        ".earthcall-proof-story",
+        ".manifestation-person-witness",
+        ".ontology-detail-box"
     ].join(",");
 
     const HEADING_SELECTOR = [
