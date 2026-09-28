@@ -5994,6 +5994,8 @@ body.zen-mode .studio-editor-pane {
     --fx-cyan: 110, 231, 216;
     --fx-violet: 168, 85, 247;
     --fx-rose: 244, 114, 182;
+    --fx-green: 74, 222, 128;
+    --fx-blue: 96, 165, 250;
 }
 
 /* Shared reactive card substrate */
@@ -6001,6 +6003,11 @@ body.zen-mode .studio-editor-pane {
     .stat-card,
     .now-card,
     .project-card,
+    .portfolio-snapshot-card,
+    .evidence-card,
+    .depth-card,
+    .draft-item-card,
+    .template-card,
     .pillar-card,
     .skill-category-card,
     .story-card,
@@ -6015,6 +6022,8 @@ body.zen-mode .studio-editor-pane {
     .engineering-card,
     .portfolio-card
 ).fx-reactive-card {
+    position: relative;
+    overflow: hidden;
     isolation: isolate;
     contain: paint;
     will-change: box-shadow, border-color;
@@ -6028,6 +6037,11 @@ body.zen-mode .studio-editor-pane {
     .stat-card,
     .now-card,
     .project-card,
+    .portfolio-snapshot-card,
+    .evidence-card,
+    .depth-card,
+    .draft-item-card,
+    .template-card,
     .pillar-card,
     .skill-category-card,
     .story-card,
@@ -6096,36 +6110,133 @@ body.zen-mode .studio-editor-pane {
     opacity: .9;
 }
 
-/* Hairline spectral rim. The conic field quietly rotates, but only the one-pixel
-   shell is visible. */
+/* Aurora-current perimeter.
+   The earlier rim only breathed in place. This version keeps the faint spectral
+   shell, then sends a deliberately irregular auroral current around it: broad
+   transparent gaps, cyan/green/violet/rose filaments, changing brightness, and
+   a second slower opacity pulse. The oversized field is clipped back to the
+   card's rounded perimeter by the mask, so the light reads as a current moving
+   through the outline rather than a rotating disc. */
 .fx-card-rim {
     z-index: 4;
     inset: -1px;
-    padding: 1px;
-    opacity: .16;
+    padding: 1.8px;
+    opacity: .52;
+    overflow: hidden;
     background:
-        conic-gradient(
-            from 210deg,
-            transparent 0deg 44deg,
-            rgba(var(--fx-amber), .82) 62deg,
-            transparent 88deg 150deg,
-            rgba(var(--fx-cyan), .72) 177deg,
-            transparent 206deg 274deg,
-            rgba(var(--fx-violet), .72) 300deg,
-            transparent 332deg 360deg
+        linear-gradient(
+            115deg,
+            rgba(var(--fx-cyan), .18),
+            rgba(var(--fx-green), .11) 26%,
+            rgba(var(--fx-violet), .14) 52%,
+            rgba(var(--fx-rose), .09) 76%,
+            rgba(var(--fx-amber), .14)
         );
     -webkit-mask:
         linear-gradient(#000 0 0) content-box,
         linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    transition: opacity 280ms ease, filter 320ms ease;
-    animation: fx-rim-breathe 8s ease-in-out infinite;
+    transition: opacity 320ms ease;
+    animation: fx-rim-breathe 8.6s ease-in-out infinite;
+    animation-delay: calc(var(--fx-seed, 0) * -0.63s);
+}
+
+.fx-card-rim::before {
+    content: "";
+    position: absolute;
+    inset: -72%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 17% 34% at 21% 22%, rgba(var(--fx-cyan), .92), transparent 70%),
+        radial-gradient(ellipse 13% 29% at 76% 17%, rgba(var(--fx-green), .92), transparent 72%),
+        radial-gradient(ellipse 16% 31% at 82% 72%, rgba(var(--fx-violet), .88), transparent 72%),
+        radial-gradient(ellipse 12% 27% at 27% 79%, rgba(var(--fx-rose), .72), transparent 70%),
+        conic-gradient(
+            from 8deg,
+            transparent 0deg 18deg,
+            rgba(var(--fx-cyan), .96) 31deg,
+            rgba(var(--fx-blue), .82) 43deg,
+            transparent 58deg 90deg,
+            rgba(var(--fx-green), .96) 108deg,
+            rgba(var(--fx-cyan), .72) 122deg,
+            transparent 140deg 182deg,
+            rgba(var(--fx-violet), .94) 202deg,
+            rgba(var(--fx-rose), .68) 218deg,
+            transparent 236deg 277deg,
+            rgba(var(--fx-amber), .78) 294deg,
+            rgba(var(--fx-green), .82) 311deg,
+            transparent 329deg 360deg
+        );
+    opacity: .82;
+    transform-origin: 50% 50%;
+    filter: blur(.72px) saturate(1.42) brightness(1.08);
+    mix-blend-mode: screen;
+    will-change: transform, opacity, filter;
+    animation:
+        fx-aurora-rim-travel 9.8s linear infinite,
+        fx-aurora-rim-flare 5.4s ease-in-out infinite;
+    animation-delay:
+        calc(var(--fx-seed, 0) * -0.71s),
+        calc(var(--fx-seed, 0) * -0.41s);
 }
 
 .fx-reactive-card:hover > .fx-card-rim {
-    opacity: .82;
-    filter: drop-shadow(0 0 7px rgba(var(--fx-cyan), .18));
+    opacity: .96;
+}
+
+[data-theme="light"] .fx-card-rim {
+    opacity: .4;
+}
+
+[data-theme="light"] .fx-reactive-card:hover > .fx-card-rim {
+    opacity: .74;
+}
+
+[data-theme="light"] .fx-card-rim::before {
+    mix-blend-mode: multiply;
+    filter: blur(.65px) saturate(1.3) brightness(1.03);
+}
+
+@keyframes fx-aurora-rim-travel {
+    0% {
+        transform: rotate(0deg) scale(1.02, .96) translate3d(-1.2%, .4%, 0);
+    }
+    23% {
+        transform: rotate(83deg) scale(.96, 1.055) translate3d(.8%, -1.2%, 0);
+    }
+    51% {
+        transform: rotate(187deg) scale(1.045, .95) translate3d(1.4%, .8%, 0);
+    }
+    76% {
+        transform: rotate(278deg) scale(.955, 1.04) translate3d(-.7%, 1.1%, 0);
+    }
+    100% {
+        transform: rotate(360deg) scale(1.02, .96) translate3d(-1.2%, .4%, 0);
+    }
+}
+
+@keyframes fx-aurora-rim-flare {
+    0%, 100% {
+        opacity: .43;
+        filter: blur(1.05px) saturate(1.22) brightness(.9);
+    }
+    24% {
+        opacity: .72;
+        filter: blur(.78px) saturate(1.42) brightness(1.08);
+    }
+    46% {
+        opacity: .98;
+        filter: blur(.48px) saturate(1.7) brightness(1.42);
+    }
+    69% {
+        opacity: .62;
+        filter: blur(.9px) saturate(1.35) brightness(1.02);
+    }
+    84% {
+        opacity: .88;
+        filter: blur(.58px) saturate(1.56) brightness(1.26);
+    }
 }
 
 /* A tiny "star" lives exactly where the pointer meets the card. */
