@@ -3907,8 +3907,16 @@ ${currentDraft.content}`;
         window.addEventListener("resize", () => {
             if (isGraphView) resizeCanvas();
         });
+
+        let graphScrollTicking = false;
         window.addEventListener("scroll", () => {
-            if (isGraphView) updateCanvasRect();
+            if (isGraphView && !graphScrollTicking) {
+                window.requestAnimationFrame(() => {
+                    updateCanvasRect();
+                    graphScrollTicking = false;
+                });
+                graphScrollTicking = true;
+            }
         }, { passive: true });
     }
 
