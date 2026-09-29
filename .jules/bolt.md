@@ -16,3 +16,6 @@
 ## 2026-11-20 - Cache Edge Adjacency for O(1) Graph Traversal
 **Learning:** Checking neighbor status in a hot path with `Array.prototype.some` across all edges (`edges.some(e => ...`) executes O(E) operations, creating a severe bottleneck during graph updates or rendering. Building a neighbor `Set` per node achieves O(1) checks.
 **Action:** Replace dynamic array scanning with pre-computed `Set` caches (e.g. `node.neighbors.has(target)`) to verify graph adjacency in constant time. Always maintain adjacency sets alongside edge arrays when creating or removing connections.
+## 2026-09-29 - RequestAnimationFrame Throttling for Scroll Events
+**Learning:** Attaching heavy synchronous layout measurements like `getBoundingClientRect()` directly to `scroll` events can cause layout thrashing because the event fires rapidly and synchronously. Using `requestAnimationFrame` with a ticking flag defers these measurements to the browser's render cycle.
+**Action:** When working on performance optimizations in `script.js` or similar front-end files, wrap heavy DOM reads during high-frequency events (like scroll or resize) within `requestAnimationFrame` loops with a boolean 'ticking' guard to throttle execution safely.
