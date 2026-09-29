@@ -63,3 +63,81 @@ test('Build Pulse turns the build-in-public promise into live, filterable commit
 
   dom.window.close();
 });
+
+test('Build Pulse displays fallback UI when GitHub API fails and cache is empty', async () => {
+  const dom = new JSDOM(html, {
+    url: 'https://example.test/story.html',
+    runScripts: 'outside-only',
+    pretendToBeVisual: true
+  });
+
+  // Mock fetch to simulate an API error
+  dom.window.fetch = async () => {
+    return { ok: false, status: 500 };
+  };
+
+  dom.window.eval(script);
+  dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded', { bubbles: true }));
+  // Give promises time to settle
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  const shell = dom.window.document.querySelector('[data-build-pulse]');
+  assert.ok(shell);
+
+  const status = shell.querySelector('[data-build-pulse-status]');
+  assert.equal(status.textContent, 'Live GitHub pulse unavailable right now · repositories remain public');
+
+  const fallbackCards = shell.querySelectorAll('.build-pulse-fallback-card');
+  assert.ok(fallbackCards.length > 0);
+
+  dom.window.close();
+});
+
+test('Build Pulse displays stale cached data when API fails but cache exists', async () => {
+  const dom = new JSDOM(html, {
+    url: 'https://example.test/story.html',
+    runScripts: 'outside-only',
+    pretendToBeVisual: true
+  });
+
+  // Pre-populate sessionStorage with a stale cache
+  const staleData = {
+    savedAt: Date.now() - (10 * 60 * 1000), // 10 minutes ago, making it stale (> 5 min TTL)
+    items: [{
+      repoId: 'Earthcall',
+      repoLabel: 'Earthcall',
+      repoUrl: 'https://github.com/example/earthcall',
+      sha: 'abcdef0123456789',
+      shortSha: 'abcdef0',
+      message: 'Old cached commit',
+      date: '2026-09-20T20:00:00Z',
+      url: 'https://github.com/example/earthcall/commit/abcdef0'
+    }]
+  };
+
+  // Set cache for one of the repositories (Earthcall)
+  dom.window.sessionStorage.setItem('dimension-build-pulse-v1:earthcall', JSON.stringify(staleData));
+
+  // Mock fetch to simulate an API error
+  dom.window.fetch = async () => {
+    return { ok: false, status: 500 };
+  };
+
+  dom.window.eval(script);
+  dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded', { bubbles: true }));
+  // Give promises time to settle
+  await new Promise(resolve => setTimeout(resolve, 0));
+
+  const shell = dom.window.document.querySelector('[data-build-pulse]');
+  assert.ok(shell);
+
+  const status = shell.querySelector('[data-build-pulse-status]');
+  assert.match(status.textContent, /cached fallback/);
+
+  const items = shell.querySelectorAll('.build-pulse-item');
+  // It should show the 1 stale item we injected
+  assert.equal(items.length, 1);
+  assert.match(shell.textContent, /Old cached commit/);
+
+  dom.window.close();
+});
