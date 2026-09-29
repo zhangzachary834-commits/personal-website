@@ -20,6 +20,7 @@ function escapeAttribute(str) {
 }
 
 function sanitizeUrl(rawUrl) {
+    if (typeof rawUrl !== 'string') return '#';
     const value = String(rawUrl ?? "").trim();
     if (!value) return "#";
 
