@@ -296,7 +296,13 @@
             }
             if (brushSummary) {
                 const name = isErase ? "Soft Eraser" : state.tool === "pan" ? "Canvas Hand" : "Round Brush";
-                brushSummary.innerHTML = "<strong>" + name + "</strong><span>" + state.size + "px · " + Math.round(state.opacity * 100) + "% opacity</span>";
+                brushSummary.textContent = '';
+                const strong = document.createElement('strong');
+                strong.textContent = name;
+                const span = document.createElement('span');
+                span.textContent = state.size + "px · " + Math.round(state.opacity * 100) + "% opacity";
+                brushSummary.appendChild(strong);
+                brushSummary.appendChild(span);
             }
             updateBrushCursorSize();
         }
