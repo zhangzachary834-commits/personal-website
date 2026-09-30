@@ -2199,6 +2199,9 @@ Sent via Dimension of Thought Platform`;
 
             updateLivePreview();
             renderDraftsList();
+            window.dispatchEvent(new CustomEvent("dimension:studio-draft-changed", {
+                detail: { draftId: draft.id }
+            }));
         }
 
         function updateLivePreview() {
@@ -2317,6 +2320,35 @@ Sent via Dimension of Thought Platform`;
             saveDrafts(drafts);
             renderDraftsList();
         }
+
+        // Small public bridge for optional Studio integrations. The core draft state
+        // remains owned by this engine; integrations never edit localStorage behind it.
+        window.DimensionStudioBridge = {
+            getCurrentDraftSnapshot() {
+                commitCurrentDraft();
+                return JSON.parse(JSON.stringify(currentDraft));
+            },
+
+            setGoogleDocsMeta(meta) {
+                currentDraft.googleDocs = meta ? { ...meta } : null;
+                const idx = drafts.findIndex(d => d.id === currentDraft.id);
+                if (idx !== -1) drafts[idx] = currentDraft;
+                saveDrafts(drafts);
+                renderDraftsList();
+                window.dispatchEvent(new CustomEvent("dimension:studio-draft-changed", {
+                    detail: { draftId: currentDraft.id }
+                }));
+            },
+
+            applyGoogleDocsBody(content) {
+                bodyInput.value = String(content ?? "");
+                updateLivePreview();
+                commitCurrentDraft();
+                window.dispatchEvent(new CustomEvent("dimension:studio-draft-changed", {
+                    detail: { draftId: currentDraft.id }
+                }));
+            }
+        };
 
         document.querySelectorAll(".tool-btn[data-action]").forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -2536,7 +2568,8 @@ Sent via Dimension of Thought Platform`;
                         title: (d.title || "Draft") + " (Copy)",
                         slug: (d.slug || "draft") + "-copy",
                         updatedAt: Date.now(),
-                        isPublished: false
+                        isPublished: false,
+                        googleDocs: null
                     };
                     drafts.unshift(clone);
                     saveDrafts(drafts);
