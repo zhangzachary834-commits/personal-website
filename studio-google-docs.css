@@ -1,0 +1,93 @@
+.google-docs-sync-btn {
+    position: relative;
+}
+
+.google-docs-sync-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--muted);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-card) 70%, transparent);
+}
+
+.google-docs-sync-dot.linked {
+    background: var(--teal);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--teal) 70%, transparent);
+}
+
+.google-docs-sync-panel {
+    width: min(640px, calc(100vw - 32px));
+}
+
+.google-docs-sync-summary {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    margin: 0 0 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--bg-card) 84%, transparent);
+}
+
+.google-docs-sync-summary strong {
+    color: var(--text);
+}
+
+.google-docs-sync-summary span {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.google-docs-sync-actions,
+.google-docs-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.google-docs-link-row {
+    margin-top: 16px;
+}
+
+.google-docs-link-input {
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.google-docs-config-note,
+.google-docs-conflict-note {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.google-docs-conflict-note {
+    border-color: color-mix(in srgb, #f59e0b 55%, var(--line));
+}
+
+.google-docs-sync-status {
+    min-height: 1.4em;
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.google-docs-sync-status.error {
+    color: #fca5a5;
+}
+
+.google-docs-sync-status.success {
+    color: var(--teal);
+}
+
+@media (max-width: 900px) {
+    .google-docs-sync-btn .google-docs-label {
+        display: none;
+    }
+}
