@@ -119,19 +119,16 @@
             const conflictNote = doc.getElementById("google-docs-conflict-note");
             const syncDot = doc.getElementById("google-docs-sync-dot");
 
-            let accessToken = "";
-            let tokenExpiresAt = 0;
-            let tokenWasGranted = false;
-
             function getBridge() {
                 return win.DimensionStudioBridge || null;
             }
 
             function getConfig() {
-                const config = win.DimensionStudioConfig && win.DimensionStudioConfig.googleDocs;
+                const rootConfig = win.DimensionStudioConfig || {};
+                const config = rootConfig.google || rootConfig.googleDocs || {};
                 return {
-                    clientId: config && config.clientId ? String(config.clientId).trim() : "",
-                    scope: config && config.scope ? String(config.scope).trim() : DEFAULT_SCOPE
+                    clientId: config.clientId ? String(config.clientId).trim() : "",
+                    scope: config.scope ? String(config.scope).trim() : DEFAULT_SCOPE
                 };
             }
 
@@ -208,43 +205,12 @@
                 if (forcePushButton && !linked) forcePushButton.hidden = true;
             }
 
-            async function waitForGoogleIdentity() {
-                for (let i = 0; i < 50; i += 1) {
-                    if (win.google && win.google.accounts && win.google.accounts.oauth2) return;
-                    await new Promise((resolve) => win.setTimeout(resolve, 100));
-                }
-                throw new Error("Google Identity Services did not load. Check your connection and reload.");
-            }
-
             async function ensureToken() {
-                const config = getConfig();
-                if (!config.clientId) {
-                    throw new Error("Google OAuth client ID is not configured yet.");
+                const personWorkspace = win.DimensionPersonWorkspace;
+                if (!personWorkspace || !personWorkspace.getAccessToken || !personWorkspace.isReady()) {
+                    throw new Error("Enter your Person Workspace before using Google Docs sync.");
                 }
-                if (accessToken && Date.now() < tokenExpiresAt - 60000) return accessToken;
-
-                await waitForGoogleIdentity();
-
-                return new Promise((resolve, reject) => {
-                    const client = win.google.accounts.oauth2.initTokenClient({
-                        client_id: config.clientId,
-                        scope: config.scope,
-                        callback: (response) => {
-                            if (!response || response.error) {
-                                reject(new Error(response && response.error_description
-                                    ? response.error_description
-                                    : "Google authorization was not completed."));
-                                return;
-                            }
-                            accessToken = response.access_token;
-                            tokenExpiresAt = Date.now() + (Number(response.expires_in || 3600) * 1000);
-                            tokenWasGranted = true;
-                            resolve(accessToken);
-                        }
-                    });
-
-                    client.requestAccessToken({ prompt: tokenWasGranted ? "" : "consent" });
-                });
+                return personWorkspace.getAccessToken({ interactive: true });
             }
 
             async function apiFetch(url, options, mayRetry) {
@@ -259,8 +225,6 @@
 
                 let response = await win.fetch(url, request);
                 if (response.status === 401 && mayRetry !== false) {
-                    accessToken = "";
-                    tokenExpiresAt = 0;
                     return apiFetch(url, options, false);
                 }
 
