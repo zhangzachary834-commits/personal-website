@@ -11,6 +11,7 @@
     <link rel="icon" type="image/jpeg" href="assets/dimension-emblem.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="studio-draw.css">
+    <link rel="stylesheet" href="studio-person.css">
     <link rel="stylesheet" href="studio-google-docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,6 +88,13 @@
                 <button type="button" class="btn btn-secondary btn-small" id="open-drafts-drawer-btn" title="Manage saved drafts and templates">
                     <span>📑</span>
                     <span>Drafts (<span id="drafts-count-badge">1</span>)</span>
+                </button>
+
+                <!-- Private Person Workspace -->
+                <button type="button" class="btn btn-secondary btn-small person-workspace-btn" id="person-workspace-btn" title="Open your private Person Workspace">
+                    <span aria-hidden="true">✦</span>
+                    <span id="person-workspace-name">Person Workspace</span>
+                    <span class="person-workspace-dot" id="person-workspace-dot" aria-hidden="true"></span>
                 </button>
 
                 <!-- Google Docs Sync -->
@@ -432,6 +440,54 @@
         </section>
     </main>
 
+
+    <!-- Private Person Workspace Gate -->
+    <section class="person-workspace-gate" id="person-workspace-gate" aria-labelledby="person-gate-title">
+        <div class="person-gate-card">
+            <span class="person-gate-kicker">Dimension of Thought // Private Studio</span>
+            <h1 id="person-gate-title">Enter your Person Workspace.</h1>
+            <p>Your drafts and artwork belong to you, not to a communal browser bucket. Google provides the identity and private cloud boundary; it does not define the Person.</p>
+            <div class="person-gate-principle">
+                <strong>Person ≠ account.</strong> A Person is the real human being. A Google identity is only the provider relation used to recognize which Person is entering this private workspace.
+            </div>
+            <div class="person-gate-actions">
+                <button type="button" class="btn btn-primary" id="person-sign-in-btn">Continue with Google</button>
+                <span id="person-workspace-state">Locked</span>
+            </div>
+            <div class="person-config-note" id="person-config-note" hidden>
+                Google setup is not finished yet. Add the public Web OAuth client ID to <code>studio-integrations.config.js</code>.
+            </div>
+            <p class="person-gate-status" id="person-gate-status" role="status" aria-live="polite"></p>
+        </div>
+    </section>
+
+    <!-- Person Workspace Panel -->
+    <div class="modal-dialog-backdrop" id="person-workspace-modal-backdrop" hidden>
+        <div class="modal-dialog-box person-workspace-panel" role="dialog" aria-modal="true" aria-labelledby="person-workspace-modal-title">
+            <div class="modal-dialog-header">
+                <h3 id="person-workspace-modal-title">✦ Person Workspace</h3>
+                <button type="button" class="control-dot close-dot" id="close-person-workspace-modal-btn" title="Close" aria-label="Close"></button>
+            </div>
+            <div class="modal-dialog-body">
+                <div class="person-profile-row">
+                    <img class="person-profile-avatar" id="person-panel-avatar" alt="" hidden>
+                    <div class="person-profile-copy">
+                        <strong id="person-panel-name">No Person present</strong>
+                        <span id="person-panel-email"></span>
+                        <span id="person-cloud-status" class="person-cloud-status">Private cloud ready</span>
+                    </div>
+                </div>
+                <p class="person-workspace-principle">
+                    Your writing drafts and 2D Studio artwork are stored in this Person's private Google Drive application-data space. Google authentication is a recognition mechanism, not an ontological definition of Personhood.
+                </p>
+                <div class="person-panel-actions">
+                    <button type="button" class="btn btn-secondary btn-small" id="person-reload-page-btn">Reload from cloud</button>
+                    <button type="button" class="btn btn-secondary btn-small" id="person-sign-out-btn">Leave Person Workspace</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Slide-out Drafts Manager Drawer -->
     <div class="drafts-drawer-backdrop" id="drafts-drawer-backdrop" hidden></div>
     <aside class="drafts-drawer" id="drafts-drawer" hidden aria-label="Saved Drafts Manager">
@@ -549,10 +605,11 @@
         <span id="toast-message" class="toast-message">Draft saved successfully.</span>
     </div>
 
-    <script src="script.js"></script>
-    <script src="studio-draw.js"></script>
     <script src="studio-integrations.config.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="studio-person.js"></script>
+    <script src="script.js"></script>
+    <script src="studio-draw.js"></script>
     <script src="studio-google-docs.js"></script>
 </body>
 </html>
