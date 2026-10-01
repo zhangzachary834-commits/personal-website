@@ -241,6 +241,10 @@
 
         async function getAccessToken(options) {
             const opts = options || {};
+            if (opts.forceRefresh) {
+                accessToken = "";
+                tokenExpiresAt = 0;
+            }
             if (accessToken && Date.now() < tokenExpiresAt - 60000) return accessToken;
 
             const config = getConfig();
@@ -444,7 +448,7 @@
         function flushCloud() {
             if (!workspace || !person) return Promise.resolve();
             win.clearTimeout(saveTimer);
-            saveChain = saveChain.then(async () => {
+            saveChain = saveChain.catch(() => {}).then(async () => {
                 try {
                     await uploadWorkspace();
                     setCloudStatus("Private cloud saved", false);
