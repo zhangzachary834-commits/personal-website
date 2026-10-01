@@ -225,6 +225,10 @@
 
                 let response = await win.fetch(url, request);
                 if (response.status === 401 && mayRetry !== false) {
+                    const personWorkspace = win.DimensionPersonWorkspace;
+                    if (personWorkspace && personWorkspace.getAccessToken) {
+                        await personWorkspace.getAccessToken({ interactive: true, forceRefresh: true });
+                    }
                     return apiFetch(url, options, false);
                 }
 
