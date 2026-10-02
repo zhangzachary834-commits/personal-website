@@ -482,13 +482,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (art.concepts && art.concepts.length > 0) {
                 card.setAttribute("data-concepts", art.concepts.join(","));
             }
+            if (art.series) card.setAttribute("data-series", art.series);
+            if (art.seriesLabel) card.setAttribute("data-series-label", art.seriesLabel);
 
             const catLabels = {
                 ontology: "Epistemology · Relational Ontology",
                 narrative: "Culture & Narrative Ethics",
                 reflections: "Life Reflections & Evowth",
                 systems: "Systems Architecture & OntoMath",
-                robotics: "Robotics & Spatial AI"
+                robotics: "Robotics & Spatial AI",
+                ai: "AI & Model Behavior"
             };
             const catLabel = catLabels[art.category] || "Original Inquiry";
             const readTime = art.readTime || "5 min read";
@@ -2213,7 +2216,8 @@ Sent via Dimension of Thought Platform`;
                 narrative: "Culture & Narrative Ethics",
                 reflections: "Life Reflections & Evowth",
                 systems: "Systems Architecture & OntoMath",
-                robotics: "Robotics & Spatial AI"
+                robotics: "Robotics & Spatial AI",
+                ai: "AI & Model Behavior"
             };
 
             const cleanText = body.replace(/<[^>]*>/g, " ").trim();
@@ -2633,7 +2637,8 @@ Sent via Dimension of Thought Platform`;
                 narrative: "Culture & Narrative Ethics",
                 reflections: "Life Reflections & Evowth",
                 systems: "Systems Architecture & OntoMath",
-                robotics: "Robotics & Spatial AI"
+                robotics: "Robotics & Spatial AI",
+                ai: "AI & Model Behavior"
             };
             const catLabel = catLabels[draft.category] || "Inquiry";
             const dateStr = draft.date || new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -2966,6 +2971,8 @@ ${currentDraft.content}`;
             reflections: "#4ade80",
             systems: "#38bdf8",
             robotics: "#facc15",
+            ai: "#60a5fa",
+            series: "#fb7185",
             concept: "#e2e8f0"
         };
 
@@ -2975,6 +2982,8 @@ ${currentDraft.content}`;
             reflections: "Life Reflections & Evowth",
             systems: "Systems Architecture & OntoMath",
             robotics: "Robotics & Spatial AI",
+            ai: "AI & Model Behavior",
+            series: "Writing Series",
             concept: "Ontological Concept"
         };
 
@@ -3026,6 +3035,7 @@ ${currentDraft.content}`;
             photonParticles = [];
 
             const categoryHubs = {};
+            const seriesHubs = {};
             const conceptHubs = {};
             const cards = document.querySelectorAll(".essay-card");
 
@@ -3045,6 +3055,8 @@ ${currentDraft.content}`;
                 const excerpt = (card.querySelector(".essay-excerpt") || {}).textContent || "";
                 const readTime = (card.querySelector(".essay-read-time") || {}).textContent || "6 min read";
                 const author = (card.querySelector(".essay-author") || {}).textContent || "By Zachary Zhang";
+                const series = (card.getAttribute("data-series") || "").trim();
+                const seriesLabel = (card.getAttribute("data-series-label") || series).trim();
 
                 // Extract concepts
                 let concepts = [];
@@ -3068,6 +3080,8 @@ ${currentDraft.content}`;
                     author: author,
                     url: url,
                     category: category,
+                    series: series,
+                    seriesLabel: seriesLabel,
                     concepts: concepts,
                     color: colorMap[category] || "#6ee7d8",
                     radius: 8.5,
@@ -3129,7 +3143,56 @@ ${currentDraft.content}`;
                     color: colorMap[category] || "#d8b46e"
                 });
 
-                // 2. Create concept diamond stars and relational edges
+                // 2. Create a reusable writing-series hub and connect member pieces.
+                if (series) {
+                    if (!seriesHubs[series]) {
+                        const seriesCount = Object.keys(seriesHubs).length;
+                        const seriesAngle = -Math.PI / 2 + seriesCount * (Math.PI / 3);
+                        const seriesDist = 150;
+                        const seriesNode = {
+                            id: "series_" + series.replace(/[^a-z0-9_-]/gi, "-").toLowerCase(),
+                            isHub: true,
+                            isSeries: true,
+                            isConcept: false,
+                            title: seriesLabel || series,
+                            subtitle: "Writing Series",
+                            excerpt: `A connected sequence of writing pieces in the ${seriesLabel || series} series.`,
+                            readTime: "Series hub",
+                            author: "By Zachary Zhang",
+                            url: null,
+                            category: category,
+                            series: series,
+                            seriesLabel: seriesLabel || series,
+                            concepts: [],
+                            color: colorMap.series,
+                            radius: 11.5,
+                            x: center.x + Math.cos(seriesAngle) * seriesDist,
+                            y: center.y + Math.sin(seriesAngle) * seriesDist,
+                            targetX: center.x + Math.cos(seriesAngle) * seriesDist,
+                            targetY: center.y + Math.sin(seriesAngle) * seriesDist,
+                            vx: 0,
+                            vy: 0,
+                            orbitAngle: seriesAngle,
+                            orbitRadius: seriesDist,
+                            orbitSpeed: 0.0012,
+                            orbitOffset: Math.random() * Math.PI * 2,
+                            twinkleOffset: Math.random() * Math.PI * 2,
+                            pulsePhase: Math.random() * Math.PI * 2
+                        };
+                        seriesHubs[series] = seriesNode;
+                        nodes.push(seriesNode);
+                    }
+
+                    edges.push({
+                        source: node,
+                        target: seriesHubs[series],
+                        isConceptEdge: false,
+                        isSeriesEdge: true,
+                        color: colorMap.series
+                    });
+                }
+
+                // 3. Create concept diamond stars and relational edges
                 concepts.forEach((concept, cIdx) => {
                     if (!conceptHubs[concept]) {
                         const conceptAngle = Math.random() * Math.PI * 2;
@@ -3172,7 +3235,7 @@ ${currentDraft.content}`;
                 });
             });
 
-            // 3. Initialize Photon Pulse Packets along edges
+            // 4. Initialize Photon Pulse Packets along edges
             for (let i = 0; i < edges.length * 2; i++) {
                 const edge = edges[i % edges.length];
                 photonParticles.push({
@@ -3197,7 +3260,7 @@ ${currentDraft.content}`;
 
             // Update stats readout
             const essayCount = cards.length;
-            const hubCount = Object.keys(categoryHubs).length;
+            const hubCount = Object.keys(categoryHubs).length + Object.keys(seriesHubs).length;
             const conceptCount = Object.keys(conceptHubs).length;
             const synapseCount = edges.length;
 
@@ -3296,10 +3359,16 @@ ${currentDraft.content}`;
                     ctx.shadowBlur = 8;
                     ctx.shadowColor = a.color;
                 } else {
-                    ctx.lineWidth = edge.isConceptEdge ? 0.9 : 1.2;
-                    ctx.strokeStyle = edge.isConceptEdge
-                        ? `rgba(148, 163, 184, ${alpha * 0.35})`
-                        : `rgba(216, 180, 110, ${alpha * 0.45})`;
+                    if (edge.isSeriesEdge) {
+                        ctx.lineWidth = 1.4;
+                        ctx.strokeStyle = `rgba(251, 113, 133, ${alpha * 0.62})`;
+                        ctx.setLineDash([5, 4]);
+                    } else {
+                        ctx.lineWidth = edge.isConceptEdge ? 0.9 : 1.2;
+                        ctx.strokeStyle = edge.isConceptEdge
+                            ? `rgba(148, 163, 184, ${alpha * 0.35})`
+                            : `rgba(216, 180, 110, ${alpha * 0.45})`;
+                    }
                 }
 
                 // Curved bezier synapse
@@ -3310,6 +3379,7 @@ ${currentDraft.content}`;
                 ctx.moveTo(a.x, a.y);
                 ctx.quadraticCurveTo(cx, cy, b.x, b.y);
                 ctx.stroke();
+                ctx.setLineDash([]);
                 ctx.restore();
 
                 // Save curve control point for particles
@@ -3408,6 +3478,16 @@ ${currentDraft.content}`;
                         ctx.strokeStyle = "#fff";
                         ctx.lineWidth = 2;
                         ctx.stroke();
+
+                        if (node.isSeries) {
+                            ctx.setLineDash([3, 3]);
+                            ctx.lineWidth = 1.2;
+                            ctx.beginPath();
+                            ctx.arc(node.x, node.y, currentRadius + 5, 0, Math.PI * 2);
+                            ctx.strokeStyle = colorMap.series;
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
                     }
                 }
                 ctx.shadowBlur = 0;
@@ -3446,6 +3526,7 @@ ${currentDraft.content}`;
             if (!searchQuery) return false;
             return node.title.toLowerCase().includes(searchQuery) ||
                    node.subtitle.toLowerCase().includes(searchQuery) ||
+                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
                    (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
         }
 
@@ -3477,7 +3558,7 @@ ${currentDraft.content}`;
                     const dy = edge.target.y - edge.source.y;
                     // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
                     const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                    const targetDist = edge.isConceptEdge ? 130 : 160;
+                    const targetDist = edge.isSeriesEdge ? 115 : (edge.isConceptEdge ? 130 : 160);
                     const force = (dist - targetDist) * k;
                     const fx = (dx / dist) * force;
                     const fy = (dy / dist) * force;
@@ -3670,7 +3751,7 @@ ${currentDraft.content}`;
                 tooltip.style.top = (pos.canvasY - 15) + "px";
                 tooltip.innerHTML = `
                     <div style="font-size:0.72rem;color:${escapeAttribute(hoveredNode.color)};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${escapeHtml(catNames[hoveredNode.category] || hoveredNode.category)}
+                        ${escapeHtml(hoveredNode.isSeries ? catNames.series : (catNames[hoveredNode.category] || hoveredNode.category))}
                     </div>
                     <strong style="color:var(--gold);font-size:0.95rem;">${escapeHtml(hoveredNode.title)}</strong>
                     ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${escapeHtml(hoveredNode.subtitle)}</div>` : ""}
@@ -3767,7 +3848,7 @@ ${currentDraft.content}`;
             const focusBtn = document.getElementById("inspector-focus-btn");
 
             if (catTag) {
-                catTag.textContent = catNames[node.category] || node.category;
+                catTag.textContent = node.isSeries ? catNames.series : (catNames[node.category] || node.category);
                 catTag.style.color = node.color;
                 catTag.style.borderColor = node.color;
             }
