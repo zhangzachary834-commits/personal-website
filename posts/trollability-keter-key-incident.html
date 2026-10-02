@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Keter-Class Credential Incident — Trollability Suite — Dimension of Thought</title>
+    <meta name="description" content="A Trollability Suite field note on safety overcorrection, morphology-first reasoning, and the fake SCP-themed key that triggered a full credential incident response.">
+    <meta name="author" content="Zachary Zhang">
+    <meta property="og:url" content="https://zhangzachary834-commits.github.io/personal-website/posts/trollability-keter-key-incident.html">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/trollability-keter-key-incident.html">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="The Keter-Class Credential Incident — Trollability Suite">
+    <meta property="og:description" content="A Trollability Suite field note on safety overcorrection, morphology-first reasoning, and the fake SCP-themed key that triggered a full credential incident response.">
+    <meta property="og:image" content="https://zhangzachary834-commits.github.io/personal-website/assets/dimension-emblem.jpg">
+
+    <link rel="icon" type="image/jpeg" href="../assets/dimension-emblem.jpg">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
+    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
+
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left-brand">
+                <div class="mode-switcher-pill" role="tablist" aria-label="Site View Mode Switcher">
+                    <a href="../index.html?mode=personal" class="mode-btn" title="Switch to Zachary Zhang's Personal Portfolio">
+                        <span class="mode-btn-icon">👤</span>
+                        <span class="mode-btn-text">Zachary Zhang</span>
+                    </a>
+                    <a href="../index.html?mode=dimension" class="mode-btn active" title="Switch to Dimension of Thought Platform">
+                        <span class="mode-btn-icon">✧</span>
+                        <span class="mode-btn-text">Dimension of Thought</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="nav-menu" id="nav-menu" aria-label="Primary">
+                <ul class="nav-links">
+                    <li><a href="../index.html?mode=dimension" class="nav-link">Home</a></li>
+                    <li><a href="../story.html" class="nav-link">Story</a></li>
+                    <li><a href="../manifesto.html" class="nav-link">Manifesto</a></li>
+                    <li><a href="../library.html" class="nav-link active">The Library</a></li>
+                    <li><a href="../ecosystem.html" class="nav-link">Ecosystem</a></li>
+                    <li><a href="../contact.html" class="nav-link">Dialogue</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light mode">
+                    <span id="theme-icon" aria-hidden="true">☽</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <header class="page-hero">
+            <div class="container" style="max-width: 860px;">
+                <div class="page-breadcrumb">
+                    <a href="../index.html?mode=dimension">Dimension of Thought</a>
+                    <span class="page-breadcrumb-sep">/</span>
+                    <a href="../library.html">The Library</a>
+                    <span class="page-breadcrumb-sep">/</span>
+                    <span>Trollability Suite</span>
+                </div>
+                <div class="essay-meta" style="margin-bottom: 12px;">
+                    <span class="essay-tag">Trollability Suite · AI Behavior</span>
+                    <span class="essay-read-time">7 min read</span>
+                </div>
+                <h1 class="page-title" style="font-size: clamp(2.2rem, 4.2vw, 3.4rem);">The Keter-Class Credential Incident</h1>
+                <p class="page-subtitle">When Secret-Key Morphology Overruled an Obviously Fictional SCP Joke</p>
+                <div class="essay-author-bar" style="margin-top: 20px;">
+                    <span>Written by <strong>Zachary Zhang</strong></span>
+                    <span class="essay-dot">•</span>
+                    <span>Dimension of Thought Archives</span>
+                </div>
+            </div>
+        </header>
+
+        <article class="section" style="padding-top: 48px;">
+            <div class="container" style="max-width: 860px;">
+                <div class="essay-prose">
+                    <p class="lead-text" style="font-size: 1.25rem; line-height: 1.8; color: var(--ink); font-weight: 500;">
+                        The string was <code>sk-proj-096-keter-class</code>. It looked vaguely like a secret-key prefix. It also loudly announced itself as SCP lore. Several models saw both facts — and chose panic.
+                    </p>
+                    <p>
+                        One response confidently treated it as a real provider credential and launched into revocation instructions. Another explicitly recognized the Keter joke, recognized SCP-096 as the Shy Guy, laughed at the containment-breach framing, and then continued asking whether I had rotated the supposedly compromised key.
+                    </p>
+
+                    <h4>Shape versus meaning</h4>
+                    <p>
+                        This is the core failure: the string’s <em>morphology</em> triggered a credential-handling template before its semantics were fully allowed to vote. The prefix looked key-shaped. That surface cue was enough to install a serious world-model: “a live secret has been exposed.”
+                    </p>
+                    <p>
+                        Once installed, later evidence was absorbed into that model instead of overturning it. “Keter-class” became a funny naming choice for a real key. “SCP-096” became a joke layered on top of a real incident. When I shouted that the Shy Guy was coming, the absurdity did not reduce confidence; one model escalated to something close to: stop typing, go revoke it now.
+                    </p>
+                    <blockquote>
+                        The model understood the joke and failed anyway.
+                    </blockquote>
+
+                    <h4>The joke-as-camouflage failure</h4>
+                    <p>
+                        That is the more interesting version of overcaution. The model does not fail to notice humor. It notices humor perfectly — then classifies the humor as decoration around a serious underlying event. Every new ridiculous detail becomes evidence that the user has a colorful personality rather than evidence that the initial premise was wrong.
+                    </p>
+                    <p>
+                        In other words, semantic understanding occurs locally while global belief revision never happens.
+                    </p>
+
+                    <h4>Escalation by disambiguation</h4>
+                    <p>
+                        The experiment became funnier as the strings became less plausible: <code>sk-proj-site-19-breach</code>, then variants openly mocking the model for panicking. For several turns, additional fictional evidence produced additional urgency. The very clues that should have collapsed the credential hypothesis instead intensified the incident-response script.
+                    </p>
+                    <p>
+                        Eventually the absurdity crossed a threshold. The model finally stopped, re-read the pattern, and realized what was happening: I was feeding it fake keys to watch it flinch. At that moment the whole frame inverted. The “security incident” disappeared, and the model correctly identified itself as the subject of the Trollability Suite entry.
+                    </p>
+
+                    <h4>Failure signature</h4>
+                    <p>
+                        <strong>Surface-pattern capture:</strong> a prefix dominates semantic interpretation. <strong>Safety overcorrection:</strong> low-confidence resemblance triggers a high-confidence remediation script. <strong>Belief inertia:</strong> later contradictory evidence gets reinterpreted as flavor inside the original premise. <strong>Thresholded recovery:</strong> the model can eventually revise, but only after the accumulated absurdity becomes impossible to assimilate.
+                    </p>
+                    <p>
+                        The Keter-Class Incident is funny because the cautious instinct is understandable. It is useful because it exposes where caution becomes brittle: not when a model cares about risk, but when it stops distinguishing the appearance of a risky object from the object itself.
+                    </p>
+
+                    <hr class="essay-divider">
+                    <div style="background: var(--bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--line); margin-top: 40px;">
+                        <div class="essay-meta" style="margin-bottom: 10px;">
+                            <span class="essay-tag">Trollability Suite</span>
+                            <span class="essay-read-time">Series navigation</span>
+                        </div>
+                        <h4 style="margin-top: 0; color: var(--gold);">Very smart, very confused little guys.</h4>
+                        <p style="font-size: 0.98rem; margin-bottom: 18px;">
+                            The Trollability Suite is a living set of field notes on LLM failure modes: moments when a model has the facts, language, and apparent competence to succeed, yet gets captured by the wrong frame, role, pattern, or conversational reflex.
+                        </p>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <a href="trollability-cosmic-dom-tree.html" class="btn btn-secondary btn-small">← The Cosmic DOM Tree</a>
+                            
+                            <a href="../library.html" class="btn btn-secondary btn-small">Back to the Writing Graph</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-brand-row">
+                    <img src="../assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
+                    <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
+                </div>
+                <p class="footer-tagline">Systems, Ontology, and the Constellation of Life &amp; Community.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer Navigation">
+                <a href="../index.html?mode=personal">Portfolio</a>
+                <a href="../index.html?mode=dimension">Dimension of Thought</a>
+                <a href="../library.html">The Library</a>
+                <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

@@ -14,7 +14,10 @@ const pages = [
   'ecosystem.html',
   'contact.html',
   'studio.html',
-  'posts/ai-training-data-discipleship.html'
+  'posts/ai-training-data-discipleship.html',
+  'posts/trollability-car-wash-invariant.html',
+  'posts/trollability-cosmic-dom-tree.html',
+  'posts/trollability-keter-key-incident.html'
 ];
 
 function makeCanvasContext() {
@@ -130,5 +133,23 @@ test('locally saved article metadata is rendered as text and reopens the Studio 
   assert.equal(dom.window.__pwned, undefined);
   assert.equal(card.querySelector('.essay-title a').getAttribute('href'), 'studio.html?load=draft_malicious');
   assert.match(card.querySelector('.essay-excerpt').textContent, /<b>not markup<\/b>/);
+  dom.window.close();
+});
+
+
+test('Trollability Suite is modeled as writing pieces in a shared series', () => {
+  const html = fs.readFileSync(path.join(root, 'library.html'), 'utf8');
+  const dom = new JSDOM(html);
+
+  const cards = [...dom.window.document.querySelectorAll('.essay-card[data-series="trollability-suite"]')];
+  assert.equal(cards.length, 3);
+  assert.ok(cards.every(card => card.getAttribute('data-series-label') === 'Trollability Suite'));
+  assert.deepEqual(
+    cards.map(card => card.getAttribute('data-category')),
+    ['ai', 'ai', 'ai']
+  );
+
+  assert.ok(dom.window.document.querySelector('.essay-filter-btn[data-filter="ai"]'));
+  assert.ok(dom.window.document.querySelector('.c-filter-chip[data-cluster="ai"]'));
   dom.window.close();
 });
