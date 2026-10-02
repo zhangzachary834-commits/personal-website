@@ -16,3 +16,6 @@
 ## 2026-11-20 - Cache Edge Adjacency for O(1) Graph Traversal
 **Learning:** Checking neighbor status in a hot path with `Array.prototype.some` across all edges (`edges.some(e => ...`) executes O(E) operations, creating a severe bottleneck during graph updates or rendering. Building a neighbor `Set` per node achieves O(1) checks.
 **Action:** Replace dynamic array scanning with pre-computed `Set` caches (e.g. `node.neighbors.has(target)`) to verify graph adjacency in constant time. Always maintain adjacency sets alongside edge arrays when creating or removing connections.
+## 2026-11-21 - Card Spotlight Hover Event Layout Thrashing
+**Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` causes severe layout thrashing (synchronous layout calculation) which drags down rendering performance.
+**Action:** When calculating relative coordinates for visual effects, hook into a lower-frequency event like `pointerenter` (or `mouseenter`) to cache the absolute element offset (`rect.left + window.scrollX`), and use `e.pageX/pageY` minus the cached offset in the `mousemove` handler.

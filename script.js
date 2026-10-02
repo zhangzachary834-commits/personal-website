@@ -541,10 +541,22 @@ document.addEventListener("DOMContentLoaded", () => {
             if (card._hasSpotlight) return;
             card._hasSpotlight = true;
 
-            card.addEventListener("mousemove", (e) => {
+            // ⚡ Bolt Optimization: Cache absolute document position on hover entry
+            // to prevent calling getBoundingClientRect() on every mousemove frame,
+            // eliminating synchronous layout thrashing in the rendering pipeline.
+            let cachedLeft = 0;
+            let cachedTop = 0;
+
+            card.addEventListener("pointerenter", () => {
                 const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                cachedLeft = rect.left + window.scrollX;
+                cachedTop = rect.top + window.scrollY;
+            }, { passive: true });
+
+            card.addEventListener("mousemove", (e) => {
+                // Compute relative coordinates using pageX/pageY and cached absolute position
+                const x = e.pageX - cachedLeft;
+                const y = e.pageY - cachedTop;
                 card.style.setProperty("--mouse-x", x + "px");
                 card.style.setProperty("--mouse-y", y + "px");
             });
