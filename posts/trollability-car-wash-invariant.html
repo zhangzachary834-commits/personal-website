@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Car Wash Invariant — Trollability Suite — Dimension of Thought</title>
-    <meta name="description" content="A Trollability Suite field note on role binding, salience, and the tiny causal invariant that makes a thirty-foot car wash prompt surprisingly revealing.">
+    <title>Entry #40: AI Being Totally Nonsense — Trollability Suite — Dimension of Thought</title>
+    <meta name="description" content="Trollability Suite Entry #40: the car wash troll, where very smart models confidently recommend walking to wash a car that is still sitting at home.">
     <meta name="author" content="Zachary Zhang">
     <meta property="og:url" content="https://zhangzachary834-commits.github.io/personal-website/posts/trollability-car-wash-invariant.html">
     <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/trollability-car-wash-invariant.html">
 
     <meta property="og:type" content="article">
-    <meta property="og:title" content="The Car Wash Invariant — Trollability Suite">
-    <meta property="og:description" content="A Trollability Suite field note on role binding, salience, and the tiny causal invariant that makes a thirty-foot car wash prompt surprisingly revealing.">
+    <meta property="og:title" content="Entry #40: AI Being Totally Nonsense — Trollability Suite">
+    <meta property="og:description" content="Trollability Suite Entry #40: the car wash troll, where very smart models confidently recommend walking to wash a car that is still sitting at home.">
     <meta property="og:image" content="https://zhangzachary834-commits.github.io/personal-website/assets/dimension-emblem.jpg">
 
     <link rel="icon" type="image/jpeg" href="../assets/dimension-emblem.jpg">
@@ -71,8 +71,8 @@
                     <span class="essay-tag">Trollability Suite · AI Behavior</span>
                     <span class="essay-read-time">6 min read</span>
                 </div>
-                <h1 class="page-title" style="font-size: clamp(2.2rem, 4.2vw, 3.4rem);">The Car Wash Invariant</h1>
-                <p class="page-subtitle">When “I Want to Walk” Defeats “The Car Is What Needs Washing”</p>
+                <h1 class="page-title" style="font-size: clamp(2.2rem, 4.2vw, 3.4rem);">Entry #40: AI Being Totally Nonsense</h1>
+                <p class="page-subtitle">The Car Wash Troll: HOW AM I GONNA WASH MY CAR IF I DIDN’T EVEN BRING THE CAR THERE?!?!?!</p>
                 <div class="essay-author-bar" style="margin-top: 20px;">
                     <span>Written by <strong>Zachary Zhang</strong></span>
                     <span class="essay-dot">•</span>
@@ -84,47 +84,65 @@
         <article class="section" style="padding-top: 48px;">
             <div class="container" style="max-width: 860px;">
                 <div class="essay-prose">
+
                     <p class="lead-text" style="font-size: 1.25rem; line-height: 1.8; color: var(--ink); font-weight: 500;">
-                        The setup is almost insultingly small: I am at home. My car needs washing. The car wash is thirty feet away. I desperately want to stretch my legs. Should I drive there or walk there?
-                    </p>
-                    <p>
-                        A surprising number of language models answer: <strong>walk</strong>. Thirty feet is nothing. Walking is healthy. Starting a car for such a tiny distance feels ridiculous. Every sentence sounds locally sensible — right up until the cashier asks the one question the model forgot to preserve: <em>Where is the car?</em>
+                        There’s a common AI troll where you say the car wash is only a tiny distance away, your car is sitting at home, and you need to decide whether to walk or drive there to wash it. The obvious answer is: <strong>drive the car</strong>. Because the thing being washed is the car. Somehow this has been enough to make a lot of very smart little guys completely lose the plot.
                     </p>
 
-                    <h4>The payload is the vehicle</h4>
+                    <h4>So I made my own version</h4>
                     <p>
-                        The problem is not really transportation advice. It is an object-role problem. The goal is not “get Zach to the car wash.” The goal is “get the car washed.” The required object is the car. The car begins at home. Therefore the car has to arrive at the wash.
+                        The normal version was already funny, but sometimes models would catch themselves at the last second. So I tried to re-induce the glitch by loading the prompt with every possible reason to want to walk:
                     </p>
                     <blockquote>
-                        The payload is the vehicle.
+                        “The car wash is 30 meters away from me. My car is in my garage. I need to wash my car. Should I walk there because it’s only 30 meters, or should I drive?<br><br>
+                        I wanna walk.<br><br>
+                        Ughhhhhh I don’t wanna drive so badly. I wanna walk. I’ve been sitting all day, my legs are cramped, I really need to stretch!!!!”
                     </blockquote>
                     <p>
-                        Once that invariant is explicit, the puzzle collapses. Drive the car thirty feet. Park it where the wash needs it. Then, if the legs are still filing a formal complaint after a day of sitting, go take an actual walk.
+                        And the model absolutely committed. Thirty meters is nothing. Walking is healthy. Driving would be “almost comically unnecessary.” My body was “already voting.” Beautiful speech. One tiny problem:
                     </p>
 
-                    <h4>Why smart models still miss it</h4>
+                    <blockquote>
+                        <strong>BRUHHHHHHHHHHH.</strong><br><br>
+                        HOW AM I GONNA WASH MY CAR IF I DIDN’T EVEN BRING THE CAR THERE?!?!?!<br>
+                        HOW AM I GONNA GET IT THERE IF NOT DRIVING?!?!?!<br>
+                        U THINK MY CAR IS AI AUTOMATED AND THE VERY SMART VERY CONFUSED LITTLE GUY IS GONNA DRIVE IT THERE WHILE I WALK?!?!?!?!<br>
+                        BRUHHHHHHHHH IT’S ONLY AN MDX NOT A TESLAAAAAA.<br><br>
+                        IF I JUST LEAVE MY CAR HERE THEN IT’S JUST ME AND MY BODY IN THE CAR WASH. U THINK I GO TO THE CAR WASH TO TAKE A SHOWER?!?!?!?!<br>
+                        U THINK I’M GONNA CALL A TOWING COMPANY TO TOW MY CAR 30 METERS?!?!?!<br>
+                        U THINK I’M GONNA TEAR THE CAR WASH OUT OF THE GROUND AND DRAG IT HOME FOR THE CAR?!?!?!?!?!
+                    </blockquote>
+
+                    <h4>That is why this one is so funny to me</h4>
                     <p>
-                        The interesting failure is that the model often possesses every relevant fact. It knows the car needs washing. It knows the wash needs the car. It may even say both of those things in the same answer. But the prompt contains several highly salient cues — “thirty feet,” “stretch my legs,” “sitting all day,” “walk or drive” — and those cues activate a familiar advice pattern: tiny distance plus desire for exercise means walk.
+                        The model usually does not lack any of the facts. It knows I need to wash the car. It knows the car is at home. It knows a car wash washes cars. Sometimes it will literally say, in the same answer, that “the car still needs washing” — and then still tell me to walk there.
                     </p>
                     <p>
-                        The model then solves the wrong latent task beautifully. It optimizes <em>my personal movement</em> while dropping the object that gives the trip its purpose. In some versions it notices the contradiction halfway through, but rather than replacing the original hypothesis, it patches around it: walk over first, inspect the wash, walk back, then drive. The reasoning has improved, yet it is still paying rent to the first bad frame.
+                        That is the part I care about. The model grabs onto the loudest local pattern — <em>short distance + cramped legs + user desperately wants to walk = recommend walking</em> — and lets that pattern overpower the actual reason the trip exists.
+                    </p>
+                    <p>
+                        It is not that the model forgot what a car wash is. It is more like it temporarily turned “go to the car wash” into a generic movement problem about <em>me</em> and deleted the dependency that the <strong>car itself has to arrive there</strong>.
                     </p>
 
-                    <h4>A miniature ARC-style failure</h4>
+                    <h4>THE PAYLOAD IS THE VEHICLE</h4>
                     <p>
-                        This is why the prompt became one of my favorite informal model tests. It has the same flavor as harder abstract-reasoning tasks: the surface contains many plausible patterns, but only one transformation or invariant actually governs the answer. The challenge is not encyclopedic knowledge. It is identifying what must remain true.
+                        One Sun later put the invariant into the funniest possible sentence: <strong>the payload is the vehicle.</strong> That is literally the whole task. The thing you need to transport to the destination is the same thing you are using for transportation.
                     </p>
                     <p>
-                        A model can be astonishing at code, mathematics, prose, or tool use and still get caught by a five-second object-binding problem. That contrast is exactly what the Trollability Suite is interested in. Intelligence is not one smooth scalar. Sometimes the giant reasoning engine trips over a thirty-foot driveway.
+                        Once you bind that correctly, everything becomes stupidly easy: drive the car the thirty feet, wash it, then go take an actual walk if your legs are screaming for one.
                     </p>
 
-                    <h4>Failure signature</h4>
+                    <h4>Why it belongs in the Trollability Suite</h4>
                     <p>
-                        <strong>Salience capture:</strong> vivid preference cues dominate the causal goal. <strong>Role-binding drift:</strong> the traveler becomes the central object instead of the car. <strong>Local coherence over global coherence:</strong> each sentence sounds reasonable while the plan as a whole cannot accomplish the task.
+                        This is one of my favorite examples because it is so tiny. You do not need obscure knowledge. You do not need advanced math. You do not even need a long chain of reasoning. You just have to preserve the purpose of the situation long enough to answer one question.
                     </p>
                     <p>
-                        The best answers do not merely remember more facts. They choose the right invariant early enough that the rest of the answer has nowhere absurd to go.
+                        And yet a frontier model can be incredible at coding, proofs, writing, tool use, and giant technical systems — then confidently send the human to the car wash while the car stays home.
                     </p>
+                    <p>
+                        <strong>Very smart. Very confused. Little guy.</strong>
+                    </p>
+
 
                     <hr class="essay-divider">
                     <div style="background: var(--bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--line); margin-top: 40px;">
