@@ -2105,28 +2105,39 @@ Sent via Dimension of Thought Platform`;
             }
         };
 
-        // Storage helpers
+        // Private Person Workspace storage. Draft bodies no longer live in shared
+        // origin localStorage; Google Drive appDataFolder is the canonical private store.
+        const personWorkspace = window.DimensionPersonWorkspace || null;
+        const studioPerson = personWorkspace && personWorkspace.getPerson
+            ? personWorkspace.getPerson()
+            : null;
+        const defaultAuthor = studioPerson && studioPerson.displayName
+            ? studioPerson.displayName
+            : "Author";
+
         function getDrafts() {
-            try {
-                const stored = localStorage.getItem("dimension_drafts_v1");
-                if (stored) return JSON.parse(stored);
-            } catch (e) {
-                return [];
-            }
-            return [];
+            return personWorkspace && personWorkspace.getDrafts
+                ? personWorkspace.getDrafts()
+                : [];
         }
 
-        function saveDrafts(drafts) {
-            localStorage.setItem("dimension_drafts_v1", JSON.stringify(drafts));
-            if (draftsCountBadge) draftsCountBadge.textContent = String(drafts.length);
+        function saveDrafts(nextDrafts) {
+            if (personWorkspace && personWorkspace.saveDrafts) {
+                personWorkspace.saveDrafts(nextDrafts);
+            }
+            if (draftsCountBadge) draftsCountBadge.textContent = String(nextDrafts.length);
         }
 
         function getActiveDraftId() {
-            return localStorage.getItem("dimension_active_draft_id");
+            return personWorkspace && personWorkspace.getActiveDraftId
+                ? personWorkspace.getActiveDraftId()
+                : null;
         }
 
         function setActiveDraftId(id) {
-            localStorage.setItem("dimension_active_draft_id", id);
+            if (personWorkspace && personWorkspace.setActiveDraftId) {
+                personWorkspace.setActiveDraftId(id);
+            }
         }
 
         let drafts = getDrafts();
@@ -2145,24 +2156,10 @@ Sent via Dimension of Thought Platform`;
             activeId = loadParam;
             setActiveDraftId(activeId);
         } else if (drafts.length === 0) {
-            const seed = {
-                id: "draft_" + Date.now(),
-                title: "You Don't Prove Persons",
-                subtitle: "The Category Error Hiding Inside \"There's No Scientific Evidence for God\"",
-                category: "ontology",
-                slug: "you-dont-prove-persons",
-                author: "Zachary Zhang",
-                date: "Jun 3, 2025",
-                readTime: "9 min read",
-                excerpt: "“Extraordinary claims require extraordinary evidence.” It sounds rigorous and scientific. But applying empirical object-metrics to personal reality is a profound category error.",
-                tags: "Epistemology, Relational Ontology",
-                content: "<span class=\"drop-cap\">H</span>ere is the claim, stated as strongly and cleanly as it can be stated: *\u201cExtraordinary claims require extraordinary evidence. The existence of God is an extraordinary claim. No sufficient empirical evidence has been provided. Therefore, belief in God is unwarranted.\u201d*\n\nThis sounds reasonable. It sounds rigorous. But applying empirical object-metrics to personal reality is a profound **category error**\u2014and not a minor one.\n\n## The Distinction Between Objects and Persons\n\nScience is a glorious tool designed to examine **objects**\u2014things that can be isolated, repeated, manipulated, and dissected under controlled conditions without their consent.\n\nA **Person**, however, cannot be proven through the epistemology of detachment.\n\n> \u201cPersons are not proven through physical dissection. Personal reality is encountered through relation, trust, and mutual communion.\u201d\n\n## The Catastrophe of Scientism\n\nWhen modern secular thought insists that only empirical measurements count as evidence, it doesn't just eliminate God\u2014it inadvertently eliminates the human person. You do not prove a Person from afar; you step forward and enter the dialogue.",
-                updatedAt: Date.now(),
-                isPublished: true
-            };
-            drafts.push(seed);
+            const firstDraft = createDraftObject("Untitled Essay", "A new inquiry taking shape...");
+            drafts.push(firstDraft);
             saveDrafts(drafts);
-            activeId = seed.id;
+            activeId = firstDraft.id;
             setActiveDraftId(activeId);
         }
 
@@ -2175,7 +2172,7 @@ Sent via Dimension of Thought Platform`;
                 subtitle: subtitle,
                 category: "ontology",
                 slug: slugify(title),
-                author: "Zachary Zhang",
+                author: defaultAuthor,
                 date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
                 readTime: "1 min read",
                 excerpt: "",
@@ -2195,20 +2192,23 @@ Sent via Dimension of Thought Platform`;
             subtitleInput.value = draft.subtitle || "";
             categoryInput.value = draft.category || "ontology";
             slugInput.value = draft.slug || slugify(draft.title);
-            authorInput.value = draft.author || "Zachary Zhang";
+            authorInput.value = draft.author || defaultAuthor;
             excerptInput.value = draft.excerpt || "";
             tagsInput.value = draft.tags || "";
             bodyInput.value = draft.content || "";
 
             updateLivePreview();
             renderDraftsList();
+            window.dispatchEvent(new CustomEvent("dimension:studio-draft-changed", {
+                detail: { draftId: draft.id }
+            }));
         }
 
         function updateLivePreview() {
             const title = titleInput.value.trim() || "Untitled Article";
             const subtitle = subtitleInput.value.trim() || "A philosophical inquiry into the depths of truth and narrative.";
             const category = categoryInput.value || "ontology";
-            const author = authorInput.value.trim() || "Zachary Zhang";
+            const author = authorInput.value.trim() || defaultAuthor;
             const body = bodyInput.value;
 
             const catLabels = {
@@ -2294,7 +2294,7 @@ Sent via Dimension of Thought Platform`;
             currentDraft.subtitle = subtitleInput.value.trim();
             currentDraft.category = categoryInput.value;
             currentDraft.slug = slugInput.value.trim() || slugify(title);
-            currentDraft.author = authorInput.value.trim() || "Zachary Zhang";
+            currentDraft.author = authorInput.value.trim() || defaultAuthor;
             currentDraft.excerpt = excerptInput.value.trim();
             currentDraft.tags = tagsInput.value.trim();
             currentDraft.content = bodyInput.value;
@@ -2321,6 +2321,35 @@ Sent via Dimension of Thought Platform`;
             saveDrafts(drafts);
             renderDraftsList();
         }
+
+        // Small public bridge for optional Studio integrations. The core draft state
+        // remains owned by this engine; integrations never edit localStorage behind it.
+        window.DimensionStudioBridge = {
+            getCurrentDraftSnapshot() {
+                commitCurrentDraft();
+                return JSON.parse(JSON.stringify(currentDraft));
+            },
+
+            setGoogleDocsMeta(meta) {
+                currentDraft.googleDocs = meta ? { ...meta } : null;
+                const idx = drafts.findIndex(d => d.id === currentDraft.id);
+                if (idx !== -1) drafts[idx] = currentDraft;
+                saveDrafts(drafts);
+                renderDraftsList();
+                window.dispatchEvent(new CustomEvent("dimension:studio-draft-changed", {
+                    detail: { draftId: currentDraft.id }
+                }));
+            },
+
+            applyGoogleDocsBody(content) {
+                bodyInput.value = String(content ?? "");
+                updateLivePreview();
+                commitCurrentDraft();
+                window.dispatchEvent(new CustomEvent("dimension:studio-draft-changed", {
+                    detail: { draftId: currentDraft.id }
+                }));
+            }
+        };
 
         document.querySelectorAll(".tool-btn[data-action]").forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -2540,7 +2569,8 @@ Sent via Dimension of Thought Platform`;
                         title: (d.title || "Draft") + " (Copy)",
                         slug: (d.slug || "draft") + "-copy",
                         updatedAt: Date.now(),
-                        isPublished: false
+                        isPublished: false,
+                        googleDocs: null
                     };
                     drafts.unshift(clone);
                     saveDrafts(drafts);
@@ -2651,7 +2681,7 @@ Sent via Dimension of Thought Platform`;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${escapeHtml(draft.title)} — Dimension of Thought</title>
     <meta name="description" content="${escapeHtml(draft.subtitle || draft.excerpt || "")}">
-    <meta name="author" content="${escapeHtml(draft.author || "Zachary Zhang")}">
+    <meta name="author" content="${escapeHtml(draft.author || defaultAuthor)}">
     <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/${draft.slug}.html">
 
     <meta property="og:type" content="article">
@@ -2720,7 +2750,7 @@ Sent via Dimension of Thought Platform`;
                 <h1 class="page-title" style="font-size: clamp(2.4rem, 4.8vw, 3.8rem);">${escapeHtml(draft.title)}</h1>
                 <p class="page-subtitle">${escapeHtml(draft.subtitle || "")}</p>
                 <div class="essay-author-bar" style="margin-top: 20px;">
-                    <span>Written by <strong>${escapeHtml(draft.author || "Zachary Zhang")}</strong></span>
+                    <span>Written by <strong>${escapeHtml(draft.author || defaultAuthor)}</strong></span>
                     <span class="essay-dot">•</span>
                     <span>Dimension of Thought Archives</span>
                 </div>
@@ -2922,7 +2952,11 @@ ${currentDraft.content}`;
 
         loadDraftIntoEditor(currentDraft);
     }
-    initStudioEngine();
+    if (window.DimensionPersonWorkspace && window.DimensionPersonWorkspace.onReady) {
+        window.DimensionPersonWorkspace.onReady(initStudioEngine);
+    } else {
+        initStudioEngine();
+    }
 
 // =========================================================================
     // Enhanced Library Celestial Constellation Mode & Interactive Graph Engine

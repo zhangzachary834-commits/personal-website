@@ -11,6 +11,8 @@
     <link rel="icon" type="image/jpeg" href="assets/dimension-emblem.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="studio-draw.css">
+    <link rel="stylesheet" href="studio-person.css">
+    <link rel="stylesheet" href="studio-google-docs.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -86,6 +88,20 @@
                 <button type="button" class="btn btn-secondary btn-small" id="open-drafts-drawer-btn" title="Manage saved drafts and templates">
                     <span>📑</span>
                     <span>Drafts (<span id="drafts-count-badge">1</span>)</span>
+                </button>
+
+                <!-- Private Person Workspace -->
+                <button type="button" class="btn btn-secondary btn-small person-workspace-btn" id="person-workspace-btn" title="Open your private Person Workspace">
+                    <span aria-hidden="true">✦</span>
+                    <span id="person-workspace-name">Person Workspace</span>
+                    <span class="person-workspace-dot" id="person-workspace-dot" aria-hidden="true"></span>
+                </button>
+
+                <!-- Google Docs Sync -->
+                <button type="button" class="btn btn-secondary btn-small google-docs-sync-btn" id="open-google-docs-sync-btn" title="Sync this draft with Google Docs">
+                    <span aria-hidden="true">↕</span>
+                    <span class="google-docs-label">Google Docs</span>
+                    <span class="google-docs-sync-dot" id="google-docs-sync-dot" aria-hidden="true"></span>
                 </button>
 
                 <!-- Templates Dropdown Button -->
@@ -425,6 +441,54 @@
         </section>
     </main>
 
+
+    <!-- Private Person Workspace Gate -->
+    <section class="person-workspace-gate" id="person-workspace-gate" aria-labelledby="person-gate-title">
+        <div class="person-gate-card">
+            <span class="person-gate-kicker">Dimension of Thought // Private Studio</span>
+            <h1 id="person-gate-title">Enter your Person Workspace.</h1>
+            <p>Your drafts and artwork belong to you, not to a communal browser bucket. Google provides the identity and private cloud boundary; it does not define the Person.</p>
+            <div class="person-gate-principle">
+                <strong>Person ≠ account.</strong> A Person is the real human being. A Google identity is only the provider relation used to recognize which Person is entering this private workspace.
+            </div>
+            <div class="person-gate-actions">
+                <button type="button" class="btn btn-primary" id="person-sign-in-btn">Continue with Google</button>
+                <span id="person-workspace-state">Locked</span>
+            </div>
+            <div class="person-config-note" id="person-config-note" hidden>
+                Google setup is not finished yet. Add the public Web OAuth client ID to <code>studio-integrations.config.js</code>.
+            </div>
+            <p class="person-gate-status" id="person-gate-status" role="status" aria-live="polite"></p>
+        </div>
+    </section>
+
+    <!-- Person Workspace Panel -->
+    <div class="modal-dialog-backdrop" id="person-workspace-modal-backdrop" hidden>
+        <div class="modal-dialog-box person-workspace-panel" role="dialog" aria-modal="true" aria-labelledby="person-workspace-modal-title">
+            <div class="modal-dialog-header">
+                <h3 id="person-workspace-modal-title">✦ Person Workspace</h3>
+                <button type="button" class="control-dot close-dot" id="close-person-workspace-modal-btn" title="Close" aria-label="Close"></button>
+            </div>
+            <div class="modal-dialog-body">
+                <div class="person-profile-row">
+                    <img class="person-profile-avatar" id="person-panel-avatar" alt="" hidden>
+                    <div class="person-profile-copy">
+                        <strong id="person-panel-name">No Person present</strong>
+                        <span id="person-panel-email"></span>
+                        <span id="person-cloud-status" class="person-cloud-status">Private cloud ready</span>
+                    </div>
+                </div>
+                <p class="person-workspace-principle">
+                    Your writing drafts and 2D Studio artwork are stored in this Person's private Google Drive application-data space. Google authentication is a recognition mechanism, not an ontological definition of Personhood.
+                </p>
+                <div class="person-panel-actions">
+                    <button type="button" class="btn btn-secondary btn-small" id="person-reload-page-btn">Reload from cloud</button>
+                    <button type="button" class="btn btn-secondary btn-small" id="person-sign-out-btn">Leave Person Workspace</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Slide-out Drafts Manager Drawer -->
     <div class="drafts-drawer-backdrop" id="drafts-drawer-backdrop" hidden></div>
     <aside class="drafts-drawer" id="drafts-drawer" hidden aria-label="Saved Drafts Manager">
@@ -491,13 +555,62 @@
         </div>
     </div>
 
+
+    <!-- Google Docs Sync Modal -->
+    <div class="modal-dialog-backdrop" id="google-docs-modal-backdrop" hidden>
+        <div class="modal-dialog-box google-docs-sync-panel" role="dialog" aria-modal="true" aria-labelledby="google-docs-modal-title">
+            <div class="modal-dialog-header">
+                <h3 id="google-docs-modal-title">↕ Google Docs Sync</h3>
+                <button type="button" class="control-dot close-dot" id="close-google-docs-modal-btn" title="Close" aria-label="Close"></button>
+            </div>
+            <div class="modal-dialog-body">
+                <p class="modal-lead">Bind this Studio draft to one Google Doc. The first pass preserves the Markdown source exactly and guards against overwriting remote edits.</p>
+
+                <div class="google-docs-sync-summary" id="google-docs-sync-summary">
+                    <strong>No Google Doc linked</strong>
+                    <span>Create a new Doc or link an existing one to this Studio draft.</span>
+                </div>
+
+                <div class="google-docs-sync-actions">
+                    <button type="button" class="btn btn-primary btn-small" id="google-docs-create-btn">Create Google Doc</button>
+                    <button type="button" class="btn btn-secondary btn-small" id="google-docs-pull-btn" disabled>Pull from Docs</button>
+                    <button type="button" class="btn btn-secondary btn-small" id="google-docs-push-btn" disabled>Push to Docs</button>
+                    <button type="button" class="btn btn-secondary btn-small" id="google-docs-open-btn" disabled>Open Doc ↗</button>
+                    <button type="button" class="btn btn-secondary btn-small" id="google-docs-unlink-btn" disabled>Unlink</button>
+                </div>
+
+                <div class="google-docs-link-row">
+                    <input type="text" class="studio-text-input google-docs-link-input" id="google-docs-link-input" placeholder="Paste Google Docs URL or document ID" autocomplete="off">
+                    <button type="button" class="btn btn-secondary btn-small" id="google-docs-link-btn">Link existing Doc</button>
+                </div>
+
+                <div class="google-docs-config-note" id="google-docs-config-note" hidden>
+                    Google OAuth is not configured yet. Add the Web OAuth client ID to <code>studio-integrations.config.js</code>; no client secret belongs in this site.
+                </div>
+
+                <div class="google-docs-conflict-note" id="google-docs-conflict-note" hidden>
+                    The Google Doc changed after the last successful sync. Pull first to preserve those edits. If you intentionally want Studio to replace the remote body, use the explicit override below.
+                    <div style="margin-top:10px;">
+                        <button type="button" class="btn btn-secondary btn-small" id="google-docs-force-push-btn" hidden>Force push Studio → Docs</button>
+                    </div>
+                </div>
+
+                <p class="google-docs-sync-status" id="google-docs-sync-status" role="status" aria-live="polite"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast-notification" class="toast-notification" role="status" aria-live="polite">
         <span class="toast-icon">✓</span>
         <span id="toast-message" class="toast-message">Draft saved successfully.</span>
     </div>
 
+    <script src="studio-integrations.config.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="studio-person.js"></script>
     <script src="script.js"></script>
     <script src="studio-draw.js"></script>
+    <script src="studio-google-docs.js"></script>
 </body>
 </html>
