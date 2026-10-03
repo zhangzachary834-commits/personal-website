@@ -6368,18 +6368,36 @@ class VesselEngine {
         let nextX = 50;
         let nextY = 50;
 
+        // ⚡ Bolt Optimization: Cache absolute document position on hover entry
+        // to prevent calling getBoundingClientRect() on every pointermove frame,
+        // eliminating synchronous layout thrashing in the rendering pipeline.
+        let cachedLeft = 0;
+        let cachedTop = 0;
+        let cachedWidth = 0;
+        let cachedHeight = 0;
+
         const paint = () => {
             frame = 0;
             card.style.setProperty("--fx-x", nextX.toFixed(2) + "%");
             card.style.setProperty("--fx-y", nextY.toFixed(2) + "%");
         };
 
-        card.addEventListener("pointermove", (event) => {
+        card.addEventListener("pointerenter", () => {
             const rect = card.getBoundingClientRect();
-            if (!rect.width || !rect.height) return;
+            cachedLeft = rect.left + window.scrollX;
+            cachedTop = rect.top + window.scrollY;
+            cachedWidth = rect.width;
+            cachedHeight = rect.height;
+        }, { passive: true });
 
-            nextX = ((event.clientX - rect.left) / rect.width) * 100;
-            nextY = ((event.clientY - rect.top) / rect.height) * 100;
+        card.addEventListener("pointermove", (event) => {
+            if (!cachedWidth || !cachedHeight) return;
+
+            const relativeX = event.pageX - cachedLeft;
+            const relativeY = event.pageY - cachedTop;
+
+            nextX = (relativeX / cachedWidth) * 100;
+            nextY = (relativeY / cachedHeight) * 100;
 
             if (!frame) frame = requestAnimationFrame(paint);
         }, { passive: true });
