@@ -17,7 +17,11 @@ const pages = [
   'posts/ai-training-data-discipleship.html',
   'posts/trollability-car-wash-invariant.html',
   'posts/trollability-cosmic-dom-tree.html',
-  'posts/trollability-keter-key-incident.html'
+  'posts/trollability-keter-key-incident.html',
+  'posts/trollability-ai-flamethrower.html',
+  'posts/trollability-answer-key-paradox.html',
+  'posts/trollability-gothamchess.html',
+  'posts/trollability-chainsaw-amnesia.html'
 ];
 
 function makeCanvasContext() {
@@ -142,11 +146,11 @@ test('Trollability Suite is modeled as writing pieces in a shared series', () =>
   const dom = new JSDOM(html);
 
   const cards = [...dom.window.document.querySelectorAll('.essay-card[data-series="trollability-suite"]')];
-  assert.equal(cards.length, 3);
+  assert.equal(cards.length, 7);
   assert.ok(cards.every(card => card.getAttribute('data-series-label') === 'Trollability Suite'));
   assert.deepEqual(
     cards.map(card => card.getAttribute('data-category')),
-    ['ai', 'ai', 'ai']
+    ['ai', 'ai', 'ai', 'ai', 'ai', 'ai', 'ai']
   );
 
   assert.ok(dom.window.document.querySelector('.essay-filter-btn[data-filter="ai"]'));
