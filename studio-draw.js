@@ -107,8 +107,21 @@
         writeModeBtn.addEventListener("click", () => setMode("write"));
         drawModeBtn.addEventListener("click", () => setMode("draw"));
 
+        // ⚡ Bolt Optimization: Cache bounding client rect to prevent
+        // layout thrashing during high-frequency drawing pointermove events.
+        let cachedCanvasRect = null;
+        function updateCanvasCache() {
+            cachedCanvasRect = canvas.getBoundingClientRect();
+        }
+
+        canvas.addEventListener("pointerenter", updateCanvasCache, { passive: true });
+        canvas.addEventListener("pointerdown", updateCanvasCache, { passive: true });
+        window.addEventListener("resize", () => cachedCanvasRect = null, { passive: true });
+        window.addEventListener("scroll", () => cachedCanvasRect = null, { passive: true });
+
         function normalizePoint(e) {
-            const rect = canvas.getBoundingClientRect();
+            if (!cachedCanvasRect) updateCanvasCache();
+            const rect = cachedCanvasRect;
             if (!rect.width || !rect.height) return null;
             return {
                 x: Math.max(0, Math.min(WIDTH, (e.clientX - rect.left) * WIDTH / rect.width)),
@@ -311,8 +324,21 @@
             cursor.style.marginTop = (-diameter / 2) + "px";
         }
 
+        // ⚡ Bolt Optimization: Cache absolute document position on hover entry
+        // to prevent calling getBoundingClientRect() on every pointermove frame,
+        // eliminating synchronous layout thrashing in the rendering pipeline.
+        let cachedStageRect = null;
+        function updateStageCache() {
+            cachedStageRect = stage.getBoundingClientRect();
+        }
+
+        stage.addEventListener("pointerenter", updateStageCache, { passive: true });
+        window.addEventListener("resize", () => cachedStageRect = null, { passive: true });
+        window.addEventListener("scroll", () => cachedStageRect = null, { passive: true });
+
         stage.addEventListener("pointermove", (e) => {
-            const rect = stage.getBoundingClientRect();
+            if (!cachedStageRect) updateStageCache();
+            const rect = cachedStageRect;
             cursor.style.transform = "translate3d(" + (e.clientX - rect.left) + "px, " + (e.clientY - rect.top) + "px, 0)";
             stage.classList.toggle("cursor-visible", state.tool !== "pan");
         });
