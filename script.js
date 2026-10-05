@@ -4484,8 +4484,11 @@ ${currentDraft.content}`;
                         animId = requestAnimationFrame(draw);
                     }
 
+                    let cachedSATRect = null;
+
                     function onPointerDown(e) {
-                        const rect = canvas.getBoundingClientRect();
+                        cachedSATRect = canvas.getBoundingClientRect();
+                        const rect = cachedSATRect;
                         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                         const x = (clientX - rect.left) * (canvas.width / rect.width);
@@ -4503,7 +4506,8 @@ ${currentDraft.content}`;
 
                     function onPointerMove(e) {
                         if (!isDragging) return;
-                        const rect = canvas.getBoundingClientRect();
+                        // ⚡ Bolt Optimization: Cache bounding client rect on pointer down to prevent layout thrashing during high-frequency pointermove events
+                        const rect = cachedSATRect || canvas.getBoundingClientRect();
                         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                         posA.x = (clientX - rect.left) * (canvas.width / rect.width) - dragOffset.x;
