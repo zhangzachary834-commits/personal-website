@@ -437,6 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     function initEssayFilters() {
         const essayFilterBtns = document.querySelectorAll(".essay-filter-btn");
+        const cards = document.getElementsByClassName("essay-card");
 
         essayFilterBtns.forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -444,12 +445,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.classList.add("active");
                 const filter = btn.getAttribute("data-filter");
 
-                const cards = document.querySelectorAll(".essay-card");
-                cards.forEach((card) => {
+                for (let i = 0; i < cards.length; i++) {
+                    const card = cards[i];
                     const category = card.getAttribute("data-category");
                     const matches = filter === "all" || category === filter;
                     card.style.display = matches ? "flex" : "none";
-                });
+                }
             });
         });
     }
