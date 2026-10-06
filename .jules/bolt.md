@@ -19,3 +19,6 @@
 ## 2026-11-21 - Card Spotlight Hover Event Layout Thrashing
 **Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` causes severe layout thrashing (synchronous layout calculation) which drags down rendering performance.
 **Action:** When calculating relative coordinates for visual effects, hook into a lower-frequency event like `pointerenter` (or `mouseenter`) to cache the absolute element offset (`rect.left + window.scrollX`), and use `e.pageX/pageY` minus the cached offset in the `mousemove` handler.
+## 2026-11-22 - Layout Thrashing in Interactive Canvas Elements
+**Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` (or `touchmove`) during a drag interaction causes severe layout thrashing (synchronous layout calculation), harming rendering performance. Since the canvas is static while dragging, this is an unnecessary overhead.
+**Action:** When calculating relative coordinates for drag operations inside interactive elements, cache the canvas bounding rect in `pointerdown` and reuse it in `pointermove` to eliminate synchronous layout calculations during high-frequency events.
