@@ -22,3 +22,6 @@
 ## 2026-11-22 - Layout Thrashing in Interactive Canvas Elements
 **Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` (or `touchmove`) during a drag interaction causes severe layout thrashing (synchronous layout calculation), harming rendering performance. Since the canvas is static while dragging, this is an unnecessary overhead.
 **Action:** When calculating relative coordinates for drag operations inside interactive elements, cache the canvas bounding rect in `pointerdown` and reuse it in `pointermove` to eliminate synchronous layout calculations during high-frequency events.
+## 2026-11-23 - Avoid Caching Layout on Scroll for Interactive Canvas Elements
+**Learning:** Caching `getBoundingClientRect()` using `window.addEventListener("scroll", ...)` is brittle because inner containers (e.g., modals, overflow sidebars) do not bubble scroll events to the window, leading to stale coordinates that break drawing logic.
+**Action:** For interactive canvas elements that rely on pointer coordinates during dragging, cache the bounding rect inside the `pointerdown` event handler and clear it in the `pointerup`/`pointercancel` handler. Use a fallback (`cachedRect || el.getBoundingClientRect()`) for hover states outside of active drags.

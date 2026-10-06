@@ -107,8 +107,12 @@
         writeModeBtn.addEventListener("click", () => setMode("write"));
         drawModeBtn.addEventListener("click", () => setMode("draw"));
 
+        // ⚡ Bolt Optimization: Cache bounding rect during drag interactions
+        // to prevent synchronous layout calculations in high-frequency pointermove events.
+        let cachedCanvasRect = null;
+
         function normalizePoint(e) {
-            const rect = canvas.getBoundingClientRect();
+            const rect = cachedCanvasRect || canvas.getBoundingClientRect();
             if (!rect.width || !rect.height) return null;
             return {
                 x: Math.max(0, Math.min(WIDTH, (e.clientX - rect.left) * WIDTH / rect.width)),
@@ -159,6 +163,7 @@
 
         function startStroke(e) {
             if (state.tool === "pan" || e.button !== 0) return;
+            cachedCanvasRect = canvas.getBoundingClientRect();
             const point = normalizePoint(e);
             if (!point) return;
 
@@ -197,6 +202,7 @@
                 state.redo = [];
             }
             state.currentStroke = null;
+            cachedCanvasRect = null;
             render();
             scheduleSave();
         }
