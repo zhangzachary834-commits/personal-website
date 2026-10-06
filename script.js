@@ -421,12 +421,12 @@ document.addEventListener("DOMContentLoaded", () => {
             projectFilterBtns.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
             const filter = btn.getAttribute("data-filter");
+            const isAll = filter === "all";
+            const filterRegex = isAll ? null : new RegExp(`(?:^|\\s)${filter}(?:\\s|$)`);
 
             projectCards.forEach((card) => {
-                const categories = (card.getAttribute("data-category") || "")
-                    .split(/\s+/)
-                    .filter(Boolean);
-                const matches = filter === "all" || categories.includes(filter);
+                const catStr = card.getAttribute("data-category") || "";
+                const matches = isAll || filterRegex.test(catStr);
                 card.style.display = matches ? "flex" : "none";
             });
         });

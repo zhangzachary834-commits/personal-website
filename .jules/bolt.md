@@ -22,3 +22,7 @@
 ## 2026-11-22 - Layout Thrashing in Interactive Canvas Elements
 **Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` (or `touchmove`) during a drag interaction causes severe layout thrashing (synchronous layout calculation), harming rendering performance. Since the canvas is static while dragging, this is an unnecessary overhead.
 **Action:** When calculating relative coordinates for drag operations inside interactive elements, cache the canvas bounding rect in `pointerdown` and reuse it in `pointermove` to eliminate synchronous layout calculations during high-frequency events.
+
+## 2024-06-25 - Regex over String Split in Hot Loops
+**Learning:** In high-frequency filtering loops (e.g. iterating over 1000s of items on click), allocating an array via `str.split(/\s+/)` and testing with `.includes()` for every item creates massive GC churn and overhead. Using a pre-compiled regular expression boundary match `(?:^|\s)word(?:\s|$)` with `.test()` is roughly 4-5x faster.
+**Action:** When searching for an exact token in a space-separated string attribute, hoist a pre-compiled RegExp outside the loop instead of splitting the string into an array inside the loop.
