@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { walk } = require('./utils');
 
 const root = path.resolve(__dirname, '..');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'site.config.json'), 'utf8'));
@@ -8,17 +9,6 @@ const socialImage = `${baseUrl}/${String(config.socialImage || 'assets/dimension
 
 if (!/^https:\/\//.test(baseUrl)) {
   throw new Error(`site.config.json baseUrl must be an absolute https URL; got: ${baseUrl}`);
-}
-
-function walk(dir) {
-  const out = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (['.git', 'node_modules', 'backup'].includes(entry.name)) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walk(full));
-    else out.push(full);
-  }
-  return out;
 }
 
 function rel(file) {
