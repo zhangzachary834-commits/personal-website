@@ -21,7 +21,6 @@ window.matchMedia = () => ({ matches: false });
 let layoutThrashCount = 0;
 
 // Mock elements getBoundingClientRect
-const originalGetBoundingClientRect = window.Element.prototype.getBoundingClientRect;
 window.Element.prototype.getBoundingClientRect = function() {
   layoutThrashCount++;
   return { left: 100, top: 100, width: 200, height: 100, right: 300, bottom: 200 };
