@@ -2243,7 +2243,7 @@ Sent via Dimension of Thought Platform`;
             prevTag.setAttribute("data-category", category);
             prevAuthor.textContent = author;
             prevMetaTime.textContent = `Today · ${readTimeStr}`;
-            prevProseBody.innerHTML = parseMarkdown(body);
+            prevProseBody.innerHTML = typeof DOMPurify !== "undefined" ? DOMPurify.sanitize(parseMarkdown(body)) : escapeHtml(parseMarkdown(body));
 
             if (wordCountEl) wordCountEl.textContent = `${words.toLocaleString()} words`;
             if (readTimeEl) readTimeEl.textContent = readTimeStr;
