@@ -26,3 +26,6 @@
 ## 2024-06-25 - Regex over String Split in Hot Loops
 **Learning:** In high-frequency filtering loops (e.g. iterating over 1000s of items on click), allocating an array via `str.split(/\s+/)` and testing with `.includes()` for every item creates massive GC churn and overhead. Using a pre-compiled regular expression boundary match `(?:^|\s)word(?:\s|$)` with `.test()` is roughly 4-5x faster.
 **Action:** When searching for an exact token in a space-separated string attribute, hoist a pre-compiled RegExp outside the loop instead of splitting the string into an array inside the loop.
+## 2026-11-23 - Layout Thrashing in Studio Draw
+**Learning:** `canvas.getBoundingClientRect()` inside a `pointermove` loop in `studio-draw.js` causes synchronous layout calculations, throttling rendering performance during fast brush strokes.
+**Action:** When calculating relative coordinates for drawing, cache the canvas bounding rect in `pointerdown` and clear it on `pointerup`. Reuse the cached rect during `pointermove` to eliminate layout thrashing.
