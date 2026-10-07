@@ -1,23 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+const { walk } = require('./utils');
 
 const root = path.resolve(__dirname, '..');
 const config = JSON.parse(fs.readFileSync(path.join(root, 'site.config.json'), 'utf8'));
 const baseUrl = String(config.baseUrl || '').replace(/\/$/, '');
 const errors = [];
 const warnings = [];
-
-function walk(dir) {
-  const out = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (['.git', 'node_modules', 'backup'].includes(entry.name)) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walk(full));
-    else out.push(full);
-  }
-  return out;
-}
 
 function rel(file) {
   return path.relative(root, file).split(path.sep).join('/');
