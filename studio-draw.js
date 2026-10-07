@@ -107,8 +107,12 @@
         writeModeBtn.addEventListener("click", () => setMode("write"));
         drawModeBtn.addEventListener("click", () => setMode("draw"));
 
+        let cachedCanvasRect = null;
+
         function normalizePoint(e) {
-            const rect = canvas.getBoundingClientRect();
+            // ⚡ Bolt Optimization: Cache bounding client rect on pointerdown
+            // to prevent synchronous layout thrashing during high-frequency pointermove events.
+            const rect = cachedCanvasRect || canvas.getBoundingClientRect();
             if (!rect.width || !rect.height) return null;
             return {
                 x: Math.max(0, Math.min(WIDTH, (e.clientX - rect.left) * WIDTH / rect.width)),
@@ -159,6 +163,7 @@
 
         function startStroke(e) {
             if (state.tool === "pan" || e.button !== 0) return;
+            cachedCanvasRect = canvas.getBoundingClientRect();
             const point = normalizePoint(e);
             if (!point) return;
 
@@ -192,6 +197,7 @@
             if (!state.drawing || state.pointerId !== e.pointerId) return;
             state.drawing = false;
             state.pointerId = null;
+            cachedCanvasRect = null;
             if (state.currentStroke && state.currentStroke.points && state.currentStroke.points.length) {
                 state.strokes.push(state.currentStroke);
                 state.redo = [];
