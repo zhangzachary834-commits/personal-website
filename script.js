@@ -3298,37 +3298,23 @@ ${currentDraft.content}`;
             ctx.closePath();
         }
 
-        function draw() {
-            const width = canvas.width / (window.devicePixelRatio || 1);
-            const height = canvas.height / (window.devicePixelRatio || 1);
+        function drawNebulae(ctx, width, height) {
+            if (!enableNebulae) return;
+            nebulae.forEach(n => {
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 50 || n.x > width - 50) n.vx *= -1;
+                if (n.y < 50 || n.y > height - 50) n.vy *= -1;
 
-            ctx.clearRect(0, 0, width, height);
+                const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+                grad.addColorStop(0, n.color);
+                grad.addColorStop(1, "transparent");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+            });
+        }
 
-            // Apply camera pan & zoom
-            ctx.save();
-            ctx.translate(width / 2 + camera.x, height / 2 + camera.y);
-            ctx.scale(camera.zoom, camera.zoom);
-            ctx.translate(-width / 2, -height / 2);
-
-            const time = Date.now() * 0.001;
-
-            // 1. Render Cosmic Nebulae
-            if (enableNebulae) {
-                nebulae.forEach(n => {
-                    n.x += n.vx;
-                    n.y += n.vy;
-                    if (n.x < 50 || n.x > width - 50) n.vx *= -1;
-                    if (n.y < 50 || n.y > height - 50) n.vy *= -1;
-
-                    const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-                    grad.addColorStop(0, n.color);
-                    grad.addColorStop(1, "transparent");
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, width, height);
-                });
-            }
-
-            // 2. Render Twinkling Background Micro-Stars
+        function drawBackgroundMicroStars(ctx, time) {
             bgMicroStars.forEach(s => {
                 const twinkle = Math.sin(time * s.twinkleSpeed * 50 + s.twinkleOffset) * 0.5 + 0.5;
                 ctx.fillStyle = `rgba(247, 243, 235, ${0.1 + twinkle * 0.4})`;
@@ -3336,8 +3322,9 @@ ${currentDraft.content}`;
                 ctx.arc(s.x, s.y, s.r * (0.8 + twinkle * 0.4), 0, Math.PI * 2);
                 ctx.fill();
             });
+        }
 
-            // 3. Render Synapse Edges
+        function drawSynapseEdges(ctx, time) {
             edges.forEach(edge => {
                 const a = edge.source;
                 const b = edge.target;
@@ -3398,38 +3385,39 @@ ${currentDraft.content}`;
                 edge.lastCx = cx;
                 edge.lastCy = cy;
             });
+        }
 
-            // 4. Render Photon Pulse Particles
-            if (enableParticles) {
-                photonParticles.forEach(p => {
-                    const edge = p.edge;
-                    if (!edge || !edge.lastCx) return;
-                    const a = edge.source;
-                    const b = edge.target;
+        function drawPhotonPulseParticles(ctx) {
+            if (!enableParticles) return;
+            photonParticles.forEach(p => {
+                const edge = p.edge;
+                if (!edge || !edge.lastCx) return;
+                const a = edge.source;
+                const b = edge.target;
 
-                    if (!matchesActiveFilter(a) || !matchesActiveFilter(b)) return;
-                    if (isolatedNode && a !== isolatedNode && b !== isolatedNode) return;
+                if (!matchesActiveFilter(a) || !matchesActiveFilter(b)) return;
+                if (isolatedNode && a !== isolatedNode && b !== isolatedNode) return;
 
-                    p.progress += p.speed;
-                    if (p.progress >= 1.0) p.progress = 0;
+                p.progress += p.speed;
+                if (p.progress >= 1.0) p.progress = 0;
 
-                    const t = p.forward ? p.progress : 1 - p.progress;
-                    // Quadratic Bezier Interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
-                    const inv = 1 - t;
-                    const px = inv * inv * a.x + 2 * inv * t * edge.lastCx + t * t * b.x;
-                    const py = inv * inv * a.y + 2 * inv * t * edge.lastCy + t * t * b.y;
+                const t = p.forward ? p.progress : 1 - p.progress;
+                // Quadratic Bezier Interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+                const inv = 1 - t;
+                const px = inv * inv * a.x + 2 * inv * t * edge.lastCx + t * t * b.x;
+                const py = inv * inv * a.y + 2 * inv * t * edge.lastCy + t * t * b.y;
 
-                    ctx.fillStyle = p.color;
-                    ctx.shadowBlur = 6;
-                    ctx.shadowColor = p.color;
-                    ctx.beginPath();
-                    ctx.arc(px, py, p.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                });
-            }
+                ctx.fillStyle = p.color;
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = p.color;
+                ctx.beginPath();
+                ctx.arc(px, py, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+        }
 
-            // 5. Render Constellation Nodes (Hubs, Articles, Concepts)
+        function drawConstellationNodes(ctx, time) {
             nodes.forEach(node => {
                 const isFiltered = matchesActiveFilter(node);
                 const isSearched = matchesSearch(node);
@@ -3519,6 +3507,36 @@ ${currentDraft.content}`;
 
                 ctx.restore();
             });
+        }
+
+        function draw() {
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Apply camera pan & zoom
+            ctx.save();
+            ctx.translate(width / 2 + camera.x, height / 2 + camera.y);
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-width / 2, -height / 2);
+
+            const time = Date.now() * 0.001;
+
+            // 1. Render Cosmic Nebulae
+            drawNebulae(ctx, width, height);
+
+            // 2. Render Twinkling Background Micro-Stars
+            drawBackgroundMicroStars(ctx, time);
+
+            // 3. Render Synapse Edges
+            drawSynapseEdges(ctx, time);
+
+            // 4. Render Photon Pulse Particles
+            drawPhotonPulseParticles(ctx);
+
+            // 5. Render Constellation Nodes (Hubs, Articles, Concepts)
+            drawConstellationNodes(ctx, time);
 
             ctx.restore(); // Restore camera transform
         }
