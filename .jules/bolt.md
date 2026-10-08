@@ -26,3 +26,7 @@
 ## 2024-06-25 - Regex over String Split in Hot Loops
 **Learning:** In high-frequency filtering loops (e.g. iterating over 1000s of items on click), allocating an array via `str.split(/\s+/)` and testing with `.includes()` for every item creates massive GC churn and overhead. Using a pre-compiled regular expression boundary match `(?:^|\s)word(?:\s|$)` with `.test()` is roughly 4-5x faster.
 **Action:** When searching for an exact token in a space-separated string attribute, hoist a pre-compiled RegExp outside the loop instead of splitting the string into an array inside the loop.
+
+## 2024-10-08 - Layout Thrashing Cache Needs Viewport Invalidation
+**Learning:** When caching `getBoundingClientRect()` over multiple frames (e.g., during pointer hover for a custom cursor), the cached `rect` holds coordinates relative to the viewport. If the page is scrolled or resized, the element shifts relative to the viewport, making the cache instantly stale and breaking coordinate mapping (like cursor position). The previous card optimization worked without this because the hover state was confined to a small static card and cleared frequently, while a full screen stage scroll breaks the assumption entirely.
+**Action:** Always bind `scroll` and `resize` event listeners to the `window` to invalidate viewport-relative caches when optimizing high-frequency layout reads like `getBoundingClientRect()` that persist over long intervals.

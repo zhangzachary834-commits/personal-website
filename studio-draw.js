@@ -107,8 +107,21 @@
         writeModeBtn.addEventListener("click", () => setMode("write"));
         drawModeBtn.addEventListener("click", () => setMode("draw"));
 
+        // ⚡ Bolt Optimization: Cache bounding rects during drag/hover
+        // to prevent synchronous layout thrashing in high-frequency pointer events.
+        let cachedCanvasRect = null;
+        let cachedStageRect = null;
+        window.addEventListener("scroll", () => {
+            cachedCanvasRect = null;
+            cachedStageRect = null;
+        }, { passive: true });
+        window.addEventListener("resize", () => {
+            cachedCanvasRect = null;
+            cachedStageRect = null;
+        }, { passive: true });
+
         function normalizePoint(e) {
-            const rect = canvas.getBoundingClientRect();
+            const rect = cachedCanvasRect || canvas.getBoundingClientRect();
             if (!rect.width || !rect.height) return null;
             return {
                 x: Math.max(0, Math.min(WIDTH, (e.clientX - rect.left) * WIDTH / rect.width)),
@@ -159,6 +172,7 @@
 
         function startStroke(e) {
             if (state.tool === "pan" || e.button !== 0) return;
+            cachedCanvasRect = canvas.getBoundingClientRect();
             const point = normalizePoint(e);
             if (!point) return;
 
@@ -189,6 +203,7 @@
         }
 
         function finishStroke(e) {
+            cachedCanvasRect = null;
             if (!state.drawing || state.pointerId !== e.pointerId) return;
             state.drawing = false;
             state.pointerId = null;
@@ -311,12 +326,19 @@
             cursor.style.marginTop = (-diameter / 2) + "px";
         }
 
+        stage.addEventListener("pointerenter", () => {
+            cachedStageRect = stage.getBoundingClientRect();
+        }, { passive: true });
+
         stage.addEventListener("pointermove", (e) => {
-            const rect = stage.getBoundingClientRect();
+            const rect = cachedStageRect || stage.getBoundingClientRect();
             cursor.style.transform = "translate3d(" + (e.clientX - rect.left) + "px, " + (e.clientY - rect.top) + "px, 0)";
             stage.classList.toggle("cursor-visible", state.tool !== "pan");
         });
-        stage.addEventListener("pointerleave", () => stage.classList.remove("cursor-visible"));
+        stage.addEventListener("pointerleave", () => {
+            cachedStageRect = null;
+            stage.classList.remove("cursor-visible");
+        });
 
         if (colorInput) {
             colorInput.addEventListener("input", () => {
