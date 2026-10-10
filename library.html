@@ -98,8 +98,33 @@
                     <button class="essay-filter-btn" data-filter="narrative">Culture &amp; Narrative</button>
                     <button class="essay-filter-btn" data-filter="reflections">Life Reflections</button>
                     <button class="essay-filter-btn" data-filter="ai">AI &amp; Model Behavior</button>
-                    <button class="btn btn-secondary btn-small" id="toggle-graph-view-btn" style="margin-left: auto; border-color: var(--teal); color: var(--teal);">🌌 Constellation View</button>
+                    <button class="btn btn-secondary btn-small" id="toggle-graph-view-btn" aria-pressed="false" style="margin-left: auto; border-color: var(--teal); color: var(--teal);">🌌 Constellation View</button>
                     <a href="studio.html" class="btn btn-secondary btn-small" style="margin-left: 8px; border-color: var(--gold); color: var(--gold);">✍️ Studio</a>
+                </div>
+
+                <div class="library-layout-toolbar" aria-label="Library post layout controls">
+                    <div>
+                        <span class="library-layout-kicker">Reading architecture</span>
+                        <p class="library-layout-description">Let the same archive become a gallery, a journal, a shelf, or a living mosaic.</p>
+                    </div>
+                    <div class="library-layout-switcher" role="group" aria-label="Choose post layout">
+                        <button type="button" class="library-layout-btn active" data-library-layout="gallery" aria-pressed="true" title="Balanced luminous cards">
+                            <span class="library-layout-icon" aria-hidden="true">▦</span>
+                            <span>Gallery</span>
+                        </button>
+                        <button type="button" class="library-layout-btn" data-library-layout="journal" aria-pressed="false" title="Editorial long-form index">
+                            <span class="library-layout-icon" aria-hidden="true">☰</span>
+                            <span>Journal</span>
+                        </button>
+                        <button type="button" class="library-layout-btn" data-library-layout="shelf" aria-pressed="false" title="Compact reading shelf">
+                            <span class="library-layout-icon" aria-hidden="true">▤</span>
+                            <span>Shelf</span>
+                        </button>
+                        <button type="button" class="library-layout-btn" data-library-layout="mosaic" aria-pressed="false" title="Asymmetric editorial mosaic">
+                            <span class="library-layout-icon" aria-hidden="true">✦</span>
+                            <span>Mosaic</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="graph-view-container" class="constellation-view-container" style="display: none;">
@@ -174,7 +199,7 @@
                     </div>
                 </div>
 
-                <div class="essays-grid" id="essays-grid">
+                <div class="essays-grid" id="essays-grid" data-layout="gallery">
                     <!-- Essay 1 -->
                     <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons" data-concepts="Person, Encounter, Epistemology, Moral Ontology">
                         <div class="essay-meta">
