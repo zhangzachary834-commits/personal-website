@@ -290,6 +290,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     // Navigation & Scroll Tracking
     // -------------------------------------------------------------------------
+    const homeMenu = document.querySelector(".home-mobile-menu");
+    if (homeMenu) {
+        homeMenu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+            homeMenu.open = false;
+        }));
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && homeMenu.open) {
+                homeMenu.open = false;
+                homeMenu.querySelector("summary").focus();
+            }
+        });
+        document.addEventListener("click", event => {
+            if (!homeMenu.contains(event.target)) homeMenu.open = false;
+        });
+    }
     const navbar = document.getElementById("navbar");
     const hamburgerBtn = document.getElementById("hamburger-btn");
     const scrollProgressBar = document.getElementById("scroll-progress");
@@ -436,32 +451,75 @@ document.addEventListener("DOMContentLoaded", () => {
     // Essay Category Filtering (The Library Page)
     // -------------------------------------------------------------------------
     function initEssayFilters() {
-        const essayFilterBtns = document.querySelectorAll(".essay-filter-btn");
-        const cards = document.getElementsByClassName("essay-card");
+        const grid = document.getElementById("essays-grid");
+        if (!grid) return;
+        const buttons = Array.from(document.querySelectorAll(".essay-filter-btn"));
+        const search = document.getElementById("library-search");
+        const panel = document.getElementById("library-search-panel");
+        const count = document.getElementById("library-result-count");
+        const empty = document.getElementById("library-empty-state");
+        const reset = document.getElementById("library-search-reset");
+        const categories = new Set(buttons.map(button => button.dataset.filter));
+        // Index content only, so layout controls don't become search matches.
+        const entries = Array.from(grid.querySelectorAll(".essay-card")).map(card => ({
+            card,
+            text: [card.querySelector(".essay-title")?.textContent,
+                card.querySelector(".essay-subtitle")?.textContent,
+                card.querySelector(".essay-excerpt")?.textContent,
+                card.dataset.concepts, card.dataset.seriesLabel].join(" ").toLocaleLowerCase()
+        }));
+        let filter = "all";
 
-        essayFilterBtns.forEach((btn) => {
-            btn.addEventListener("click", () => {
-                essayFilterBtns.forEach((b) => b.classList.remove("active"));
-                btn.classList.add("active");
-                const filter = btn.getAttribute("data-filter");
-
-                for (let i = 0; i < cards.length; i++) {
-                    const card = cards[i];
-                    const category = card.getAttribute("data-category");
-                    const matches = filter === "all" || category === filter;
-                    card.style.display = matches ? "" : "none";
-                }
-
-                const grid = document.getElementById("essays-grid");
-                if (grid) {
-                    grid.dispatchEvent(new CustomEvent("libraryfilterchange", {
-                        detail: { filter }
-                    }));
-                }
+        function applyFilters(updateUrl = true) {
+            const query = search ? search.value.trim() : "";
+            const terms = query.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+            let visible = 0;
+            entries.forEach(({ card, text }) => {
+                const matches = (filter === "all" || card.dataset.category === filter) &&
+                    terms.every(term => text.includes(term));
+                card.style.display = matches ? "" : "none";
+                if (matches) visible++;
             });
+            buttons.forEach(button => {
+                const active = button.dataset.filter === filter;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+            if (count) count.textContent = `${visible} of ${entries.length} writings`;
+            if (empty) empty.hidden = visible !== 0;
+            if (reset) reset.disabled = !query && filter === "all";
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                if (query) url.searchParams.set("q", query);
+                else url.searchParams.delete("q");
+                if (filter !== "all") url.searchParams.set("category", filter);
+                else url.searchParams.delete("category");
+                window.history.replaceState(window.history.state, "", url);
+            }
+            grid.dispatchEvent(new CustomEvent("libraryfilterchange", { detail: { filter, query } }));
+        }
+
+        function readUrl() {
+            const params = new URLSearchParams(window.location.search);
+            filter = categories.has(params.get("category")) ? params.get("category") : "all";
+            if (search) search.value = params.get("q") || "";
+            applyFilters(false);
+        }
+        buttons.forEach(button => button.addEventListener("click", () => {
+            filter = button.dataset.filter;
+            applyFilters();
+        }));
+        if (search) search.addEventListener("input", () => applyFilters());
+        if (reset) reset.addEventListener("click", () => {
+            filter = "all";
+            if (search) search.value = "";
+            applyFilters();
+            if (search) search.focus();
         });
+        window.addEventListener("popstate", readUrl);
+        if (panel) panel.hidden = false;
+        readUrl();
     }
-    initEssayFilters();
 
     // -------------------------------------------------------------------------
     // Dynamic Custom Published Articles Loader
@@ -529,6 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
         initCardSpotlights();
     }
     initDynamicCustomArticles();
+    initEssayFilters();
 
     // -------------------------------------------------------------------------
     // Library Reading Layouts

@@ -92,6 +92,14 @@
 
         <section class="section">
             <div class="container">
+                <div class="library-search-panel" id="library-search-panel" hidden>
+                    <label for="library-search">Find your next rabbit hole.</label>
+                    <div class="library-search-row">
+                        <input type="search" id="library-search" placeholder="Search titles, ideas, or excerpts…" aria-controls="essays-grid" aria-describedby="library-result-count" autocomplete="off">
+                        <button type="button" class="btn btn-secondary btn-small" id="library-search-reset">Reset filters</button>
+                    </div>
+                    <p id="library-result-count" role="status" aria-live="polite" aria-atomic="true"></p>
+                </div>
                 <div class="essay-filter-bar">
                     <button class="essay-filter-btn active" data-filter="all">All Writings</button>
                     <button class="essay-filter-btn" data-filter="ontology">Ontology &amp; Philosophy</button>
@@ -219,6 +227,7 @@
                     </div>
                 </div>
 
+                <p class="library-empty-state" id="library-empty-state" hidden>No writings match yet. Try another word or reset the filters to explore the full Library.</p>
                 <div class="essays-grid" id="essays-grid" data-layout="gallery">
                     <!-- Essay 1 -->
                     <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons" data-concepts="Person, Encounter, Epistemology, Moral Ontology">
