@@ -449,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const card = cards[i];
                     const category = card.getAttribute("data-category");
                     const matches = filter === "all" || category === filter;
-                    card.style.display = matches ? "flex" : "none";
+                    card.style.display = matches ? "" : "none";
                 }
             });
         });
@@ -522,6 +522,58 @@ document.addEventListener("DOMContentLoaded", () => {
         initCardSpotlights();
     }
     initDynamicCustomArticles();
+
+    // -------------------------------------------------------------------------
+    // Library Reading Layouts
+    // -------------------------------------------------------------------------
+    function initLibraryLayouts() {
+        const grid = document.getElementById("essays-grid");
+        const buttons = Array.from(document.querySelectorAll("[data-library-layout]"));
+        if (!grid || buttons.length === 0) return;
+
+        const storageKey = "dimension_library_layout";
+        const validLayouts = new Set(["gallery", "journal", "shelf", "mosaic"]);
+
+        let initialLayout = "gallery";
+        try {
+            const savedLayout = localStorage.getItem(storageKey);
+            if (savedLayout && validLayouts.has(savedLayout)) initialLayout = savedLayout;
+        } catch (e) {
+            // Storage can be unavailable in hardened/private contexts; the UI still works.
+        }
+
+        function applyLayout(layout, persist = true) {
+            const nextLayout = validLayouts.has(layout) ? layout : "gallery";
+            grid.setAttribute("data-layout", nextLayout);
+
+            buttons.forEach((button) => {
+                const isActive = button.getAttribute("data-library-layout") === nextLayout;
+                button.classList.toggle("active", isActive);
+                button.setAttribute("aria-pressed", String(isActive));
+            });
+
+            if (persist) {
+                try {
+                    localStorage.setItem(storageKey, nextLayout);
+                } catch (e) {
+                    // Persistence is progressive enhancement, not a requirement.
+                }
+            }
+
+            grid.dispatchEvent(new CustomEvent("librarylayoutchange", {
+                detail: { layout: nextLayout }
+            }));
+        }
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", () => {
+                applyLayout(button.getAttribute("data-library-layout") || "gallery");
+            });
+        });
+
+        applyLayout(initialLayout, false);
+    }
+    initLibraryLayouts();
 
     // -------------------------------------------------------------------------
     // Interactive Card Spotlight Hover Tracker
@@ -3934,27 +3986,40 @@ ${currentDraft.content}`;
             });
         }
 
-        // Toggle Grid vs. Constellation View
+        // Toggle Library layouts vs. Constellation View
+        function showLibraryLayouts() {
+            isGraphView = false;
+            toggleBtn.textContent = "🌌 Constellation View";
+            toggleBtn.style.color = "var(--teal)";
+            toggleBtn.style.borderColor = "var(--teal)";
+            toggleBtn.setAttribute("aria-pressed", "false");
+            gridContainer.style.display = "grid";
+            graphContainer.style.display = "none";
+            if (inspectorCard) inspectorCard.setAttribute("hidden", "");
+            if (animationId) cancelAnimationFrame(animationId);
+        }
+
         toggleBtn.addEventListener("click", () => {
             isGraphView = !isGraphView;
             if (isGraphView) {
-                toggleBtn.textContent = "📑 Grid View";
+                toggleBtn.textContent = "📚 Library View";
                 toggleBtn.style.color = "var(--ink)";
                 toggleBtn.style.borderColor = "var(--line)";
+                toggleBtn.setAttribute("aria-pressed", "true");
                 gridContainer.style.display = "none";
                 graphContainer.style.display = "flex";
                 resizeCanvas();
                 initGraphData();
                 loop();
             } else {
-                toggleBtn.textContent = "🌌 Constellation View";
-                toggleBtn.style.color = "var(--teal)";
-                toggleBtn.style.borderColor = "var(--teal)";
-                gridContainer.style.display = "grid";
-                graphContainer.style.display = "none";
-                if (inspectorCard) inspectorCard.setAttribute("hidden", "");
-                cancelAnimationFrame(animationId);
+                showLibraryLayouts();
             }
+        });
+
+        // Choosing Gallery / Journal / Shelf / Mosaic always returns from the
+        // cosmic graph to the readable archive, so the switcher never feels inert.
+        gridContainer.addEventListener("librarylayoutchange", () => {
+            if (isGraphView) showLibraryLayouts();
         });
 
         // ---------------------------------------------------------------------
