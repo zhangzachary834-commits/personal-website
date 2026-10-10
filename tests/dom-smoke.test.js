@@ -153,3 +153,79 @@ test('Trollability Suite is modeled as writing pieces in a shared series', () =>
   assert.ok(dom.window.document.querySelector('.c-filter-chip[data-cluster="ai"]'));
   dom.window.close();
 });
+
+function openDiscoveryPage(page, query = '', drafts = []) {
+  const dom = new JSDOM(fs.readFileSync(path.join(root, page), 'utf8'), {
+    url: `https://example.test/${page}${query}`, runScripts: 'outside-only', pretendToBeVisual: true
+  });
+  installBrowserMocks(dom.window);
+  dom.window.localStorage.setItem('dimension_custom_articles', JSON.stringify(drafts));
+  dom.window.eval(script);
+  dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+  return dom;
+}
+
+test('Library combines URL search and categories, resets, and restores browser history', () => {
+  const dom = openDiscoveryPage('library.html', '?q=cosmic&category=ai&mode=dimension#essays-grid');
+  try {
+    const { document } = dom.window;
+    const visible = () => [...document.querySelectorAll('.essay-card')].filter(card => card.style.display !== 'none');
+    const search = document.getElementById('library-search');
+    assert.equal(visible().length, 1);
+    assert.equal(visible()[0].dataset.essayId, 'trollability-cosmic-dom-tree');
+    assert.equal(document.querySelector('[data-filter="ai"]').getAttribute('aria-pressed'), 'true');
+    document.querySelector('[data-filter="ontology"]').click();
+    assert.equal(visible().length, 0);
+    assert.equal(document.getElementById('library-empty-state').hidden, false);
+    document.getElementById('library-search-reset').click();
+    assert.equal(visible().length, 12);
+    assert.equal(dom.window.location.search, '?mode=dimension');
+    assert.equal(dom.window.location.hash, '#essays-grid');
+    assert.equal(document.activeElement, search);
+    search.value = 'causal invariants';
+    search.dispatchEvent(new dom.window.Event('input'));
+    assert.equal(visible()[0].dataset.essayId, 'trollability-car-wash-invariant');
+    document.querySelector('[data-library-layout="observatory"]').click();
+    assert.equal(visible()[0].classList.contains('observatory-featured'), true);
+    dom.window.history.replaceState(null, '', '?category=ai&q=cosmic');
+    dom.window.dispatchEvent(new dom.window.PopStateEvent('popstate'));
+    assert.equal(search.value, 'cosmic');
+    assert.equal(visible()[0].dataset.essayId, 'trollability-cosmic-dom-tree');
+    assert.equal(visible()[0].classList.contains('observatory-featured'), true);
+  } finally { dom.window.close(); }
+});
+
+test('Library searches local drafts and treats markup-shaped queries as plain text', () => {
+  const dom = openDiscoveryPage('library.html', '?category=invalid&q=uniquedraft', [{
+    id: 'local-search-test', title: 'UniqueDraft idea', category: 'reflections', content: 'A local thought.'
+  }]);
+  try {
+    const { document } = dom.window;
+    assert.equal(document.getElementById('library-result-count').textContent, '1 of 13 writings');
+    const search = document.getElementById('library-search');
+    search.value = '<img src=x onerror=alert(1)>';
+    search.dispatchEvent(new dom.window.Event('input'));
+    assert.equal(document.getElementById('library-result-count').textContent, '0 of 13 writings');
+    assert.equal(document.getElementById('library-empty-state').hidden, false);
+    assert.equal(document.querySelector('img[src="x"]'), null);
+  } finally { dom.window.close(); }
+});
+
+test('Homepage mobile menu closes on Escape, selection, and outside interaction', () => {
+  const dom = openDiscoveryPage('index.html');
+  try {
+    const { document } = dom.window;
+    const menu = document.querySelector('.home-mobile-menu');
+    menu.open = true;
+    document.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    assert.equal(menu.open, false);
+    assert.equal(document.activeElement, menu.querySelector('summary'));
+    menu.open = true;
+    menu.querySelector('a').click();
+    assert.equal(menu.open, false);
+    menu.open = true;
+    document.querySelector('h1').click();
+    assert.equal(menu.open, false);
+    assert.equal(menu.querySelectorAll('nav a').length, 7);
+  } finally { dom.window.close(); }
+});
