@@ -429,7 +429,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Project Category Filtering (Personal Mode)
     // -------------------------------------------------------------------------
     const projectFilterBtns = document.querySelectorAll(".filter-btn");
-    const projectCards = document.querySelectorAll(".project-card");
+    // ⚡ Bolt Optimization: Cache dynamic node list as a live HTMLCollection for performance
+    const projectCards = document.getElementsByClassName("project-card");
 
     projectFilterBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -439,11 +440,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const isAll = filter === "all";
             const filterRegex = isAll ? null : new RegExp(`(?:^|\\s)${filter}(?:\\s|$)`);
 
-            projectCards.forEach((card) => {
+            for (let i = 0; i < projectCards.length; i++) {
+                const card = projectCards[i];
                 const catStr = card.getAttribute("data-category") || "";
                 const matches = isAll || filterRegex.test(catStr);
                 card.style.display = matches ? "flex" : "none";
-            });
+            }
         });
     });
 
