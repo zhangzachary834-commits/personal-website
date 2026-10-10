@@ -421,12 +421,12 @@ document.addEventListener("DOMContentLoaded", () => {
             projectFilterBtns.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
             const filter = btn.getAttribute("data-filter");
+            const isAll = filter === "all";
+            const filterRegex = isAll ? null : new RegExp(`(?:^|\\s)${filter}(?:\\s|$)`);
 
             projectCards.forEach((card) => {
-                const categories = (card.getAttribute("data-category") || "")
-                    .split(/\s+/)
-                    .filter(Boolean);
-                const matches = filter === "all" || categories.includes(filter);
+                const catStr = card.getAttribute("data-category") || "";
+                const matches = isAll || filterRegex.test(catStr);
                 card.style.display = matches ? "flex" : "none";
             });
         });
@@ -437,6 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------------------------------------------------------
     function initEssayFilters() {
         const essayFilterBtns = document.querySelectorAll(".essay-filter-btn");
+        const cards = document.getElementsByClassName("essay-card");
 
         essayFilterBtns.forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -444,12 +445,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.classList.add("active");
                 const filter = btn.getAttribute("data-filter");
 
-                const cards = document.querySelectorAll(".essay-card");
-                cards.forEach((card) => {
+                for (let i = 0; i < cards.length; i++) {
+                    const card = cards[i];
                     const category = card.getAttribute("data-category");
                     const matches = filter === "all" || category === filter;
-                    card.style.display = matches ? "flex" : "none";
-                });
+                    card.style.display = matches ? "" : "none";
+                }
             });
         });
     }
@@ -482,13 +483,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (art.concepts && art.concepts.length > 0) {
                 card.setAttribute("data-concepts", art.concepts.join(","));
             }
+            if (art.series) card.setAttribute("data-series", art.series);
+            if (art.seriesLabel) card.setAttribute("data-series-label", art.seriesLabel);
 
             const catLabels = {
                 ontology: "Epistemology · Relational Ontology",
                 narrative: "Culture & Narrative Ethics",
                 reflections: "Life Reflections & Evowth",
                 systems: "Systems Architecture & OntoMath",
-                robotics: "Robotics & Spatial AI"
+                robotics: "Robotics & Spatial AI",
+                ai: "AI & Model Behavior"
             };
             const catLabel = catLabels[art.category] || "Original Inquiry";
             const readTime = art.readTime || "5 min read";
@@ -520,6 +524,58 @@ document.addEventListener("DOMContentLoaded", () => {
     initDynamicCustomArticles();
 
     // -------------------------------------------------------------------------
+    // Library Reading Layouts
+    // -------------------------------------------------------------------------
+    function initLibraryLayouts() {
+        const grid = document.getElementById("essays-grid");
+        const buttons = Array.from(document.querySelectorAll("[data-library-layout]"));
+        if (!grid || buttons.length === 0) return;
+
+        const storageKey = "dimension_library_layout";
+        const validLayouts = new Set(["gallery", "journal", "shelf", "mosaic"]);
+
+        let initialLayout = "gallery";
+        try {
+            const savedLayout = localStorage.getItem(storageKey);
+            if (savedLayout && validLayouts.has(savedLayout)) initialLayout = savedLayout;
+        } catch (e) {
+            // Storage can be unavailable in hardened/private contexts; the UI still works.
+        }
+
+        function applyLayout(layout, persist = true) {
+            const nextLayout = validLayouts.has(layout) ? layout : "gallery";
+            grid.setAttribute("data-layout", nextLayout);
+
+            buttons.forEach((button) => {
+                const isActive = button.getAttribute("data-library-layout") === nextLayout;
+                button.classList.toggle("active", isActive);
+                button.setAttribute("aria-pressed", String(isActive));
+            });
+
+            if (persist) {
+                try {
+                    localStorage.setItem(storageKey, nextLayout);
+                } catch (e) {
+                    // Persistence is progressive enhancement, not a requirement.
+                }
+            }
+
+            grid.dispatchEvent(new CustomEvent("librarylayoutchange", {
+                detail: { layout: nextLayout }
+            }));
+        }
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", () => {
+                applyLayout(button.getAttribute("data-library-layout") || "gallery");
+            });
+        });
+
+        applyLayout(initialLayout, false);
+    }
+    initLibraryLayouts();
+
+    // -------------------------------------------------------------------------
     // Interactive Card Spotlight Hover Tracker
     // -------------------------------------------------------------------------
     function initCardSpotlights() {
@@ -538,10 +594,22 @@ document.addEventListener("DOMContentLoaded", () => {
             if (card._hasSpotlight) return;
             card._hasSpotlight = true;
 
-            card.addEventListener("mousemove", (e) => {
+            // ⚡ Bolt Optimization: Cache absolute document position on hover entry
+            // to prevent calling getBoundingClientRect() on every mousemove frame,
+            // eliminating synchronous layout thrashing in the rendering pipeline.
+            let cachedLeft = 0;
+            let cachedTop = 0;
+
+            card.addEventListener("pointerenter", () => {
                 const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                cachedLeft = rect.left + window.scrollX;
+                cachedTop = rect.top + window.scrollY;
+            }, { passive: true });
+
+            card.addEventListener("mousemove", (e) => {
+                // Compute relative coordinates using pageX/pageY and cached absolute position
+                const x = e.pageX - cachedLeft;
+                const y = e.pageY - cachedTop;
                 card.style.setProperty("--mouse-x", x + "px");
                 card.style.setProperty("--mouse-y", y + "px");
             });
@@ -2213,7 +2281,8 @@ Sent via Dimension of Thought Platform`;
                 narrative: "Culture & Narrative Ethics",
                 reflections: "Life Reflections & Evowth",
                 systems: "Systems Architecture & OntoMath",
-                robotics: "Robotics & Spatial AI"
+                robotics: "Robotics & Spatial AI",
+                ai: "AI & Model Behavior"
             };
 
             const cleanText = body.replace(/<[^>]*>/g, " ").trim();
@@ -2227,7 +2296,7 @@ Sent via Dimension of Thought Platform`;
             prevTag.setAttribute("data-category", category);
             prevAuthor.textContent = author;
             prevMetaTime.textContent = `Today · ${readTimeStr}`;
-            prevProseBody.innerHTML = parseMarkdown(body);
+            prevProseBody.innerHTML = typeof DOMPurify !== "undefined" ? DOMPurify.sanitize(parseMarkdown(body)) : escapeHtml(parseMarkdown(body));
 
             if (wordCountEl) wordCountEl.textContent = `${words.toLocaleString()} words`;
             if (readTimeEl) readTimeEl.textContent = readTimeStr;
@@ -2663,7 +2732,8 @@ Sent via Dimension of Thought Platform`;
                 narrative: "Culture & Narrative Ethics",
                 reflections: "Life Reflections & Evowth",
                 systems: "Systems Architecture & OntoMath",
-                robotics: "Robotics & Spatial AI"
+                robotics: "Robotics & Spatial AI",
+                ai: "AI & Model Behavior"
             };
             const catLabel = catLabels[draft.category] || "Inquiry";
             const dateStr = draft.date || new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -3000,6 +3070,8 @@ ${currentDraft.content}`;
             reflections: "#4ade80",
             systems: "#38bdf8",
             robotics: "#facc15",
+            ai: "#60a5fa",
+            series: "#fb7185",
             concept: "#e2e8f0"
         };
 
@@ -3009,6 +3081,8 @@ ${currentDraft.content}`;
             reflections: "Life Reflections & Evowth",
             systems: "Systems Architecture & OntoMath",
             robotics: "Robotics & Spatial AI",
+            ai: "AI & Model Behavior",
+            series: "Writing Series",
             concept: "Ontological Concept"
         };
 
@@ -3060,6 +3134,7 @@ ${currentDraft.content}`;
             photonParticles = [];
 
             const categoryHubs = {};
+            const seriesHubs = {};
             const conceptHubs = {};
             const cards = document.querySelectorAll(".essay-card");
 
@@ -3079,6 +3154,8 @@ ${currentDraft.content}`;
                 const excerpt = (card.querySelector(".essay-excerpt") || {}).textContent || "";
                 const readTime = (card.querySelector(".essay-read-time") || {}).textContent || "6 min read";
                 const author = (card.querySelector(".essay-author") || {}).textContent || "By Zachary Zhang";
+                const series = (card.getAttribute("data-series") || "").trim();
+                const seriesLabel = (card.getAttribute("data-series-label") || series).trim();
 
                 // Extract concepts
                 let concepts = [];
@@ -3102,6 +3179,8 @@ ${currentDraft.content}`;
                     author: author,
                     url: url,
                     category: category,
+                    series: series,
+                    seriesLabel: seriesLabel,
                     concepts: concepts,
                     color: colorMap[category] || "#6ee7d8",
                     radius: 8.5,
@@ -3163,7 +3242,56 @@ ${currentDraft.content}`;
                     color: colorMap[category] || "#d8b46e"
                 });
 
-                // 2. Create concept diamond stars and relational edges
+                // 2. Create a reusable writing-series hub and connect member pieces.
+                if (series) {
+                    if (!seriesHubs[series]) {
+                        const seriesCount = Object.keys(seriesHubs).length;
+                        const seriesAngle = -Math.PI / 2 + seriesCount * (Math.PI / 3);
+                        const seriesDist = 150;
+                        const seriesNode = {
+                            id: "series_" + series.replace(/[^a-z0-9_-]/gi, "-").toLowerCase(),
+                            isHub: true,
+                            isSeries: true,
+                            isConcept: false,
+                            title: seriesLabel || series,
+                            subtitle: "Writing Series",
+                            excerpt: `A connected sequence of writing pieces in the ${seriesLabel || series} series.`,
+                            readTime: "Series hub",
+                            author: "By Zachary Zhang",
+                            url: null,
+                            category: category,
+                            series: series,
+                            seriesLabel: seriesLabel || series,
+                            concepts: [],
+                            color: colorMap.series,
+                            radius: 11.5,
+                            x: center.x + Math.cos(seriesAngle) * seriesDist,
+                            y: center.y + Math.sin(seriesAngle) * seriesDist,
+                            targetX: center.x + Math.cos(seriesAngle) * seriesDist,
+                            targetY: center.y + Math.sin(seriesAngle) * seriesDist,
+                            vx: 0,
+                            vy: 0,
+                            orbitAngle: seriesAngle,
+                            orbitRadius: seriesDist,
+                            orbitSpeed: 0.0012,
+                            orbitOffset: Math.random() * Math.PI * 2,
+                            twinkleOffset: Math.random() * Math.PI * 2,
+                            pulsePhase: Math.random() * Math.PI * 2
+                        };
+                        seriesHubs[series] = seriesNode;
+                        nodes.push(seriesNode);
+                    }
+
+                    edges.push({
+                        source: node,
+                        target: seriesHubs[series],
+                        isConceptEdge: false,
+                        isSeriesEdge: true,
+                        color: colorMap.series
+                    });
+                }
+
+                // 3. Create concept diamond stars and relational edges
                 concepts.forEach((concept, cIdx) => {
                     if (!conceptHubs[concept]) {
                         const conceptAngle = Math.random() * Math.PI * 2;
@@ -3206,7 +3334,7 @@ ${currentDraft.content}`;
                 });
             });
 
-            // 3. Initialize Photon Pulse Packets along edges
+            // 4. Initialize Photon Pulse Packets along edges
             for (let i = 0; i < edges.length * 2; i++) {
                 const edge = edges[i % edges.length];
                 photonParticles.push({
@@ -3231,7 +3359,7 @@ ${currentDraft.content}`;
 
             // Update stats readout
             const essayCount = cards.length;
-            const hubCount = Object.keys(categoryHubs).length;
+            const hubCount = Object.keys(categoryHubs).length + Object.keys(seriesHubs).length;
             const conceptCount = Object.keys(conceptHubs).length;
             const synapseCount = edges.length;
 
@@ -3257,37 +3385,23 @@ ${currentDraft.content}`;
             ctx.closePath();
         }
 
-        function draw() {
-            const width = canvas.width / (window.devicePixelRatio || 1);
-            const height = canvas.height / (window.devicePixelRatio || 1);
+        function drawNebulae(ctx, width, height) {
+            if (!enableNebulae) return;
+            nebulae.forEach(n => {
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 50 || n.x > width - 50) n.vx *= -1;
+                if (n.y < 50 || n.y > height - 50) n.vy *= -1;
 
-            ctx.clearRect(0, 0, width, height);
+                const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+                grad.addColorStop(0, n.color);
+                grad.addColorStop(1, "transparent");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+            });
+        }
 
-            // Apply camera pan & zoom
-            ctx.save();
-            ctx.translate(width / 2 + camera.x, height / 2 + camera.y);
-            ctx.scale(camera.zoom, camera.zoom);
-            ctx.translate(-width / 2, -height / 2);
-
-            const time = Date.now() * 0.001;
-
-            // 1. Render Cosmic Nebulae
-            if (enableNebulae) {
-                nebulae.forEach(n => {
-                    n.x += n.vx;
-                    n.y += n.vy;
-                    if (n.x < 50 || n.x > width - 50) n.vx *= -1;
-                    if (n.y < 50 || n.y > height - 50) n.vy *= -1;
-
-                    const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-                    grad.addColorStop(0, n.color);
-                    grad.addColorStop(1, "transparent");
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0, 0, width, height);
-                });
-            }
-
-            // 2. Render Twinkling Background Micro-Stars
+        function drawBackgroundMicroStars(ctx, time) {
             bgMicroStars.forEach(s => {
                 const twinkle = Math.sin(time * s.twinkleSpeed * 50 + s.twinkleOffset) * 0.5 + 0.5;
                 ctx.fillStyle = `rgba(247, 243, 235, ${0.1 + twinkle * 0.4})`;
@@ -3295,8 +3409,9 @@ ${currentDraft.content}`;
                 ctx.arc(s.x, s.y, s.r * (0.8 + twinkle * 0.4), 0, Math.PI * 2);
                 ctx.fill();
             });
+        }
 
-            // 3. Render Synapse Edges
+        function drawSynapseEdges(ctx, time) {
             edges.forEach(edge => {
                 const a = edge.source;
                 const b = edge.target;
@@ -3330,10 +3445,16 @@ ${currentDraft.content}`;
                     ctx.shadowBlur = 8;
                     ctx.shadowColor = a.color;
                 } else {
-                    ctx.lineWidth = edge.isConceptEdge ? 0.9 : 1.2;
-                    ctx.strokeStyle = edge.isConceptEdge
-                        ? `rgba(148, 163, 184, ${alpha * 0.35})`
-                        : `rgba(216, 180, 110, ${alpha * 0.45})`;
+                    if (edge.isSeriesEdge) {
+                        ctx.lineWidth = 1.4;
+                        ctx.strokeStyle = `rgba(251, 113, 133, ${alpha * 0.62})`;
+                        ctx.setLineDash([5, 4]);
+                    } else {
+                        ctx.lineWidth = edge.isConceptEdge ? 0.9 : 1.2;
+                        ctx.strokeStyle = edge.isConceptEdge
+                            ? `rgba(148, 163, 184, ${alpha * 0.35})`
+                            : `rgba(216, 180, 110, ${alpha * 0.45})`;
+                    }
                 }
 
                 // Curved bezier synapse
@@ -3344,44 +3465,46 @@ ${currentDraft.content}`;
                 ctx.moveTo(a.x, a.y);
                 ctx.quadraticCurveTo(cx, cy, b.x, b.y);
                 ctx.stroke();
+                ctx.setLineDash([]);
                 ctx.restore();
 
                 // Save curve control point for particles
                 edge.lastCx = cx;
                 edge.lastCy = cy;
             });
+        }
 
-            // 4. Render Photon Pulse Particles
-            if (enableParticles) {
-                photonParticles.forEach(p => {
-                    const edge = p.edge;
-                    if (!edge || !edge.lastCx) return;
-                    const a = edge.source;
-                    const b = edge.target;
+        function drawPhotonPulseParticles(ctx) {
+            if (!enableParticles) return;
+            photonParticles.forEach(p => {
+                const edge = p.edge;
+                if (!edge || !edge.lastCx) return;
+                const a = edge.source;
+                const b = edge.target;
 
-                    if (!matchesActiveFilter(a) || !matchesActiveFilter(b)) return;
-                    if (isolatedNode && a !== isolatedNode && b !== isolatedNode) return;
+                if (!matchesActiveFilter(a) || !matchesActiveFilter(b)) return;
+                if (isolatedNode && a !== isolatedNode && b !== isolatedNode) return;
 
-                    p.progress += p.speed;
-                    if (p.progress >= 1.0) p.progress = 0;
+                p.progress += p.speed;
+                if (p.progress >= 1.0) p.progress = 0;
 
-                    const t = p.forward ? p.progress : 1 - p.progress;
-                    // Quadratic Bezier Interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
-                    const inv = 1 - t;
-                    const px = inv * inv * a.x + 2 * inv * t * edge.lastCx + t * t * b.x;
-                    const py = inv * inv * a.y + 2 * inv * t * edge.lastCy + t * t * b.y;
+                const t = p.forward ? p.progress : 1 - p.progress;
+                // Quadratic Bezier Interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+                const inv = 1 - t;
+                const px = inv * inv * a.x + 2 * inv * t * edge.lastCx + t * t * b.x;
+                const py = inv * inv * a.y + 2 * inv * t * edge.lastCy + t * t * b.y;
 
-                    ctx.fillStyle = p.color;
-                    ctx.shadowBlur = 6;
-                    ctx.shadowColor = p.color;
-                    ctx.beginPath();
-                    ctx.arc(px, py, p.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                });
-            }
+                ctx.fillStyle = p.color;
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = p.color;
+                ctx.beginPath();
+                ctx.arc(px, py, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+        }
 
-            // 5. Render Constellation Nodes (Hubs, Articles, Concepts)
+        function drawConstellationNodes(ctx, time) {
             nodes.forEach(node => {
                 const isFiltered = matchesActiveFilter(node);
                 const isSearched = matchesSearch(node);
@@ -3442,6 +3565,16 @@ ${currentDraft.content}`;
                         ctx.strokeStyle = "#fff";
                         ctx.lineWidth = 2;
                         ctx.stroke();
+
+                        if (node.isSeries) {
+                            ctx.setLineDash([3, 3]);
+                            ctx.lineWidth = 1.2;
+                            ctx.beginPath();
+                            ctx.arc(node.x, node.y, currentRadius + 5, 0, Math.PI * 2);
+                            ctx.strokeStyle = colorMap.series;
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
                     }
                 }
                 ctx.shadowBlur = 0;
@@ -3461,6 +3594,36 @@ ${currentDraft.content}`;
 
                 ctx.restore();
             });
+        }
+
+        function draw() {
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Apply camera pan & zoom
+            ctx.save();
+            ctx.translate(width / 2 + camera.x, height / 2 + camera.y);
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-width / 2, -height / 2);
+
+            const time = Date.now() * 0.001;
+
+            // 1. Render Cosmic Nebulae
+            drawNebulae(ctx, width, height);
+
+            // 2. Render Twinkling Background Micro-Stars
+            drawBackgroundMicroStars(ctx, time);
+
+            // 3. Render Synapse Edges
+            drawSynapseEdges(ctx, time);
+
+            // 4. Render Photon Pulse Particles
+            drawPhotonPulseParticles(ctx);
+
+            // 5. Render Constellation Nodes (Hubs, Articles, Concepts)
+            drawConstellationNodes(ctx, time);
 
             ctx.restore(); // Restore camera transform
         }
@@ -3480,6 +3643,7 @@ ${currentDraft.content}`;
             if (!searchQuery) return false;
             return node.title.toLowerCase().includes(searchQuery) ||
                    node.subtitle.toLowerCase().includes(searchQuery) ||
+                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
                    (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
         }
 
@@ -3511,7 +3675,7 @@ ${currentDraft.content}`;
                     const dy = edge.target.y - edge.source.y;
                     // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
                     const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                    const targetDist = edge.isConceptEdge ? 130 : 160;
+                    const targetDist = edge.isSeriesEdge ? 115 : (edge.isConceptEdge ? 130 : 160);
                     const force = (dist - targetDist) * k;
                     const fx = (dx / dist) * force;
                     const fy = (dy / dist) * force;
@@ -3704,7 +3868,7 @@ ${currentDraft.content}`;
                 tooltip.style.top = (pos.canvasY - 15) + "px";
                 tooltip.innerHTML = `
                     <div style="font-size:0.72rem;color:${escapeAttribute(hoveredNode.color)};text-transform:uppercase;font-weight:600;margin-bottom:2px;">
-                        ${escapeHtml(catNames[hoveredNode.category] || hoveredNode.category)}
+                        ${escapeHtml(hoveredNode.isSeries ? catNames.series : (catNames[hoveredNode.category] || hoveredNode.category))}
                     </div>
                     <strong style="color:var(--gold);font-size:0.95rem;">${escapeHtml(hoveredNode.title)}</strong>
                     ${hoveredNode.subtitle ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:2px;">${escapeHtml(hoveredNode.subtitle)}</div>` : ""}
@@ -3801,7 +3965,7 @@ ${currentDraft.content}`;
             const focusBtn = document.getElementById("inspector-focus-btn");
 
             if (catTag) {
-                catTag.textContent = catNames[node.category] || node.category;
+                catTag.textContent = node.isSeries ? catNames.series : (catNames[node.category] || node.category);
                 catTag.style.color = node.color;
                 catTag.style.borderColor = node.color;
             }
@@ -3856,27 +4020,40 @@ ${currentDraft.content}`;
             });
         }
 
-        // Toggle Grid vs. Constellation View
+        // Toggle Library layouts vs. Constellation View
+        function showLibraryLayouts() {
+            isGraphView = false;
+            toggleBtn.textContent = "🌌 Constellation View";
+            toggleBtn.style.color = "var(--teal)";
+            toggleBtn.style.borderColor = "var(--teal)";
+            toggleBtn.setAttribute("aria-pressed", "false");
+            gridContainer.style.display = "grid";
+            graphContainer.style.display = "none";
+            if (inspectorCard) inspectorCard.setAttribute("hidden", "");
+            if (animationId) cancelAnimationFrame(animationId);
+        }
+
         toggleBtn.addEventListener("click", () => {
             isGraphView = !isGraphView;
             if (isGraphView) {
-                toggleBtn.textContent = "📑 Grid View";
+                toggleBtn.textContent = "📚 Library View";
                 toggleBtn.style.color = "var(--ink)";
                 toggleBtn.style.borderColor = "var(--line)";
+                toggleBtn.setAttribute("aria-pressed", "true");
                 gridContainer.style.display = "none";
                 graphContainer.style.display = "flex";
                 resizeCanvas();
                 initGraphData();
                 loop();
             } else {
-                toggleBtn.textContent = "🌌 Constellation View";
-                toggleBtn.style.color = "var(--teal)";
-                toggleBtn.style.borderColor = "var(--teal)";
-                gridContainer.style.display = "grid";
-                graphContainer.style.display = "none";
-                if (inspectorCard) inspectorCard.setAttribute("hidden", "");
-                cancelAnimationFrame(animationId);
+                showLibraryLayouts();
             }
+        });
+
+        // Choosing Gallery / Journal / Shelf / Mosaic always returns from the
+        // cosmic graph to the readable archive, so the switcher never feels inert.
+        gridContainer.addEventListener("librarylayoutchange", () => {
+            if (isGraphView) showLibraryLayouts();
         });
 
         // ---------------------------------------------------------------------
@@ -4425,8 +4602,11 @@ ${currentDraft.content}`;
                         animId = requestAnimationFrame(draw);
                     }
 
+                    let cachedSATRect = null;
+
                     function onPointerDown(e) {
-                        const rect = canvas.getBoundingClientRect();
+                        cachedSATRect = canvas.getBoundingClientRect();
+                        const rect = cachedSATRect;
                         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                         const x = (clientX - rect.left) * (canvas.width / rect.width);
@@ -4444,7 +4624,8 @@ ${currentDraft.content}`;
 
                     function onPointerMove(e) {
                         if (!isDragging) return;
-                        const rect = canvas.getBoundingClientRect();
+                        // ⚡ Bolt Optimization: Cache bounding client rect on pointer down to prevent layout thrashing during high-frequency pointermove events
+                        const rect = cachedSATRect || canvas.getBoundingClientRect();
                         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                         posA.x = (clientX - rect.left) * (canvas.width / rect.width) - dragOffset.x;
@@ -5359,13 +5540,21 @@ class VesselEngine {
                 }
                 const row = document.createElement("div");
                 row.className = `palette-item ${idx === selectedIdx ? "active" : ""}`;
-                row.innerHTML = `
-                    <div class="palette-item-left">
-                        <span class="palette-item-icon">${item.icon}</span>
-                        <span class="palette-item-text">${item.title}</span>
-                    </div>
-                    <span class="palette-item-desc">${item.desc}</span>
-                `;
+                const leftDiv = document.createElement("div");
+                leftDiv.className = "palette-item-left";
+                const iconSpan = document.createElement("span");
+                iconSpan.className = "palette-item-icon";
+                iconSpan.textContent = item.icon;
+                const textSpan = document.createElement("span");
+                textSpan.className = "palette-item-text";
+                textSpan.textContent = item.title;
+                leftDiv.appendChild(iconSpan);
+                leftDiv.appendChild(textSpan);
+                const descSpan = document.createElement("span");
+                descSpan.className = "palette-item-desc";
+                descSpan.textContent = item.desc;
+                row.appendChild(leftDiv);
+                row.appendChild(descSpan);
                 row.addEventListener("click", () => {
                     closePalette();
                     item.action();
@@ -6309,18 +6498,36 @@ class VesselEngine {
         let nextX = 50;
         let nextY = 50;
 
+        // ⚡ Bolt Optimization: Cache absolute document position on hover entry
+        // to prevent calling getBoundingClientRect() on every pointermove frame,
+        // eliminating synchronous layout thrashing in the rendering pipeline.
+        let cachedLeft = 0;
+        let cachedTop = 0;
+        let cachedWidth = 0;
+        let cachedHeight = 0;
+
         const paint = () => {
             frame = 0;
             card.style.setProperty("--fx-x", nextX.toFixed(2) + "%");
             card.style.setProperty("--fx-y", nextY.toFixed(2) + "%");
         };
 
-        card.addEventListener("pointermove", (event) => {
+        card.addEventListener("pointerenter", () => {
             const rect = card.getBoundingClientRect();
-            if (!rect.width || !rect.height) return;
+            cachedLeft = rect.left + window.scrollX;
+            cachedTop = rect.top + window.scrollY;
+            cachedWidth = rect.width;
+            cachedHeight = rect.height;
+        }, { passive: true });
 
-            nextX = ((event.clientX - rect.left) / rect.width) * 100;
-            nextY = ((event.clientY - rect.top) / rect.height) * 100;
+        card.addEventListener("pointermove", (event) => {
+            if (!cachedWidth || !cachedHeight) return;
+
+            const relativeX = event.pageX - cachedLeft;
+            const relativeY = event.pageY - cachedTop;
+
+            nextX = (relativeX / cachedWidth) * 100;
+            nextY = (relativeY / cachedHeight) * 100;
 
             if (!frame) frame = requestAnimationFrame(paint);
         }, { passive: true });

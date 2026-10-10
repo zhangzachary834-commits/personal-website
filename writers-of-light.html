@@ -2,6 +2,8 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Writers of Light — Dimension of Thought</title>
     <meta name="description" content="Writers of Light is a free collaborative writing sanctuary for helping people give faithful words to letters, stories, essays, testimony, and thoughts that are hard to articulate.">
@@ -295,6 +297,7 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="script.js"></script>
     <script src="writers-of-light.js"></script>
 </body>

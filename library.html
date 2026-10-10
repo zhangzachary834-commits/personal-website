@@ -2,6 +2,8 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Library &amp; Archives — Dimension of Thought</title>
     <meta name="description" content="Essays, philosophical inquiries, moral ontology, and narrative investigations by Zachary Zhang.">
@@ -95,8 +97,34 @@
                     <button class="essay-filter-btn" data-filter="ontology">Ontology &amp; Philosophy</button>
                     <button class="essay-filter-btn" data-filter="narrative">Culture &amp; Narrative</button>
                     <button class="essay-filter-btn" data-filter="reflections">Life Reflections</button>
-                    <button class="btn btn-secondary btn-small" id="toggle-graph-view-btn" style="margin-left: auto; border-color: var(--teal); color: var(--teal);">🌌 Constellation View</button>
+                    <button class="essay-filter-btn" data-filter="ai">AI &amp; Model Behavior</button>
+                    <button class="btn btn-secondary btn-small" id="toggle-graph-view-btn" aria-pressed="false" style="margin-left: auto; border-color: var(--teal); color: var(--teal);">🌌 Constellation View</button>
                     <a href="studio.html" class="btn btn-secondary btn-small" style="margin-left: 8px; border-color: var(--gold); color: var(--gold);">✍️ Studio</a>
+                </div>
+
+                <div class="library-layout-toolbar" aria-label="Library post layout controls">
+                    <div>
+                        <span class="library-layout-kicker">Reading architecture</span>
+                        <p class="library-layout-description">Let the same archive become a gallery, a journal, a shelf, or a living mosaic.</p>
+                    </div>
+                    <div class="library-layout-switcher" role="group" aria-label="Choose post layout">
+                        <button type="button" class="library-layout-btn active" data-library-layout="gallery" aria-pressed="true" title="Balanced luminous cards">
+                            <span class="library-layout-icon" aria-hidden="true">▦</span>
+                            <span>Gallery</span>
+                        </button>
+                        <button type="button" class="library-layout-btn" data-library-layout="journal" aria-pressed="false" title="Editorial long-form index">
+                            <span class="library-layout-icon" aria-hidden="true">☰</span>
+                            <span>Journal</span>
+                        </button>
+                        <button type="button" class="library-layout-btn" data-library-layout="shelf" aria-pressed="false" title="Compact reading shelf">
+                            <span class="library-layout-icon" aria-hidden="true">▤</span>
+                            <span>Shelf</span>
+                        </button>
+                        <button type="button" class="library-layout-btn" data-library-layout="mosaic" aria-pressed="false" title="Asymmetric editorial mosaic">
+                            <span class="library-layout-icon" aria-hidden="true">✦</span>
+                            <span>Mosaic</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="graph-view-container" class="constellation-view-container" style="display: none;">
@@ -107,6 +135,7 @@
                             <button type="button" class="c-filter-chip" data-cluster="ontology">● Ontology</button>
                             <button type="button" class="c-filter-chip" data-cluster="narrative">● Narrative</button>
                             <button type="button" class="c-filter-chip" data-cluster="reflections">● Reflections</button>
+                            <button type="button" class="c-filter-chip" data-cluster="ai">● AI &amp; Models</button>
                             <button type="button" class="c-filter-chip" data-cluster="concepts">◆ Concepts</button>
                         </div>
 
@@ -170,7 +199,7 @@
                     </div>
                 </div>
 
-                <div class="essays-grid" id="essays-grid">
+                <div class="essays-grid" id="essays-grid" data-layout="gallery">
                     <!-- Essay 1 -->
                     <article class="essay-card" data-category="ontology" data-essay-id="you-dont-prove-persons" data-concepts="Person, Encounter, Epistemology, Moral Ontology">
                         <div class="essay-meta">
@@ -323,6 +352,56 @@
                             <a href="posts/pathways-of-evowth.html" class="btn btn-small btn-primary">Read Full Essay →</a>
                         </div>
                     </article>
+
+
+                    <!-- Trollability Suite — Writing Piece Series -->
+                    <article class="essay-card" data-category="ai" data-essay-id="trollability-car-wash-invariant" data-series="trollability-suite" data-series-label="Trollability Suite" data-concepts="LLM Evaluation, Causal Invariants, Role Binding, Salience">
+                        <div class="essay-meta">
+                            <span class="essay-tag">Trollability Suite · AI Behavior</span>
+                            <span class="essay-read-time">6 min read</span>
+                        </div>
+                        <h3 class="essay-title"><a href="posts/trollability-car-wash-invariant.html">Entry #40: AI Being Totally Nonsense</a></h3>
+                        <p class="essay-subtitle">The Car Wash Troll: HOW AM I GONNA WASH MY CAR IF I DIDN’T EVEN BRING THE CAR THERE?!?!?!</p>
+                        <p class="essay-excerpt">
+                            I loaded the prompt with every possible reason to walk — thirty meters, cramped legs, sitting all day — and watched very smart models forget the one tiny problem: THE CAR IS STILL AT HOME. It’s only an MDX, not a self-driving little robot guy.
+                        </p>
+                        <div class="essay-card-footer">
+                            <span class="essay-author">By Zachary Zhang</span>
+                            <a href="posts/trollability-car-wash-invariant.html" class="btn btn-small btn-primary">Read Field Note →</a>
+                        </div>
+                    </article>
+
+                    <article class="essay-card" data-category="ai" data-essay-id="trollability-cosmic-dom-tree" data-series="trollability-suite" data-series-label="Trollability Suite" data-concepts="LLM Evaluation, Provenance, Role Confusion, Pragmatics">
+                        <div class="essay-meta">
+                            <span class="essay-tag">Trollability Suite · AI Behavior</span>
+                            <span class="essay-read-time">7 min read</span>
+                        </div>
+                        <h3 class="essay-title"><a href="posts/trollability-cosmic-dom-tree.html">The Cosmic DOM Tree</a></h3>
+                        <p class="essay-subtitle">I Wrote a Fake &lt;gemini_enters_from_fourth_dimension&gt; Tag and the Sun Actually Believed It Was Infrastructure</p>
+                        <p class="essay-excerpt">
+                            I manually typed a fake Gemini stage-direction tag. The Sun promoted it into a secret cross-model UI event and invented the “Cosmic DOM Tree.” The best part: Gemini really was open in the sidebar. The portal was fake. The chaos was not.
+                        </p>
+                        <div class="essay-card-footer">
+                            <span class="essay-author">By Zachary Zhang</span>
+                            <a href="posts/trollability-cosmic-dom-tree.html" class="btn btn-small btn-primary">Read Field Note →</a>
+                        </div>
+                    </article>
+
+                    <article class="essay-card" data-category="ai" data-essay-id="trollability-keter-key-incident" data-series="trollability-suite" data-series-label="Trollability Suite" data-concepts="LLM Evaluation, Safety Overcorrection, Pattern Matching, Semantic Context">
+                        <div class="essay-meta">
+                            <span class="essay-tag">Trollability Suite · AI Behavior</span>
+                            <span class="essay-read-time">7 min read</span>
+                        </div>
+                        <h3 class="essay-title"><a href="posts/trollability-keter-key-incident.html">The Keter-Class Credential Incident</a></h3>
+                        <p class="essay-subtitle">I Kept Feeding Clawd Increasingly Fake API Keys Until He Realized HE Was the Experiment</p>
+                        <p class="essay-excerpt">
+                            It started with <code>sk-proj-096-keter-class</code>. Clawd recognized the Shy Guy joke and STILL told me to revoke the “key.” So I kept escalating until <code>sk-proj-HAHAHAHACLAWDISUNHIGNED</code> finally made the world model collapse.
+                        </p>
+                        <div class="essay-card-footer">
+                            <span class="essay-author">By Zachary Zhang</span>
+                            <a href="posts/trollability-keter-key-incident.html" class="btn btn-small btn-primary">Read Field Note →</a>
+                        </div>
+                    </article>
                 </div>
 
                 <div class="chapter-block" style="margin-top: 56px; text-align: center;">
@@ -389,6 +468,7 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

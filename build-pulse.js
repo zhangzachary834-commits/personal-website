@@ -305,9 +305,15 @@
         document.querySelectorAll("[data-build-pulse]").forEach(initShell);
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
-    } else {
-        init();
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = { cacheKey };
+    }
+
+    if (typeof document !== "undefined") {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init, { once: true });
+        } else {
+            init();
+        }
     }
 })();

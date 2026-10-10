@@ -16,3 +16,17 @@
 ## 2026-11-20 - Cache Edge Adjacency for O(1) Graph Traversal
 **Learning:** Checking neighbor status in a hot path with `Array.prototype.some` across all edges (`edges.some(e => ...`) executes O(E) operations, creating a severe bottleneck during graph updates or rendering. Building a neighbor `Set` per node achieves O(1) checks.
 **Action:** Replace dynamic array scanning with pre-computed `Set` caches (e.g. `node.neighbors.has(target)`) to verify graph adjacency in constant time. Always maintain adjacency sets alongside edge arrays when creating or removing connections.
+## 2026-11-21 - Card Spotlight Hover Event Layout Thrashing
+**Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` causes severe layout thrashing (synchronous layout calculation) which drags down rendering performance.
+**Action:** When calculating relative coordinates for visual effects, hook into a lower-frequency event like `pointerenter` (or `mouseenter`) to cache the absolute element offset (`rect.left + window.scrollX`), and use `e.pageX/pageY` minus the cached offset in the `mousemove` handler.
+## 2026-11-22 - Layout Thrashing in Interactive Canvas Elements
+**Learning:** Calling `getBoundingClientRect()` within a high-frequency event like `mousemove` (or `touchmove`) during a drag interaction causes severe layout thrashing (synchronous layout calculation), harming rendering performance. Since the canvas is static while dragging, this is an unnecessary overhead.
+**Action:** When calculating relative coordinates for drag operations inside interactive elements, cache the canvas bounding rect in `pointerdown` and reuse it in `pointermove` to eliminate synchronous layout calculations during high-frequency events.
+
+## 2024-06-25 - Regex over String Split in Hot Loops
+**Learning:** In high-frequency filtering loops (e.g. iterating over 1000s of items on click), allocating an array via `str.split(/\s+/)` and testing with `.includes()` for every item creates massive GC churn and overhead. Using a pre-compiled regular expression boundary match `(?:^|\s)word(?:\s|$)` with `.test()` is roughly 4-5x faster.
+**Action:** When searching for an exact token in a space-separated string attribute, hoist a pre-compiled RegExp outside the loop instead of splitting the string into an array inside the loop.
+
+## 2024-10-08 - Layout Thrashing Cache Needs Viewport Invalidation
+**Learning:** When caching `getBoundingClientRect()` over multiple frames (e.g., during pointer hover for a custom cursor), the cached `rect` holds coordinates relative to the viewport. If the page is scrolled or resized, the element shifts relative to the viewport, making the cache instantly stale and breaking coordinate mapping (like cursor position). The previous card optimization worked without this because the hover state was confined to a small static card and cleared frequently, while a full screen stage scroll breaks the assumption entirely.
+**Action:** Always bind `scroll` and `resize` event listeners to the `window` to invalidate viewport-relative caches when optimizing high-frequency layout reads like `getBoundingClientRect()` that persist over long intervals.

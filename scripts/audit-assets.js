@@ -1,24 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { walk } = require('./utils');
 
 const root = path.resolve(__dirname, '..');
 const assetsDir = path.join(root, 'assets');
 const ignoredDirs = new Set(['.git', 'node_modules', 'assets']);
 const textExtensions = new Set(['.html', '.css', '.js', '.md', '.json', '.xml', '.txt', '.yml', '.yaml']);
 
-function walk(dir) {
-  const out = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (ignoredDirs.has(entry.name)) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walk(full));
-    else out.push(full);
-  }
-  return out;
-}
-
-const sourceFiles = walk(root).filter(file => textExtensions.has(path.extname(file).toLowerCase()));
+const sourceFiles = walk(root, ignoredDirs).filter(file => textExtensions.has(path.extname(file).toLowerCase()));
 const sourceText = sourceFiles.map(file => fs.readFileSync(file, 'utf8')).join('\n');
 const assets = fs.readdirSync(assetsDir, { withFileTypes: true })
   .filter(entry => entry.isFile())

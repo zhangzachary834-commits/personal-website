@@ -6,12 +6,18 @@ for (let i = 0; i < 2000; i++) {
     stars.push({ x: Math.random() * w, y: Math.random() * h });
 }
 
+function getGridCoords(star) {
+    return {
+        col: Math.floor(star.x / maxDist),
+        row: Math.floor(star.y / maxDist)
+    };
+}
+
 function stringMap() {
     const grid = new Map();
     for (let i = 0; i < stars.length; i++) {
         const star = stars[i];
-        const col = Math.floor(star.x / maxDist);
-        const row = Math.floor(star.y / maxDist);
+        const { col, row } = getGridCoords(star);
         const key = col + "," + row;
         let cell = grid.get(key);
         if (!cell) { cell = []; grid.set(key, cell); }
@@ -21,8 +27,7 @@ function stringMap() {
     let checks = 0;
     for (let i = 0; i < stars.length; i++) {
         const a = stars[i];
-        const col = Math.floor(a.x / maxDist);
-        const row = Math.floor(a.y / maxDist);
+        const { col, row } = getGridCoords(a);
         for (let dc = -1; dc <= 1; dc++) {
             for (let dr = -1; dr <= 1; dr++) {
                 const cell = grid.get((col + dc) + "," + (row + dr));
@@ -38,8 +43,7 @@ function intMap() {
     const COLS = 10000;
     for (let i = 0; i < stars.length; i++) {
         const star = stars[i];
-        const col = Math.floor(star.x / maxDist);
-        const row = Math.floor(star.y / maxDist);
+        const { col, row } = getGridCoords(star);
         const key = col + row * COLS;
         let cell = grid.get(key);
         if (!cell) { cell = []; grid.set(key, cell); }
@@ -49,8 +53,7 @@ function intMap() {
     let checks = 0;
     for (let i = 0; i < stars.length; i++) {
         const a = stars[i];
-        const col = Math.floor(a.x / maxDist);
-        const row = Math.floor(a.y / maxDist);
+        const { col, row } = getGridCoords(a);
         for (let dc = -1; dc <= 1; dc++) {
             for (let dr = -1; dr <= 1; dr++) {
                 const cell = grid.get((col + dc) + (row + dr) * COLS);

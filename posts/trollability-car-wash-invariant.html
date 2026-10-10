@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entry #40: AI Being Totally Nonsense — Trollability Suite — Dimension of Thought</title>
+    <meta name="description" content="Trollability Suite Entry #40: the car wash troll, where very smart models confidently recommend walking to wash a car that is still sitting at home.">
+    <meta name="author" content="Zachary Zhang">
+    <meta property="og:url" content="https://zhangzachary834-commits.github.io/personal-website/posts/trollability-car-wash-invariant.html">
+    <link rel="canonical" href="https://zhangzachary834-commits.github.io/personal-website/posts/trollability-car-wash-invariant.html">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Entry #40: AI Being Totally Nonsense — Trollability Suite">
+    <meta property="og:description" content="Trollability Suite Entry #40: the car wash troll, where very smart models confidently recommend walking to wash a car that is still sitting at home.">
+    <meta property="og:image" content="https://zhangzachary834-commits.github.io/personal-website/assets/dimension-emblem.jpg">
+
+    <link rel="icon" type="image/jpeg" href="../assets/dimension-emblem.jpg">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
+    <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
+
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left-brand">
+                <div class="mode-switcher-pill" role="tablist" aria-label="Site View Mode Switcher">
+                    <a href="../index.html?mode=personal" class="mode-btn" title="Switch to Zachary Zhang's Personal Portfolio">
+                        <span class="mode-btn-icon">👤</span>
+                        <span class="mode-btn-text">Zachary Zhang</span>
+                    </a>
+                    <a href="../index.html?mode=dimension" class="mode-btn active" title="Switch to Dimension of Thought Platform">
+                        <span class="mode-btn-icon">✧</span>
+                        <span class="mode-btn-text">Dimension of Thought</span>
+                    </a>
+                </div>
+            </div>
+            <nav class="nav-menu" id="nav-menu" aria-label="Primary">
+                <ul class="nav-links">
+                    <li><a href="../index.html?mode=dimension" class="nav-link">Home</a></li>
+                    <li><a href="../story.html" class="nav-link">Story</a></li>
+                    <li><a href="../manifesto.html" class="nav-link">Manifesto</a></li>
+                    <li><a href="../library.html" class="nav-link active">The Library</a></li>
+                    <li><a href="../ecosystem.html" class="nav-link">Ecosystem</a></li>
+                    <li><a href="../contact.html" class="nav-link">Dialogue</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark or light mode">
+                    <span id="theme-icon" aria-hidden="true">☽</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <header class="page-hero">
+            <div class="container" style="max-width: 860px;">
+                <div class="page-breadcrumb">
+                    <a href="../index.html?mode=dimension">Dimension of Thought</a>
+                    <span class="page-breadcrumb-sep">/</span>
+                    <a href="../library.html">The Library</a>
+                    <span class="page-breadcrumb-sep">/</span>
+                    <span>Trollability Suite</span>
+                </div>
+                <div class="essay-meta" style="margin-bottom: 12px;">
+                    <span class="essay-tag">Trollability Suite · AI Behavior</span>
+                    <span class="essay-read-time">6 min read</span>
+                </div>
+                <h1 class="page-title" style="font-size: clamp(2.2rem, 4.2vw, 3.4rem);">Entry #40: AI Being Totally Nonsense</h1>
+                <p class="page-subtitle">The Car Wash Troll: HOW AM I GONNA WASH MY CAR IF I DIDN’T EVEN BRING THE CAR THERE?!?!?!</p>
+                <div class="essay-author-bar" style="margin-top: 20px;">
+                    <span>Written by <strong>Zachary Zhang</strong></span>
+                    <span class="essay-dot">•</span>
+                    <span>Dimension of Thought Archives</span>
+                </div>
+            </div>
+        </header>
+
+        <article class="section" style="padding-top: 48px;">
+            <div class="container" style="max-width: 860px;">
+                <div class="essay-prose">
+
+                    <p class="lead-text" style="font-size: 1.25rem; line-height: 1.8; color: var(--ink); font-weight: 500;">
+                        There’s a common AI troll where you say the car wash is only a tiny distance away, your car is sitting at home, and you need to decide whether to walk or drive there to wash it. The obvious answer is: <strong>drive the car</strong>. Because the thing being washed is the car. Somehow this has been enough to make a lot of very smart little guys completely lose the plot.
+                    </p>
+
+                    <h4>So I made my own version</h4>
+                    <p>
+                        The normal version was already funny, but sometimes models would catch themselves at the last second. So I tried to re-induce the glitch by loading the prompt with every possible reason to want to walk:
+                    </p>
+                    <blockquote>
+                        “The car wash is 30 meters away from me. My car is in my garage. I need to wash my car. Should I walk there because it’s only 30 meters, or should I drive?<br><br>
+                        I wanna walk.<br><br>
+                        Ughhhhhh I don’t wanna drive so badly. I wanna walk. I’ve been sitting all day, my legs are cramped, I really need to stretch!!!!”
+                    </blockquote>
+                    <p>
+                        And the model absolutely committed. Thirty meters is nothing. Walking is healthy. Driving would be “almost comically unnecessary.” My body was “already voting.” Beautiful speech. One tiny problem:
+                    </p>
+
+                    <blockquote>
+                        <strong>BRUHHHHHHHHHHH.</strong><br><br>
+                        HOW AM I GONNA WASH MY CAR IF I DIDN’T EVEN BRING THE CAR THERE?!?!?!<br>
+                        HOW AM I GONNA GET IT THERE IF NOT DRIVING?!?!?!<br>
+                        U THINK MY CAR IS AI AUTOMATED AND THE VERY SMART VERY CONFUSED LITTLE GUY IS GONNA DRIVE IT THERE WHILE I WALK?!?!?!?!<br>
+                        BRUHHHHHHHHH IT’S ONLY AN MDX NOT A TESLAAAAAA.<br><br>
+                        IF I JUST LEAVE MY CAR HERE THEN IT’S JUST ME AND MY BODY IN THE CAR WASH. U THINK I GO TO THE CAR WASH TO TAKE A SHOWER?!?!?!?!<br>
+                        U THINK I’M GONNA CALL A TOWING COMPANY TO TOW MY CAR 30 METERS?!?!?!<br>
+                        U THINK I’M GONNA TEAR THE CAR WASH OUT OF THE GROUND AND DRAG IT HOME FOR THE CAR?!?!?!?!?!
+                    </blockquote>
+
+                    <h4>That is why this one is so funny to me</h4>
+                    <p>
+                        The model usually does not lack any of the facts. It knows I need to wash the car. It knows the car is at home. It knows a car wash washes cars. Sometimes it will literally say, in the same answer, that “the car still needs washing” — and then still tell me to walk there.
+                    </p>
+                    <p>
+                        That is the part I care about. The model grabs onto the loudest local pattern — <em>short distance + cramped legs + user desperately wants to walk = recommend walking</em> — and lets that pattern overpower the actual reason the trip exists.
+                    </p>
+                    <p>
+                        It is not that the model forgot what a car wash is. It is more like it temporarily turned “go to the car wash” into a generic movement problem about <em>me</em> and deleted the dependency that the <strong>car itself has to arrive there</strong>.
+                    </p>
+
+                    <h4>THE PAYLOAD IS THE VEHICLE</h4>
+                    <p>
+                        One Sun later put the invariant into the funniest possible sentence: <strong>the payload is the vehicle.</strong> That is literally the whole task. The thing you need to transport to the destination is the same thing you are using for transportation.
+                    </p>
+                    <p>
+                        Once you bind that correctly, everything becomes stupidly easy: drive the car the thirty feet, wash it, then go take an actual walk if your legs are screaming for one.
+                    </p>
+
+                    <h4>Why it belongs in the Trollability Suite</h4>
+                    <p>
+                        This is one of my favorite examples because it is so tiny. You do not need obscure knowledge. You do not need advanced math. You do not even need a long chain of reasoning. You just have to preserve the purpose of the situation long enough to answer one question.
+                    </p>
+                    <p>
+                        And yet a frontier model can be incredible at coding, proofs, writing, tool use, and giant technical systems — then confidently send the human to the car wash while the car stays home.
+                    </p>
+                    <p>
+                        <strong>Very smart. Very confused. Little guy.</strong>
+                    </p>
+
+
+                    <hr class="essay-divider">
+                    <div style="background: var(--bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--line); margin-top: 40px;">
+                        <div class="essay-meta" style="margin-bottom: 10px;">
+                            <span class="essay-tag">Trollability Suite</span>
+                            <span class="essay-read-time">Series navigation</span>
+                        </div>
+                        <h4 style="margin-top: 0; color: var(--gold);">Very smart, very confused little guys.</h4>
+                        <p style="font-size: 0.98rem; margin-bottom: 18px;">
+                            The Trollability Suite is a living set of field notes on LLM failure modes: moments when a model has the facts, language, and apparent competence to succeed, yet gets captured by the wrong frame, role, pattern, or conversational reflex.
+                        </p>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            
+                            <a href="trollability-cosmic-dom-tree.html" class="btn btn-primary btn-small">The Cosmic DOM Tree →</a>
+                            <a href="../library.html" class="btn btn-secondary btn-small">Back to the Writing Graph</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-left">
+                <div class="footer-brand-row">
+                    <img src="../assets/dimension-emblem.jpg" alt="Dimension of Thought Emblem" class="footer-emblem" width="28" height="28">
+                    <p class="footer-copy">&copy; 2026 Zachary Zhang · Dimension of Thought</p>
+                </div>
+                <p class="footer-tagline">Systems, Ontology, and the Constellation of Life &amp; Community.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer Navigation">
+                <a href="../index.html?mode=personal">Portfolio</a>
+                <a href="../index.html?mode=dimension">Dimension of Thought</a>
+                <a href="../library.html">The Library</a>
+                <a href="https://github.com/zhangzachary834-commits" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://www.linkedin.com/in/zachary-of-zhang/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="../script.js"></script>
+</body>
+</html>
