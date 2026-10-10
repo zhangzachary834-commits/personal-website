@@ -451,6 +451,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     const matches = filter === "all" || category === filter;
                     card.style.display = matches ? "" : "none";
                 }
+
+                const grid = document.getElementById("essays-grid");
+                if (grid) {
+                    grid.dispatchEvent(new CustomEvent("libraryfilterchange", {
+                        detail: { filter }
+                    }));
+                }
             });
         });
     }
@@ -532,7 +539,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!grid || buttons.length === 0) return;
 
         const storageKey = "dimension_library_layout";
-        const validLayouts = new Set(["gallery", "journal", "shelf", "mosaic"]);
+        const validLayouts = new Set(["gallery", "journal", "shelf", "mosaic", "cathedral", "manuscript", "chronicle", "observatory", "star-scroll"]);
 
         let initialLayout = "gallery";
         try {
@@ -541,6 +548,50 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (e) {
             // Storage can be unavailable in hardened/private contexts; the UI still works.
         }
+
+        function visibleCards() {
+            return Array.from(grid.querySelectorAll(".essay-card"))
+                .filter((card) => card.style.display !== "none");
+        }
+
+        function focusObservatoryCard(card) {
+            const cards = Array.from(grid.querySelectorAll(".essay-card"));
+            cards.forEach((candidate) => {
+                const isFocused = candidate === card;
+                candidate.classList.toggle("observatory-featured", isFocused);
+                const control = candidate.querySelector(".observatory-focus-control");
+                if (control) {
+                    control.setAttribute("aria-pressed", String(isFocused));
+                    control.textContent = isFocused ? "Focused star" : "Focus star";
+                }
+            });
+        }
+
+        function ensureObservatoryFocus() {
+            if (grid.getAttribute("data-layout") !== "observatory") return;
+            const visible = visibleCards();
+            if (visible.length === 0) return;
+
+            const focused = visible.find((card) => card.classList.contains("observatory-featured"));
+            if (!focused) focusObservatoryCard(visible[0]);
+        }
+
+        Array.from(grid.querySelectorAll(".essay-card")).forEach((card, index) => {
+            card.style.setProperty("--library-index", String(index + 1));
+            if (card.querySelector(".observatory-focus-control")) return;
+
+            const control = document.createElement("button");
+            control.type = "button";
+            control.className = "observatory-focus-control";
+            control.setAttribute("aria-pressed", "false");
+            control.textContent = "Focus star";
+            control.addEventListener("click", (event) => {
+                event.stopPropagation();
+                focusObservatoryCard(card);
+                card.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+            card.appendChild(control);
+        });
 
         function applyLayout(layout, persist = true) {
             const nextLayout = validLayouts.has(layout) ? layout : "gallery";
@@ -551,6 +602,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.classList.toggle("active", isActive);
                 button.setAttribute("aria-pressed", String(isActive));
             });
+
+            if (nextLayout === "observatory") {
+                ensureObservatoryFocus();
+            }
 
             if (persist) {
                 try {
@@ -569,6 +624,18 @@ document.addEventListener("DOMContentLoaded", () => {
             button.addEventListener("click", () => {
                 applyLayout(button.getAttribute("data-library-layout") || "gallery");
             });
+        });
+
+        grid.addEventListener("libraryfilterchange", () => {
+            ensureObservatoryFocus();
+        });
+
+        grid.addEventListener("click", (event) => {
+            if (grid.getAttribute("data-layout") !== "observatory") return;
+            if (event.target.closest("a, button")) return;
+            const card = event.target.closest(".essay-card");
+            if (!card || card.style.display === "none") return;
+            focusObservatoryCard(card);
         });
 
         applyLayout(initialLayout, false);
