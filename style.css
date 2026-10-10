@@ -7181,3 +7181,656 @@ body.zen-mode .studio-editor-pane {
         transition: none;
     }
 }
+
+
+/* ==========================================================================
+   DEEP LIBRARY ARCHITECTURES · Cathedral / Manuscript / Chronicle /
+   Observatory / Constellation Scroll
+   ========================================================================== */
+
+/* Nine modes need a denser but still finger-friendly control altar. */
+.library-layout-switcher {
+    grid-template-columns: repeat(3, minmax(118px, 1fr));
+    width: min(100%, 560px);
+}
+
+.observatory-focus-control {
+    display: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Cathedral — tall luminous windows arranged as a nave of ideas.
+   -------------------------------------------------------------------------- */
+.essays-grid[data-layout="cathedral"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 2.2vw, 30px);
+    align-items: stretch;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card {
+    --cathedral-accent: var(--gold);
+    min-height: 520px;
+    justify-content: flex-end;
+    padding: clamp(40px, 4vw, 58px) clamp(24px, 3vw, 36px) 30px;
+    border-color: color-mix(in srgb, var(--cathedral-accent) 38%, var(--line));
+    border-radius: 46% 46% 22px 22px / 18% 18% 22px 22px;
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--cathedral-accent) 16%, transparent) 0%,
+            color-mix(in srgb, var(--bg-card) 82%, transparent) 37%,
+            color-mix(in srgb, var(--bg-card) 93%, transparent) 100%);
+    box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--cathedral-accent) 28%, transparent),
+        0 26px 64px rgba(0, 0, 0, 0.20);
+    isolation: isolate;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card[data-category="ontology"] {
+    --cathedral-accent: var(--gold);
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card[data-category="narrative"] {
+    --cathedral-accent: #a855f7;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card[data-category="reflections"] {
+    --cathedral-accent: var(--teal);
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card[data-category="ai"] {
+    --cathedral-accent: #60a5fa;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card::after {
+    content: "✦";
+    position: absolute;
+    z-index: 0;
+    top: 28px;
+    left: 50%;
+    width: 78px;
+    height: 78px;
+    display: grid;
+    place-items: center;
+    transform: translateX(-50%);
+    border: 1px solid color-mix(in srgb, var(--cathedral-accent) 52%, transparent);
+    border-radius: 50%;
+    color: color-mix(in srgb, var(--cathedral-accent) 88%, var(--ink));
+    background:
+        radial-gradient(circle,
+            color-mix(in srgb, var(--cathedral-accent) 30%, transparent),
+            color-mix(in srgb, var(--cathedral-accent) 8%, transparent) 48%,
+            transparent 70%);
+    box-shadow:
+        0 0 0 12px color-mix(in srgb, var(--cathedral-accent) 5%, transparent),
+        0 0 38px color-mix(in srgb, var(--cathedral-accent) 23%, transparent);
+    font-size: 1.45rem;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card:hover {
+    transform: translateY(-8px);
+    border-color: color-mix(in srgb, var(--cathedral-accent) 70%, var(--line));
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.30),
+        0 0 44px color-mix(in srgb, var(--cathedral-accent) 12%, transparent);
+}
+
+.essays-grid[data-layout="cathedral"] .essay-meta {
+    margin-top: 88px;
+    padding-top: 18px;
+    border-top: 1px solid color-mix(in srgb, var(--cathedral-accent) 28%, var(--line));
+}
+
+.essays-grid[data-layout="cathedral"] .essay-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.62rem, 2.2vw, 2rem);
+    line-height: 1.08;
+    text-wrap: balance;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-subtitle {
+    color: color-mix(in srgb, var(--cathedral-accent) 72%, var(--ink));
+    font-family: var(--font-serif);
+    font-style: italic;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+}
+
+.essays-grid[data-layout="cathedral"] .essay-card-footer {
+    border-top-color: color-mix(in srgb, var(--cathedral-accent) 22%, var(--line));
+}
+
+/* --------------------------------------------------------------------------
+   6. Manuscript — almost no cards: typography, margins, and silence.
+   -------------------------------------------------------------------------- */
+.essays-grid[data-layout="manuscript"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    max-width: 920px;
+    margin-inline: auto;
+    counter-reset: manuscript-entry;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-card {
+    counter-increment: manuscript-entry;
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    grid-template-areas:
+        "folio meta"
+        "folio title"
+        "folio subtitle"
+        "folio excerpt"
+        "folio footer";
+    column-gap: clamp(20px, 4vw, 42px);
+    min-height: 0;
+    padding: clamp(42px, 6vw, 68px) 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    overflow: visible;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-card:first-child {
+    border-top: 1px solid var(--line);
+}
+
+.essays-grid[data-layout="manuscript"] .essay-card:hover {
+    transform: none;
+    border-color: var(--line-strong);
+    box-shadow: none;
+    background: transparent;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-card::after {
+    content: counter(manuscript-entry, decimal-leading-zero);
+    grid-area: folio;
+    position: static;
+    display: block;
+    align-self: start;
+    padding-top: 4px;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-meta {
+    grid-area: meta;
+    margin-bottom: 17px;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-title {
+    grid-area: title;
+    max-width: 24ch;
+    margin-bottom: 12px;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4.3vw, 3.5rem);
+    font-weight: 500;
+    line-height: 1.03;
+    letter-spacing: -0.025em;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-subtitle {
+    grid-area: subtitle;
+    max-width: 54ch;
+    margin-bottom: 20px;
+    color: var(--muted);
+    font-family: var(--font-heading);
+    font-size: clamp(1.12rem, 2vw, 1.38rem);
+    font-style: italic;
+    line-height: 1.42;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-excerpt {
+    grid-area: excerpt;
+    max-width: 68ch;
+    margin-bottom: 26px;
+    color: color-mix(in srgb, var(--ink) 74%, var(--muted));
+    font-family: var(--font-serif);
+    font-size: 1.06rem;
+    line-height: 1.9;
+}
+
+.essays-grid[data-layout="manuscript"] .essay-card-footer {
+    grid-area: footer;
+    margin-top: 0;
+    padding-top: 17px;
+}
+
+/* --------------------------------------------------------------------------
+   7. Chronicle — sequence without pretending we know publication dates.
+   -------------------------------------------------------------------------- */
+.essays-grid[data-layout="chronicle"] {
+    position: relative;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 76px;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-block: 24px;
+    counter-reset: chronicle-entry;
+}
+
+.essays-grid[data-layout="chronicle"]::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background:
+        linear-gradient(180deg,
+            transparent,
+            color-mix(in srgb, var(--gold) 48%, var(--line)) 8%,
+            color-mix(in srgb, var(--teal) 44%, var(--line)) 92%,
+            transparent);
+    box-shadow: 0 0 18px var(--glow);
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card {
+    counter-increment: chronicle-entry;
+    position: relative;
+    min-height: 0;
+    padding: 28px;
+    border-radius: 18px;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card:nth-child(odd) {
+    grid-column: 1;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card:nth-child(even) {
+    grid-column: 2;
+    margin-top: 72px;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card::after {
+    content: "ARCHIVE " counter(chronicle-entry, decimal-leading-zero);
+    position: absolute;
+    z-index: 4;
+    top: 18px;
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.11em;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card:nth-child(odd)::after {
+    right: -70px;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card:nth-child(even)::after {
+    left: -70px;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card:nth-child(odd) {
+    border-top-right-radius: 5px;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-card:nth-child(even) {
+    border-top-left-radius: 5px;
+}
+
+.essays-grid[data-layout="chronicle"] .essay-title {
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+}
+
+.essays-grid[data-layout="chronicle"] .essay-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+}
+
+/* --------------------------------------------------------------------------
+   8. Observatory — one essay is the gravitational center.
+   -------------------------------------------------------------------------- */
+.essays-grid[data-layout="observatory"] {
+    position: relative;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 18px;
+    padding: clamp(20px, 3vw, 42px);
+    border: 1px solid var(--line);
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 28%),
+        radial-gradient(circle at 14% 76%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 30%),
+        color-mix(in srgb, var(--bg) 48%, transparent);
+    overflow: hidden;
+}
+
+.essays-grid[data-layout="observatory"] .essay-card {
+    grid-column: span 4;
+    min-height: 255px;
+    padding: 24px;
+    opacity: 0.78;
+    transform: scale(0.985);
+}
+
+.essays-grid[data-layout="observatory"] .essay-card:hover {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+}
+
+.essays-grid[data-layout="observatory"] .essay-card:not(.observatory-featured) .essay-excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.essays-grid[data-layout="observatory"] .essay-card:not(.observatory-featured) .essay-subtitle {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.essays-grid[data-layout="observatory"] .essay-card.observatory-featured {
+    grid-column: 2 / span 10;
+    order: -10;
+    min-height: 420px;
+    padding: clamp(34px, 5vw, 64px);
+    opacity: 1;
+    transform: none;
+    border-color: color-mix(in srgb, var(--gold) 58%, var(--line));
+    border-radius: 32px;
+    background:
+        radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--gold) 18%, transparent), transparent 34%),
+        radial-gradient(circle at 12% 88%, color-mix(in srgb, var(--teal) 12%, transparent), transparent 38%),
+        color-mix(in srgb, var(--bg-card) 92%, transparent);
+    box-shadow:
+        0 34px 90px rgba(0, 0, 0, 0.34),
+        0 0 52px color-mix(in srgb, var(--gold) 11%, transparent);
+}
+
+.essays-grid[data-layout="observatory"] .essay-card.observatory-featured::after {
+    content: "FOCUS STAR";
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+}
+
+.essays-grid[data-layout="observatory"] .observatory-featured .essay-title {
+    max-width: 20ch;
+    font-size: clamp(2.25rem, 4.6vw, 4rem);
+    line-height: 1;
+}
+
+.essays-grid[data-layout="observatory"] .observatory-featured .essay-subtitle {
+    max-width: 58ch;
+    font-size: 1.08rem;
+}
+
+.essays-grid[data-layout="observatory"] .observatory-featured .essay-excerpt {
+    max-width: 72ch;
+    font-size: 1.02rem;
+    line-height: 1.8;
+}
+
+.essays-grid[data-layout="observatory"] .observatory-focus-control {
+    position: relative;
+    z-index: 4;
+    display: inline-flex;
+    align-self: flex-start;
+    margin-top: 14px;
+    padding: 7px 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-elev) 72%, transparent);
+    color: var(--muted);
+    font: 600 0.72rem/1 var(--font-mono);
+    cursor: pointer;
+    transition: color var(--ease), border-color var(--ease), background var(--ease);
+}
+
+.essays-grid[data-layout="observatory"] .observatory-focus-control:hover {
+    color: var(--ink);
+    border-color: var(--gold);
+}
+
+.essays-grid[data-layout="observatory"] .observatory-focus-control[aria-pressed="true"] {
+    color: var(--gold);
+    border-color: color-mix(in srgb, var(--gold) 58%, var(--line));
+}
+
+/* --------------------------------------------------------------------------
+   9. Constellation Scroll — readable prose threaded by a living star-road.
+   -------------------------------------------------------------------------- */
+.essays-grid[data-layout="star-scroll"] {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    max-width: 1080px;
+    margin-inline: auto;
+    padding: 20px 0 20px 116px;
+}
+
+.essays-grid[data-layout="star-scroll"]::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+    left: 48px;
+    width: 2px;
+    background:
+        linear-gradient(180deg,
+            transparent 0%,
+            var(--gold) 9%,
+            color-mix(in srgb, var(--teal) 78%, var(--gold)) 48%,
+            #a855f7 82%,
+            transparent 100%);
+    opacity: 0.45;
+    box-shadow:
+        0 0 12px var(--glow),
+        0 0 30px color-mix(in srgb, var(--teal) 12%, transparent);
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card {
+    --star-scroll-accent: var(--gold);
+    min-height: 0;
+    padding: clamp(26px, 4vw, 40px);
+    border-left: 1px solid color-mix(in srgb, var(--star-scroll-accent) 36%, var(--line));
+    border-radius: 10px 24px 24px 10px;
+    background:
+        linear-gradient(90deg,
+            color-mix(in srgb, var(--star-scroll-accent) 8%, transparent),
+            color-mix(in srgb, var(--bg-card) 84%, transparent) 12%,
+            color-mix(in srgb, var(--bg-card) 78%, transparent));
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card[data-category="ontology"] {
+    --star-scroll-accent: var(--gold);
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card[data-category="narrative"] {
+    --star-scroll-accent: #a855f7;
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card[data-category="reflections"] {
+    --star-scroll-accent: var(--teal);
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card[data-category="ai"] {
+    --star-scroll-accent: #60a5fa;
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card::after {
+    content: "✦";
+    position: absolute;
+    z-index: 6;
+    top: 40px;
+    left: -83px;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--star-scroll-accent) 62%, transparent);
+    border-radius: 50%;
+    color: var(--star-scroll-accent);
+    background: var(--bg);
+    box-shadow:
+        0 0 0 7px color-mix(in srgb, var(--star-scroll-accent) 6%, transparent),
+        0 0 22px color-mix(in srgb, var(--star-scroll-accent) 28%, transparent);
+    font-size: 0.8rem;
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card:nth-child(even) {
+    margin-left: 34px;
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-card:hover {
+    transform: translateX(6px);
+    border-left-color: var(--star-scroll-accent);
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-title {
+    max-width: 25ch;
+    font-size: clamp(1.7rem, 3vw, 2.35rem);
+}
+
+.essays-grid[data-layout="star-scroll"] .essay-excerpt {
+    max-width: 72ch;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive descent: preserve the idea of each architecture on small screens.
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .library-layout-switcher {
+        width: 100%;
+        max-width: none;
+    }
+
+    .essays-grid[data-layout="cathedral"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .essays-grid[data-layout="observatory"] .essay-card {
+        grid-column: span 6;
+    }
+
+    .essays-grid[data-layout="observatory"] .essay-card.observatory-featured {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 760px) {
+    .library-layout-switcher {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .essays-grid[data-layout="cathedral"] {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .essays-grid[data-layout="cathedral"] .essay-card {
+        min-height: 460px;
+        border-radius: 38% 38% 22px 22px / 13% 13% 22px 22px;
+    }
+
+    .essays-grid[data-layout="manuscript"] .essay-card {
+        grid-template-columns: 42px minmax(0, 1fr);
+        column-gap: 16px;
+        padding-block: 38px;
+    }
+
+    .essays-grid[data-layout="manuscript"] .essay-title {
+        font-size: clamp(1.8rem, 9vw, 2.6rem);
+    }
+
+    .essays-grid[data-layout="chronicle"] {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 22px;
+        padding-left: 42px;
+    }
+
+    .essays-grid[data-layout="chronicle"]::before {
+        left: 13px;
+        transform: none;
+    }
+
+    .essays-grid[data-layout="chronicle"] .essay-card:nth-child(odd),
+    .essays-grid[data-layout="chronicle"] .essay-card:nth-child(even) {
+        grid-column: 1;
+        margin-top: 0;
+        border-radius: 18px;
+    }
+
+    .essays-grid[data-layout="chronicle"] .essay-card::after,
+    .essays-grid[data-layout="chronicle"] .essay-card:nth-child(odd)::after,
+    .essays-grid[data-layout="chronicle"] .essay-card:nth-child(even)::after {
+        top: 18px;
+        right: auto;
+        left: -42px;
+        width: 30px;
+        overflow: hidden;
+        color: var(--gold);
+        letter-spacing: 0;
+    }
+
+    .essays-grid[data-layout="observatory"] {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 14px;
+        border-radius: 24px;
+    }
+
+    .essays-grid[data-layout="observatory"] .essay-card,
+    .essays-grid[data-layout="observatory"] .essay-card.observatory-featured {
+        grid-column: 1;
+        min-height: 0;
+    }
+
+    .essays-grid[data-layout="observatory"] .essay-card.observatory-featured {
+        padding: 30px 24px;
+    }
+
+    .essays-grid[data-layout="observatory"] .observatory-featured .essay-title {
+        font-size: clamp(2rem, 10vw, 3rem);
+    }
+
+    .essays-grid[data-layout="star-scroll"] {
+        padding-left: 54px;
+    }
+
+    .essays-grid[data-layout="star-scroll"]::before {
+        left: 16px;
+    }
+
+    .essays-grid[data-layout="star-scroll"] .essay-card::after {
+        left: -53px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .essays-grid[data-layout="star-scroll"] .essay-card:nth-child(even) {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 430px) {
+    .library-layout-switcher {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
