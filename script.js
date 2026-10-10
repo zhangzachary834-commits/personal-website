@@ -6747,3 +6747,77 @@ class VesselEngine {
     }
 })();
 /* === END LUMINOUS CONSTELLATION FX PASS === */
+
+// Essay reading controls: progressive enhancement, without rewriting article content.
+(() => {
+    if (typeof document === 'undefined') return;
+    function initReadingRoom() {
+        const prose = document.querySelector('main article .essay-prose');
+        if (!prose || document.querySelector('.reading-toolbar')) return;
+        document.body.classList.add('reading-page');
+        const toolbar = document.createElement('div');
+        toolbar.className = 'reading-toolbar';
+        toolbar.setAttribute('aria-label', 'Reading controls');
+        toolbar.setAttribute('role', 'group');
+        const headings = Array.from(prose.children).filter(node => /^H[234]$/.test(node.tagName));
+        if (headings.length) {
+            const contents = document.createElement('details');
+            contents.className = 'reading-contents';
+            const summary = document.createElement('summary');
+            summary.textContent = 'On this page';
+            contents.append(summary);
+            const nav = document.createElement('nav');
+            nav.setAttribute('aria-label', 'Essay sections');
+            headings.forEach((heading, index) => {
+                if (!heading.id) {
+                    let id = `reading-section-${index + 1}`;
+                    while (document.getElementById(id)) id += '-section';
+                    heading.id = id;
+                }
+                const link = document.createElement('a');
+                link.href = '#' + encodeURIComponent(heading.id);
+                link.textContent = heading.textContent;
+                link.addEventListener('click', () => {
+                    contents.open = false;
+                    heading.setAttribute('tabindex', '-1');
+                    heading.focus({ preventScroll: true });
+                });
+                nav.append(link);
+            });
+            contents.append(nav);
+            toolbar.append(contents);
+            toolbar.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && contents.open) {
+                    contents.open = false;
+                    summary.focus();
+                }
+            });
+            document.addEventListener('click', event => {
+                if (!contents.contains(event.target)) contents.open = false;
+            });
+        }
+        const quiet = document.createElement('button');
+        quiet.type = 'button';
+        quiet.className = 'reading-quiet';
+        quiet.textContent = 'Quiet reading';
+        quiet.setAttribute('aria-pressed', 'false');
+        quiet.addEventListener('click', () => {
+            const active = document.body.classList.toggle('reading-quiet-mode');
+            quiet.setAttribute('aria-pressed', String(active));
+        });
+        const size = document.createElement('button');
+        size.type = 'button';
+        size.className = 'reading-size';
+        size.textContent = 'Larger text';
+        size.setAttribute('aria-pressed', 'false');
+        size.addEventListener('click', () => {
+            const active = prose.classList.toggle('reading-large');
+            size.setAttribute('aria-pressed', String(active));
+        });
+        toolbar.append(quiet, size);
+        prose.before(toolbar);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReadingRoom, { once: true });
+    } else initReadingRoom();
+})();

@@ -7942,3 +7942,30 @@ body.zen-mode .studio-editor-pane {
     .home-page .portal-card { padding-inline: 24px; }
     .portal-art { margin-inline: -24px; height: 185px; }
 }
+
+/* A compact reading desk on published essays. */
+.reading-toolbar { position: sticky; top: calc(var(--nav-height) + 12px); z-index: 30; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; width: min(100%, 760px); margin: 0 auto 28px; padding: 10px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--bg); box-shadow: 0 8px 28px rgba(0,0,0,.12); font-family: var(--font-sans); }
+.reading-toolbar button, .reading-contents summary { min-height: 44px; padding: 10px 14px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: .85rem; }
+.reading-toolbar button:hover, .reading-contents summary:hover { color: var(--ink); background: var(--glow); }
+.reading-toolbar button[aria-pressed="true"] { color: var(--gold-2); border-color: var(--line-strong); background: var(--glow); }
+.reading-toolbar :is(button, summary, a):focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.reading-contents { margin-right: auto; }
+.reading-contents summary { display: list-item; list-style-position: inside; }
+.reading-contents nav { position: absolute; left: 0; right: 0; top: calc(100% + 8px); display: grid; gap: 4px; max-height: min(50dvh, 360px); overflow-y: auto; padding: 14px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--bg); box-shadow: var(--shadow); }
+.reading-contents a { padding: 10px 12px; color: var(--muted); border-radius: 8px; font-size: .9rem; }
+.reading-contents a:hover { color: var(--gold-2); background: var(--glow); }
+.reading-page .essay-prose > :is(h2,h3,h4) { scroll-margin-top: calc(var(--nav-height) + 150px); }
+.reading-page .essay-prose.reading-large { font-size: clamp(1.24rem, 1.7vw, 1.4rem); }
+.reading-quiet-mode #global-bg-canvas, .reading-quiet-mode .fx-card-atmosphere,
+.reading-quiet-mode .fx-card-rim { visibility: hidden; }
+.reading-quiet-mode .page-hero::before, .reading-quiet-mode .page-hero::after { display: none; }
+.reading-quiet-mode .essay-prose { color: var(--ink); }
+.reading-quiet-mode .essay-prose *, .reading-quiet-mode .essay-prose *::before,
+.reading-quiet-mode .essay-prose *::after { animation: none !important; text-shadow: none !important; }
+@media (max-width: 480px) {
+    .reading-toolbar { gap: 3px; padding: 6px; top: calc(var(--nav-height) + 6px); }
+    .reading-toolbar button, .reading-contents summary { padding: 10px 8px; font-size: .76rem; }
+}
+@media print {
+    .reading-toolbar { display: none; }
+}
