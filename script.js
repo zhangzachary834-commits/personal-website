@@ -5506,13 +5506,21 @@ class VesselEngine {
                 }
                 const row = document.createElement("div");
                 row.className = `palette-item ${idx === selectedIdx ? "active" : ""}`;
-                row.innerHTML = `
-                    <div class="palette-item-left">
-                        <span class="palette-item-icon">${item.icon}</span>
-                        <span class="palette-item-text">${item.title}</span>
-                    </div>
-                    <span class="palette-item-desc">${item.desc}</span>
-                `;
+                const leftDiv = document.createElement("div");
+                leftDiv.className = "palette-item-left";
+                const iconSpan = document.createElement("span");
+                iconSpan.className = "palette-item-icon";
+                iconSpan.textContent = item.icon;
+                const textSpan = document.createElement("span");
+                textSpan.className = "palette-item-text";
+                textSpan.textContent = item.title;
+                leftDiv.appendChild(iconSpan);
+                leftDiv.appendChild(textSpan);
+                const descSpan = document.createElement("span");
+                descSpan.className = "palette-item-desc";
+                descSpan.textContent = item.desc;
+                row.appendChild(leftDiv);
+                row.appendChild(descSpan);
                 row.addEventListener("click", () => {
                     closePalette();
                     item.action();
