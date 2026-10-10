@@ -229,3 +229,33 @@ test('Homepage mobile menu closes on Escape, selection, and outside interaction'
     assert.equal(menu.querySelectorAll('nav a').length, 7);
   } finally { dom.window.close(); }
 });
+
+test('Essay reading desk links to sections and toggles presentation without altering text', () => {
+  const dom = openDiscoveryPage('posts/you-dont-prove-persons.html');
+  try {
+    const { document } = dom.window;
+    const prose = document.querySelector('.essay-prose');
+    const text = prose.textContent;
+    const links = [...document.querySelectorAll('.reading-contents a')];
+    assert.equal(links.length, 2);
+    for (const link of links) assert.ok(document.getElementById(decodeURIComponent(link.hash.slice(1))));
+    const quiet = document.querySelector('.reading-quiet');
+    quiet.click();
+    assert.equal(document.body.classList.contains('reading-quiet-mode'), true);
+    assert.equal(quiet.getAttribute('aria-pressed'), 'true');
+    quiet.click();
+    assert.equal(document.body.classList.contains('reading-quiet-mode'), false);
+    document.querySelector('.reading-size').click();
+    assert.equal(prose.classList.contains('reading-large'), true);
+    assert.equal(prose.textContent, text);
+    const contents = document.querySelector('.reading-contents');
+    contents.open = true;
+    contents.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    assert.equal(contents.open, false);
+    assert.equal(document.activeElement, contents.querySelector('summary'));
+    contents.open = true;
+    links[0].click();
+    assert.equal(contents.open, false);
+    assert.equal(document.activeElement.id, links[0].hash.slice(1));
+  } finally { dom.window.close(); }
+});

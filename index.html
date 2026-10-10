@@ -435,7 +435,7 @@
         }
     </style>
 </head>
-<body>
+<body class="home-page">
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
     <canvas id="global-bg-canvas" class="constellation-canvas" aria-hidden="true"></canvas>
@@ -477,8 +477,9 @@
 
     <main id="main-content">
         <section class="section home-hero">
+            <div class="hero-orbit-art" aria-hidden="true"><span></span><span></span><span></span></div>
             <div class="container home-hero-grid">
-                <div>
+                <div class="home-hero-copy">
                     <p class="home-kicker">Personal home // maker · writer · worldbuilder · student</p>
                     <h1 class="home-title">Hi, I’m Zachary.<br>I like building <em>worlds</em>.</h1>
                     <p class="home-lede">
@@ -530,6 +531,11 @@
             </div>
         </section>
 
+        <div class="home-scroll-cue container">
+            <a href="#worlds"><span class="scroll-cue-line" aria-hidden="true"></span>Explore the constellation <span aria-hidden="true">↓</span></a>
+            <span class="home-scroll-note">Code · story · thought · connection</span>
+        </div>
+
         <section id="worlds" class="section">
             <div class="container">
                 <div class="section-header left">
@@ -541,7 +547,11 @@
                 </div>
 
                 <div class="door-grid">
-                    <a class="door-card" href="portfolio.html">
+                    <a class="door-card portal-card portal-engineering" href="portfolio.html">
+                        <div class="portal-art" aria-hidden="true">
+                            <svg viewBox="0 0 400 280" fill="none" focusable="false"><path d="M110 90 200 40l90 50v100l-90 50-90-50Z M110 90l90 50 90-50 M200 140v100"/><path class="portal-detail" d="M65 65h45M65 65v45M335 65h-45M335 65v45M65 215h45M65 215v-45M335 215h-45M335 215v-45"/><circle cx="200" cy="140" r="7" class="portal-star"/></svg>
+                            <span class="portal-art-label">01 / Build</span>
+                        </div>
                         <span class="door-index">ENGINEERING // SYSTEMS</span>
                         <h3>Engineering Portfolio</h3>
                         <p>
@@ -551,7 +561,11 @@
                         <span class="door-arrow" aria-hidden="true">↗</span>
                     </a>
 
-                    <a class="door-card" href="manifesto.html">
+                    <a class="door-card portal-card portal-thought" href="manifesto.html">
+                        <div class="portal-art" aria-hidden="true">
+                            <svg viewBox="0 0 400 280" fill="none" focusable="false"><ellipse cx="200" cy="140" rx="115" ry="48" transform="rotate(-32 200 140)"/><ellipse cx="200" cy="140" rx="115" ry="48" transform="rotate(32 200 140)"/><circle cx="200" cy="140" r="76" class="portal-detail"/><circle cx="200" cy="140" r="9" class="portal-star"/><circle cx="112" cy="83" r="5" class="portal-star"/><circle cx="289" cy="197" r="5" class="portal-star"/></svg>
+                            <span class="portal-art-label">02 / Connect</span>
+                        </div>
                         <span class="door-index">DIMENSION OF THOUGHT // VISION</span>
                         <h3>Dimension of Thought</h3>
                         <p>
@@ -561,7 +575,11 @@
                         <span class="door-arrow" aria-hidden="true">↗</span>
                     </a>
 
-                    <a class="door-card" href="story.html">
+                    <a class="door-card portal-card portal-story" href="story.html">
+                        <div class="portal-art" aria-hidden="true">
+                            <svg viewBox="0 0 400 280" fill="none" focusable="false"><path d="M60 220h280 M115 220V125a85 85 0 0 1 170 0v95 M140 220v-95a60 60 0 0 1 120 0v95 M165 220v-95a35 35 0 0 1 70 0v95"/><path class="portal-detail" d="M200 154v16m0 12v16m0 12v10M82 220l-22 35m258-35 22 35"/><circle cx="200" cy="105" r="7" class="portal-star"/></svg>
+                            <span class="portal-art-label">03 / Become</span>
+                        </div>
                         <span class="door-index">PERSONAL // STORY</span>
                         <h3>My Story</h3>
                         <p>
@@ -571,7 +589,11 @@
                         <span class="door-arrow" aria-hidden="true">↗</span>
                     </a>
 
-                    <a class="door-card" href="library.html">
+                    <a class="door-card portal-card portal-writing" href="library.html">
+                        <div class="portal-art" aria-hidden="true">
+                            <svg viewBox="0 0 400 280" fill="none" focusable="false"><path d="M200 85c-40-25-85-25-125-8v125c40-17 85-17 125 8 40-25 85-25 125-8V77c-40-17-85-17-125 8Z M200 85v125"/><path class="portal-detail" d="M100 105c25-6 50-3 75 8m-75 18c25-6 50-3 75 8m-75 18c25-6 50-3 75 8m50-52c25-11 50-14 75-8m-75 34c25-11 50-14 75-8m-75 34c25-11 50-14 75-8"/><path class="portal-star" d="m200 25 3 10 10 3-10 3-3 10-3-10-10-3 10-3Z"/></svg>
+                            <span class="portal-art-label">04 / Explore</span>
+                        </div>
                         <span class="door-index">WRITING // LIBRARY</span>
                         <h3>The Library</h3>
                         <p>
