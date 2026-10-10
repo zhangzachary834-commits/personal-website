@@ -1,8 +1,7 @@
 (() => {
     "use strict";
 
-    const STORAGE_KEY = "dimension_studio_art_v1";
-    const MODE_KEY = "dimension_studio_mode";
+    const personWorkspace = window.DimensionPersonWorkspace || null;
     const WIDTH = 1600;
     const HEIGHT = 1000;
     const byId = (id) => document.getElementById(id);
@@ -92,8 +91,8 @@
             if (brandText) brandText.textContent = draw ? "Art Studio" : "Article Studio";
             document.title = draw ? "2D Art Studio — Dimension of Thought" : "Article Drafting Studio — Dimension of Thought";
 
-            if (shouldPersist) {
-                try { localStorage.setItem(MODE_KEY, draw ? "draw" : "write"); } catch (_) {}
+            if (shouldPersist && personWorkspace && personWorkspace.setStudioMode) {
+                personWorkspace.setStudioMode(draw ? "draw" : "write");
             }
 
             if (draw) {
@@ -455,13 +454,13 @@
         }
 
         function saveLocal(message) {
-            const text = message || "Artwork saved locally";
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload()));
-                setSavedStatus(text, false);
-            } catch (_) {
-                setSavedStatus("Could not save in this browser", true);
+            const text = message || "Artwork saved to private cloud";
+            if (!personWorkspace || !personWorkspace.setArtwork) {
+                setSavedStatus("Private Person Workspace is unavailable", true);
+                return;
             }
+            personWorkspace.setArtwork(payload());
+            setSavedStatus(text, false);
         }
 
         function scheduleSave() {
@@ -480,9 +479,9 @@
 
         function loadLocal() {
             try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (!raw) return;
-                const data = JSON.parse(raw);
+                const data = personWorkspace && personWorkspace.getArtwork
+                    ? personWorkspace.getArtwork()
+                    : null;
                 if (!data || data.version !== 1 || !Array.isArray(data.strokes)) return;
 
                 state.strokes = data.strokes.filter((stroke) =>
@@ -499,9 +498,9 @@
                 if (opacityInput) opacityInput.value = String(state.opacity);
                 if (sizeValue) sizeValue.textContent = state.size + "px";
                 if (opacityValue) opacityValue.textContent = Math.round(state.opacity * 100) + "%";
-                setSavedStatus("Restored local artwork", false);
+                setSavedStatus("Restored private artwork", false);
             } catch (_) {
-                setSavedStatus("Saved artwork could not be restored", true);
+                setSavedStatus("Private artwork could not be restored", true);
             }
         }
 
@@ -576,16 +575,20 @@
         updateBrushPreview();
         render();
 
-        let initialMode = "write";
-        try {
-            initialMode = localStorage.getItem(MODE_KEY) === "draw" ? "draw" : "write";
-        } catch (_) {}
+        const initialMode = personWorkspace && personWorkspace.getStudioMode
+            ? personWorkspace.getStudioMode()
+            : "write";
         setMode(initialMode, false);
     }
 
+    function bootWhenPersonIsReady() {
+        if (personWorkspace && personWorkspace.onReady) personWorkspace.onReady(init);
+        else init();
+    }
+
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
+        document.addEventListener("DOMContentLoaded", bootWhenPersonIsReady, { once: true });
     } else {
-        init();
+        bootWhenPersonIsReady();
     }
 })();
