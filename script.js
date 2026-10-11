@@ -3773,10 +3773,17 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            // ⚡ Bolt Optimization: Use a standard for loop for concept array search
+            // instead of Array.prototype.some() which incurs allocation overhead and slower O(n) calls in hot loop
+            if (node.title.toLowerCase().includes(searchQuery)) return true;
+            if (node.subtitle.toLowerCase().includes(searchQuery)) return true;
+            if (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) return true;
+            if (node.concepts) {
+                for (let i = 0; i < node.concepts.length; i++) {
+                    if (node.concepts[i].toLowerCase().includes(searchQuery)) return true;
+                }
+            }
+            return false;
         }
 
         // Layout Physics Simulation

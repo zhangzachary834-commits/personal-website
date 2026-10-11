@@ -30,3 +30,7 @@
 ## 2024-10-08 - Layout Thrashing Cache Needs Viewport Invalidation
 **Learning:** When caching `getBoundingClientRect()` over multiple frames (e.g., during pointer hover for a custom cursor), the cached `rect` holds coordinates relative to the viewport. If the page is scrolled or resized, the element shifts relative to the viewport, making the cache instantly stale and breaking coordinate mapping (like cursor position). The previous card optimization worked without this because the hover state was confined to a small static card and cleared frequently, while a full screen stage scroll breaks the assumption entirely.
 **Action:** Always bind `scroll` and `resize` event listeners to the `window` to invalidate viewport-relative caches when optimizing high-frequency layout reads like `getBoundingClientRect()` that persist over long intervals.
+
+## 2026-11-23 - Avoid Array.prototype.some in Hot Loops
+**Learning:** Using array iterator methods like `Array.prototype.some` or `.forEach` within a hot path (e.g., repeatedly called inside a rendering or filtering loop like `matchesSearch` running per node) incurs function allocation overhead and is demonstrably slower than a standard `for` loop.
+**Action:** When iterating over arrays (like `node.concepts`) inside high-frequency operations, replace higher-order array methods with standard `for` loops to eliminate GC overhead and optimize execution speed.
