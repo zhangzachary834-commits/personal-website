@@ -3480,7 +3480,14 @@ ${currentDraft.content}`;
             }
 
             // Build neighbor cache for faster lookup in `isNeighbor`
-            nodes.forEach(n => n.neighbors = new Set());
+            nodes.forEach(n => {
+                n.neighbors = new Set();
+                // Precompute lowercase strings for search to avoid GC thrashing in render loop
+                n.searchTitle = (n.title || "").toLowerCase();
+                n.searchSubtitle = (n.subtitle || "").toLowerCase();
+                n.searchSeriesLabel = (n.seriesLabel || "").toLowerCase();
+                n.searchConcepts = n.concepts ? n.concepts.map(c => c.toLowerCase()) : [];
+            });
             edges.forEach(e => {
                 if (e.source && e.target) {
                     e.source.neighbors.add(e.target);
@@ -3773,10 +3780,10 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            return node.searchTitle.includes(searchQuery) ||
+                   node.searchSubtitle.includes(searchQuery) ||
+                   node.searchSeriesLabel.includes(searchQuery) ||
+                   (node.searchConcepts && node.searchConcepts.some(c => c.includes(searchQuery)));
         }
 
         // Layout Physics Simulation
