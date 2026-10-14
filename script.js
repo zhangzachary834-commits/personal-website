@@ -3535,6 +3535,14 @@ ${currentDraft.content}`;
             });
 
 
+            // Precompute search strings for all nodes to prevent GC thrashing in render loop
+            nodes.forEach(n => {
+                n._searchTitle = (n.title || "").toLowerCase();
+                n._searchSubtitle = (n.subtitle || "").toLowerCase();
+                n._searchSeriesLabel = (n.seriesLabel || "").toLowerCase();
+                n._searchConcepts = (n.concepts || []).map(c => c.toLowerCase());
+            });
+
             // Update stats readout
             const essayCount = cards.length;
             const hubCount = Object.keys(categoryHubs).length + Object.keys(seriesHubs).length;
@@ -3819,10 +3827,15 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            if (node._searchTitle && node._searchTitle.includes(searchQuery)) return true;
+            if (node._searchSubtitle && node._searchSubtitle.includes(searchQuery)) return true;
+            if (node._searchSeriesLabel && node._searchSeriesLabel.includes(searchQuery)) return true;
+            if (node._searchConcepts) {
+                for (let i = 0; i < node._searchConcepts.length; i++) {
+                    if (node._searchConcepts[i].includes(searchQuery)) return true;
+                }
+            }
+            return false;
         }
 
         // Layout Physics Simulation
