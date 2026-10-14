@@ -74,6 +74,7 @@
 }
 
 html {
+    overflow-x: clip;
     scroll-behavior: smooth;
     scroll-padding-top: calc(var(--nav-height) + 16px);
 }
@@ -83,7 +84,7 @@ body {
     background-color: var(--bg);
     color: var(--ink);
     line-height: 1.7;
-    overflow-x: hidden;
+    overflow-x: clip;
     transition: background-color var(--ease-slow), color var(--ease-slow);
 }
 
@@ -797,6 +798,7 @@ code {
 }
 
 .hero-stats {
+    margin-top: 48px;
     list-style: none;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2491,6 +2493,54 @@ body.zen-mode .studio-editor-pane {
     color: var(--muted);
     line-height: 1.5;
     flex: 1;
+}
+
+/* Studio toolbar: keep every control on one line and shed secondary labels
+   as the window narrows. Collapsed buttons keep their title tooltips. */
+.studio-navbar .btn,
+.studio-navbar .view-btn,
+.studio-navbar .studio-mode-btn,
+.studio-back-link,
+.studio-brand-title,
+.studio-status-pill,
+.studio-metrics-pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+@media (max-width: 1960px) {
+    .studio-back-link span:last-child,
+    .studio-nav-sep,
+    .studio-view-toggle .view-btn-label,
+    .studio-metrics-pill .metric-dot,
+    #metric-read-time {
+        display: none;
+    }
+}
+
+@media (max-width: 1640px) {
+    .studio-brand-text,
+    .google-docs-sync-btn .google-docs-label,
+    #open-templates-btn span:last-child,
+    #export-menu-btn span:last-child,
+    .studio-metrics-pill {
+        display: none;
+    }
+}
+
+@media (max-width: 1240px) {
+    .studio-nav-center,
+    .draw-nav-center,
+    #person-workspace-name,
+    #publish-article-btn span:last-child {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .studio-mode-btn span:last-child {
+        display: none;
+    }
 }
 
 @media (max-width: 1000px) {

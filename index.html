@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zachary Zhang — Home</title>
@@ -203,8 +203,8 @@
         .constellation-node {
             position: absolute;
             z-index: 4;
-            width: 132px;
-            padding: 10px 12px;
+            width: max-content;
+            padding: 10px 14px;
             transform: translate(-50%, -50%);
             border: 1px solid var(--line);
             border-radius: 999px;
@@ -229,16 +229,17 @@
         .constellation-node small {
             display: block;
             margin-top: 2px;
+            white-space: nowrap;
             font-family: var(--font-mono);
             color: var(--dim);
             font-size: .61rem;
             letter-spacing: .06em;
             text-transform: uppercase;
         }
-        .constellation-node.engineering { left: 20%; top: 23%; }
-        .constellation-node.thought { left: 80%; top: 23%; }
-        .constellation-node.story { left: 20%; top: 77%; }
-        .constellation-node.writing { left: 80%; top: 77%; }
+        .constellation-node.engineering { left: 25%; top: 13%; }
+        .constellation-node.thought { left: 75%; top: 13%; }
+        .constellation-node.story { left: 25%; top: 87%; }
+        .constellation-node.writing { left: 75%; top: 87%; }
         @keyframes constellation-breathe {
             0%, 100% { transform: scale(.94); opacity: .35; }
             50% { transform: scale(1.07); opacity: .85; }
@@ -423,7 +424,7 @@
             .home-title { font-size: clamp(3rem, 16vw, 4.6rem); }
             .home-hero-aside { min-height: 410px; }
             .constellation-field { inset: 62px 8px 12px; }
-            .constellation-node { width: 112px; padding: 9px 10px; }
+            .constellation-node { padding: 9px 11px; }
             .constellation-node strong { font-size: .86rem; }
             .constellation-node small { font-size: .54rem; }
             .constellation-core { width: 96px; height: 96px; }
@@ -499,10 +500,10 @@
                     <span class="constellation-hint" aria-hidden="true">choose a world ↗</span>
                     <div class="constellation-field">
                         <svg class="constellation-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                            <line x1="50" y1="50" x2="20" y2="23"></line>
-                            <line x1="50" y1="50" x2="80" y2="23"></line>
-                            <line x1="50" y1="50" x2="20" y2="77"></line>
-                            <line x1="50" y1="50" x2="80" y2="77"></line>
+                            <line x1="50" y1="50" x2="25" y2="13"></line>
+                            <line x1="50" y1="50" x2="75" y2="13"></line>
+                            <line x1="50" y1="50" x2="25" y2="87"></line>
+                            <line x1="50" y1="50" x2="75" y2="87"></line>
                         </svg>
 
                         <a class="constellation-core" href="#worlds" aria-label="Enter Zachary's constellation">
@@ -811,7 +812,7 @@
             }
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha384-cwS6YdhLI7XS60eoDiC+egV0qHp8zI+Cms46R0nbn8JrmoAzV9uFL60etMZhAnSu" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="script.js"></script>
 </body>
 </html>

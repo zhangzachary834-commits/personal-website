@@ -206,8 +206,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (vNavPersonal && vNavDimension) {
-            vNavPersonal.style.display = isPersonal ? "flex" : "none";
-            vNavDimension.style.display = isPersonal ? "none" : "flex";
+            // Clear rather than force "flex" so the stylesheet can still hide the rail on small screens.
+            vNavPersonal.style.display = isPersonal ? "" : "none";
+            vNavDimension.style.display = isPersonal ? "none" : "";
         }
 
         handleScroll();
@@ -1333,9 +1334,44 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Star labels fade out wherever they would sit on top of readable content.
+    // Rects are viewport-relative (the canvas is fixed at 0,0) and refreshed lazily.
+    const LABEL_AVOID_SELECTOR = "h1, h2, h3, h4, p, li, span, blockquote, figcaption, label, input, textarea, select, a, button, aside, [class*='eyebrow'], [class*='kicker'], [class*='card']";
+    let labelAvoidRects = [];
+    let labelAvoidDirty = true;
+    let labelAvoidStamp = 0;
+    const markLabelAvoidDirty = () => { labelAvoidDirty = true; };
+    window.addEventListener("scroll", markLabelAvoidDirty, { passive: true });
+    window.addEventListener("resize", markLabelAvoidDirty);
+
+    function refreshLabelAvoidRects() {
+        const now = performance.now();
+        if (!labelAvoidDirty || now - labelAvoidStamp < 120) return;
+        labelAvoidDirty = false;
+        labelAvoidStamp = now;
+        const vh = window.innerHeight;
+        const rects = [];
+        for (const el of document.querySelectorAll(LABEL_AVOID_SELECTOR)) {
+            const r = el.getBoundingClientRect();
+            if (r.width === 0 || r.bottom < 0 || r.top > vh) continue;
+            rects.push(r);
+        }
+        labelAvoidRects = rects;
+    }
+
+    function labelCollides(x, y, width) {
+        const pad = 10;
+        const left = x - pad, right = x + width + pad, top = y - 12 - pad, bottom = y + 4 + pad;
+        for (const r of labelAvoidRects) {
+            if (left < r.right && right > r.left && top < r.bottom && bottom > r.top) return true;
+        }
+        return false;
+    }
+
     function renderForegroundStars(w, palette, cascadeParams) {
         const { cascadeSat, cascadeLit, labelColor } = cascadeParams;
         ctx.font = "11px 'IBM Plex Mono', monospace";
+        if (w > 800) refreshLabelAvoidRects();
         for (const s of stars) {
             const blink = Math.sin(time * s.twinkleSpeed + s.twinkleOffset) * 0.5 + 0.5;
             const colorStr = s.isTeal ? palette.teal : (s.isPurple ? palette.purple : palette.gold);
@@ -1359,8 +1395,18 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.shadowBlur = 0;
 
             if (s.label && w > 800) {
-                ctx.fillStyle = labelColor;
-                ctx.fillText(s.label, s.x + 8, s.y - 8);
+                if (s.labelWidth === undefined) s.labelWidth = ctx.measureText(s.label).width;
+                // Flip to the star's left near the right edge so the label is never clipped.
+                const lx = s.x + 8 + s.labelWidth > w - 8 ? s.x - 8 - s.labelWidth : s.x + 8;
+                const ly = s.y - 8;
+                const target = labelCollides(lx, ly, s.labelWidth) ? 0 : 1;
+                s.labelAlpha = (s.labelAlpha ?? target) + (target - (s.labelAlpha ?? target)) * 0.12;
+                if (s.labelAlpha > 0.02) {
+                    ctx.globalAlpha = s.labelAlpha;
+                    ctx.fillStyle = labelColor;
+                    ctx.fillText(s.label, lx, ly);
+                    ctx.globalAlpha = 1.0;
+                }
             }
         }
     }
