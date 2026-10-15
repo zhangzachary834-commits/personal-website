@@ -3346,8 +3346,12 @@ ${currentDraft.content}`;
                 const angle = (idx / Math.max(1, cards.length)) * Math.PI * 2;
                 const dist = 190 + (idx % 2) * 50;
 
+                const searchTokens = [title, subtitle, seriesLabel, ...(concepts || [])].filter(Boolean).map(s => s.toLowerCase());
+                const searchString = searchTokens.join(" ");
+
                 const node = {
                     id: "art_" + title,
+                    searchString: searchString,
                     isHub: false,
                     isConcept: false,
                     title: title,
@@ -3383,12 +3387,18 @@ ${currentDraft.content}`;
                     const hubAngle = (catCount / 4) * Math.PI * 2 - Math.PI / 4;
                     const hubDist = 110;
 
+                    const hubTitle = category.charAt(0).toUpperCase() + category.slice(1) + " Hub";
+                    const hubSubtitle = catNames[category] || "Core Discipline";
+                    const hubSearchString = [hubTitle, hubSubtitle].filter(Boolean).map(s => s.toLowerCase()).join(" ");
+
                     const hub = {
                         id: "hub_" + category,
+                        searchString: hubSearchString,
+                        title: hubTitle,
+                        subtitle: hubSubtitle,
                         isHub: true,
                         isConcept: false,
-                        title: category.charAt(0).toUpperCase() + category.slice(1) + " Hub",
-                        subtitle: catNames[category] || "Core Discipline",
+                        // title & subtitle handled above
                         excerpt: `Core thematic cluster for ${category} inquiries across the holistic narrative continuum.`,
                         url: null,
                         category: category,
@@ -3426,13 +3436,19 @@ ${currentDraft.content}`;
                         const seriesCount = Object.keys(seriesHubs).length;
                         const seriesAngle = -Math.PI / 2 + seriesCount * (Math.PI / 3);
                         const seriesDist = 150;
+                        const seriesTitle = seriesLabel || series;
+                        const seriesSubtitle = "Writing Series";
+                        const seriesSearchString = [seriesTitle, seriesSubtitle].filter(Boolean).map(s => s.toLowerCase()).join(" ");
+
                         const seriesNode = {
                             id: "series_" + series.replace(/[^a-z0-9_-]/gi, "-").toLowerCase(),
+                            searchString: seriesSearchString,
+                            title: seriesTitle,
+                            subtitle: seriesSubtitle,
                             isHub: true,
                             isSeries: true,
                             isConcept: false,
-                            title: seriesLabel || series,
-                            subtitle: "Writing Series",
+                            // title & subtitle handled above
                             excerpt: `A connected sequence of writing pieces in the ${seriesLabel || series} series.`,
                             readTime: "Series hub",
                             author: "By Zachary Zhang",
@@ -3474,12 +3490,18 @@ ${currentDraft.content}`;
                     if (!conceptHubs[concept]) {
                         const conceptAngle = Math.random() * Math.PI * 2;
                         const conceptDist = 270 + Math.random() * 60;
+                        const conceptTitle = "[[" + concept + "]]";
+                        const conceptSubtitle = "Ontological Relational Concept";
+                        const conceptSearchString = [conceptTitle, conceptSubtitle, concept].filter(Boolean).map(s => s.toLowerCase()).join(" ");
+
                         const conceptNode = {
                             id: "concept_" + concept,
+                            searchString: conceptSearchString,
+                            title: conceptTitle,
+                            subtitle: conceptSubtitle,
                             isHub: false,
                             isConcept: true,
-                            title: "[[" + concept + "]]",
-                            subtitle: "Ontological Relational Concept",
+                            // title & subtitle handled above
                             excerpt: `Cross-disciplinary conceptual bridge connecting inquiries around ${concept}.`,
                             url: null,
                             category: "concept",
@@ -3817,12 +3839,11 @@ ${currentDraft.content}`;
             return node.category === activeCluster;
         }
 
+        // ⚡ Bolt Optimization: Replace slow inline string allocations in the hot layout loop.
+        // Precomputed node.searchString during init Library to avoid heavy GC thrashing.
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            return node.searchString && node.searchString.includes(searchQuery);
         }
 
         // Layout Physics Simulation
