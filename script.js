@@ -3534,6 +3534,15 @@ ${currentDraft.content}`;
                 }
             });
 
+            // ⚡ Bolt Optimization: Precompute searchable string cache to prevent GC thrashing in high-frequency rendering loop
+            nodes.forEach(n => {
+                let s = (n.title || "") + " " + (n.subtitle || "") + " " + (n.seriesLabel || "");
+                if (n.concepts && n.concepts.length > 0) {
+                    s += " " + n.concepts.join(" ");
+                }
+                n._searchStr = s.toLowerCase();
+            });
+
 
             // Update stats readout
             const essayCount = cards.length;
@@ -3819,10 +3828,8 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            // ⚡ Bolt Optimization: Use precomputed cache to avoid per-frame GC string allocations
+            return node._searchStr && node._searchStr.includes(searchQuery);
         }
 
         // Layout Physics Simulation
