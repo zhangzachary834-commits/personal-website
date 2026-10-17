@@ -3360,6 +3360,10 @@ ${currentDraft.content}`;
                     series: series,
                     seriesLabel: seriesLabel,
                     concepts: concepts,
+                    titleLower: title?.toLowerCase() || "",
+                    subtitleLower: subtitle?.toLowerCase() || "",
+                    seriesLabelLower: seriesLabel?.toLowerCase() || "",
+                    conceptsLower: concepts?.map(c => c.toLowerCase()) || [],
                     color: colorMap[category] || "#6ee7d8",
                     radius: 8.5,
                     x: center.x + Math.cos(angle) * dist,
@@ -3383,16 +3387,22 @@ ${currentDraft.content}`;
                     const hubAngle = (catCount / 4) * Math.PI * 2 - Math.PI / 4;
                     const hubDist = 110;
 
+                    const hubTitle = category.charAt(0).toUpperCase() + category.slice(1) + " Hub";
+                    const hubSubtitle = catNames[category] || "Core Discipline";
                     const hub = {
                         id: "hub_" + category,
                         isHub: true,
                         isConcept: false,
-                        title: category.charAt(0).toUpperCase() + category.slice(1) + " Hub",
-                        subtitle: catNames[category] || "Core Discipline",
+                        title: hubTitle,
+                        subtitle: hubSubtitle,
                         excerpt: `Core thematic cluster for ${category} inquiries across the holistic narrative continuum.`,
                         url: null,
                         category: category,
                         concepts: [],
+                        titleLower: hubTitle.toLowerCase(),
+                        subtitleLower: hubSubtitle.toLowerCase(),
+                        seriesLabelLower: "",
+                        conceptsLower: [],
                         color: colorMap[category] || "#d8b46e",
                         radius: 14,
                         x: center.x + Math.cos(hubAngle) * hubDist,
@@ -3426,13 +3436,15 @@ ${currentDraft.content}`;
                         const seriesCount = Object.keys(seriesHubs).length;
                         const seriesAngle = -Math.PI / 2 + seriesCount * (Math.PI / 3);
                         const seriesDist = 150;
+                        const sTitle = seriesLabel || series;
+                        const sSubtitle = "Writing Series";
                         const seriesNode = {
                             id: "series_" + series.replace(/[^a-z0-9_-]/gi, "-").toLowerCase(),
                             isHub: true,
                             isSeries: true,
                             isConcept: false,
-                            title: seriesLabel || series,
-                            subtitle: "Writing Series",
+                            title: sTitle,
+                            subtitle: sSubtitle,
                             excerpt: `A connected sequence of writing pieces in the ${seriesLabel || series} series.`,
                             readTime: "Series hub",
                             author: "By Zachary Zhang",
@@ -3441,6 +3453,10 @@ ${currentDraft.content}`;
                             series: series,
                             seriesLabel: seriesLabel || series,
                             concepts: [],
+                            titleLower: sTitle.toLowerCase(),
+                            subtitleLower: sSubtitle.toLowerCase(),
+                            seriesLabelLower: (seriesLabel || series).toLowerCase(),
+                            conceptsLower: [],
                             color: colorMap.series,
                             radius: 11.5,
                             x: center.x + Math.cos(seriesAngle) * seriesDist,
@@ -3474,16 +3490,22 @@ ${currentDraft.content}`;
                     if (!conceptHubs[concept]) {
                         const conceptAngle = Math.random() * Math.PI * 2;
                         const conceptDist = 270 + Math.random() * 60;
+                        const cTitle = "[[" + concept + "]]";
+                        const cSubtitle = "Ontological Relational Concept";
                         const conceptNode = {
                             id: "concept_" + concept,
                             isHub: false,
                             isConcept: true,
-                            title: "[[" + concept + "]]",
-                            subtitle: "Ontological Relational Concept",
+                            title: cTitle,
+                            subtitle: cSubtitle,
                             excerpt: `Cross-disciplinary conceptual bridge connecting inquiries around ${concept}.`,
                             url: null,
                             category: "concept",
                             concepts: [],
+                            titleLower: cTitle.toLowerCase(),
+                            subtitleLower: cSubtitle.toLowerCase(),
+                            seriesLabelLower: "",
+                            conceptsLower: [],
                             color: "#e2e8f0",
                             radius: 6.5,
                             x: center.x + Math.cos(conceptAngle) * conceptDist,
@@ -3819,10 +3841,10 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            return node.titleLower.includes(searchQuery) ||
+                   node.subtitleLower.includes(searchQuery) ||
+                   (node.seriesLabelLower && node.seriesLabelLower.includes(searchQuery)) ||
+                   (node.conceptsLower && node.conceptsLower.some(c => c.includes(searchQuery)));
         }
 
         // Layout Physics Simulation
