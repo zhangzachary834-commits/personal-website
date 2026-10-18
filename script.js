@@ -3360,6 +3360,10 @@ ${currentDraft.content}`;
                     series: series,
                     seriesLabel: seriesLabel,
                     concepts: concepts,
+                    titleLower: title?.toLowerCase() || "",
+                    subtitleLower: subtitle?.toLowerCase() || "",
+                    seriesLabelLower: seriesLabel?.toLowerCase() || "",
+                    conceptsLower: concepts?.map(c => c.toLowerCase()) || [],
                     color: colorMap[category] || "#6ee7d8",
                     radius: 8.5,
                     x: center.x + Math.cos(angle) * dist,
@@ -3393,6 +3397,10 @@ ${currentDraft.content}`;
                         url: null,
                         category: category,
                         concepts: [],
+                        titleLower: (category.charAt(0).toUpperCase() + category.slice(1) + " Hub").toLowerCase(),
+                        subtitleLower: (catNames[category] || "Core Discipline").toLowerCase(),
+                        seriesLabelLower: "",
+                        conceptsLower: [],
                         color: colorMap[category] || "#d8b46e",
                         radius: 14,
                         x: center.x + Math.cos(hubAngle) * hubDist,
@@ -3441,6 +3449,10 @@ ${currentDraft.content}`;
                             series: series,
                             seriesLabel: seriesLabel || series,
                             concepts: [],
+                            titleLower: (seriesLabel || series).toLowerCase(),
+                            subtitleLower: "writing series",
+                            seriesLabelLower: (seriesLabel || series).toLowerCase(),
+                            conceptsLower: [],
                             color: colorMap.series,
                             radius: 11.5,
                             x: center.x + Math.cos(seriesAngle) * seriesDist,
@@ -3484,6 +3496,10 @@ ${currentDraft.content}`;
                             url: null,
                             category: "concept",
                             concepts: [],
+                            titleLower: ("[[" + concept + "]]").toLowerCase(),
+                            subtitleLower: "ontological relational concept",
+                            seriesLabelLower: "",
+                            conceptsLower: [],
                             color: "#e2e8f0",
                             radius: 6.5,
                             x: center.x + Math.cos(conceptAngle) * conceptDist,
@@ -3819,10 +3835,10 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            return node.titleLower.includes(searchQuery) ||
+                   node.subtitleLower.includes(searchQuery) ||
+                   (node.seriesLabelLower && node.seriesLabelLower.includes(searchQuery)) ||
+                   (node.conceptsLower && node.conceptsLower.some(c => c.includes(searchQuery)));
         }
 
         // Layout Physics Simulation
