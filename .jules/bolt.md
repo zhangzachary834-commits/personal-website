@@ -30,3 +30,7 @@
 ## 2024-10-08 - Layout Thrashing Cache Needs Viewport Invalidation
 **Learning:** When caching `getBoundingClientRect()` over multiple frames (e.g., during pointer hover for a custom cursor), the cached `rect` holds coordinates relative to the viewport. If the page is scrolled or resized, the element shifts relative to the viewport, making the cache instantly stale and breaking coordinate mapping (like cursor position). The previous card optimization worked without this because the hover state was confined to a small static card and cleared frequently, while a full screen stage scroll breaks the assumption entirely.
 **Action:** Always bind `scroll` and `resize` event listeners to the `window` to invalidate viewport-relative caches when optimizing high-frequency layout reads like `getBoundingClientRect()` that persist over long intervals.
+
+## 2024-05-19 - Pre-computing Lowercase Strings for Search Optimization
+**Learning:** Calling `toLowerCase()` on multiple properties of an object inside a high-frequency search filtering loop (like `matchesSearch` inside the render loop) causes excessive object allocation and garbage collection.
+**Action:** When performing substring searches against multiple fields in a large dataset, pre-compute and store the lowercase versions of the strings on the object when it's initialized, instead of doing it continuously inside the search loop. ALWAYS use optional chaining or fallback checks (e.g., `title?.toLowerCase() || ""`) to prevent `TypeError`s when dealing with potentially missing DOM or data attributes.
