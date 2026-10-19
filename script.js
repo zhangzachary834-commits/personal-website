@@ -3375,6 +3375,8 @@ ${currentDraft.content}`;
                     twinkleOffset: Math.random() * Math.PI * 2,
                     pulsePhase: Math.random() * Math.PI * 2
                 };
+                // ⚡ Bolt Optimization: Pre-compute formatted string for matchesSearch
+                node.searchStr = ((node.title || "") + "|" + (node.subtitle || "") + "|" + (node.seriesLabel || "") + "|" + (node.concepts ? node.concepts.join("|") : "")).toLowerCase();
                 nodes.push(node);
 
                 // Create category hub if not exists
@@ -3456,6 +3458,8 @@ ${currentDraft.content}`;
                             twinkleOffset: Math.random() * Math.PI * 2,
                             pulsePhase: Math.random() * Math.PI * 2
                         };
+                        // ⚡ Bolt Optimization: Pre-compute formatted string for matchesSearch
+                        seriesNode.searchStr = ((seriesNode.title || "") + "|" + (seriesNode.subtitle || "") + "|" + (seriesNode.seriesLabel || "")).toLowerCase();
                         seriesHubs[series] = seriesNode;
                         nodes.push(seriesNode);
                     }
@@ -3499,6 +3503,8 @@ ${currentDraft.content}`;
                             twinkleOffset: Math.random() * Math.PI * 2,
                             pulsePhase: Math.random() * Math.PI * 2
                         };
+                        // ⚡ Bolt Optimization: Pre-compute formatted string for matchesSearch
+                        conceptNode.searchStr = ((conceptNode.title || "") + "|" + (conceptNode.subtitle || "")).toLowerCase();
                         conceptHubs[concept] = conceptNode;
                         nodes.push(conceptNode);
                     }
@@ -3817,12 +3823,12 @@ ${currentDraft.content}`;
             return node.category === activeCluster;
         }
 
+        // ⚡ Bolt Optimization: Precompute search strings into a single lowercased string
+        // during node initialization to prevent massive string allocations and GC thrashing
+        // inside the high-frequency render loop (called for every node on every frame).
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            return node.searchStr && node.searchStr.includes(searchQuery);
         }
 
         // Layout Physics Simulation
