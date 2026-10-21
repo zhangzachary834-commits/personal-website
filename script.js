@@ -3373,7 +3373,11 @@ ${currentDraft.content}`;
                     orbitSpeed: 0.002 * ((idx % 2 === 0) ? 1 : -1),
                     orbitOffset: Math.random() * Math.PI * 2,
                     twinkleOffset: Math.random() * Math.PI * 2,
-                    pulsePhase: Math.random() * Math.PI * 2
+                    pulsePhase: Math.random() * Math.PI * 2,
+                    _titleLower: (title || "").toLowerCase(),
+                    _subtitleLower: (subtitle || "").toLowerCase(),
+                    _seriesLabelLower: (seriesLabel || "").toLowerCase(),
+                    _conceptsLower: (concepts || []).map(c => (c || "").toLowerCase())
                 };
                 nodes.push(node);
 
@@ -3406,7 +3410,11 @@ ${currentDraft.content}`;
                         orbitSpeed: 0.001,
                         orbitOffset: Math.random() * Math.PI * 2,
                         twinkleOffset: Math.random() * Math.PI * 2,
-                        pulsePhase: 0
+                        pulsePhase: 0,
+                    _titleLower: (category.charAt(0).toUpperCase() + category.slice(1) + " Hub").toLowerCase(),
+                        _subtitleLower: (catNames[category] || "Core Discipline").toLowerCase(),
+                        _seriesLabelLower: "",
+                        _conceptsLower: []
                     };
                     categoryHubs[category] = hub;
                     nodes.push(hub);
@@ -3454,7 +3462,11 @@ ${currentDraft.content}`;
                             orbitSpeed: 0.0012,
                             orbitOffset: Math.random() * Math.PI * 2,
                             twinkleOffset: Math.random() * Math.PI * 2,
-                            pulsePhase: Math.random() * Math.PI * 2
+                            pulsePhase: Math.random() * Math.PI * 2,
+                    _titleLower: (seriesLabel || series || "").toLowerCase(),
+                            _subtitleLower: "writing series",
+                            _seriesLabelLower: (seriesLabel || series || "").toLowerCase(),
+                            _conceptsLower: []
                         };
                         seriesHubs[series] = seriesNode;
                         nodes.push(seriesNode);
@@ -3497,7 +3509,11 @@ ${currentDraft.content}`;
                             orbitSpeed: 0.0015,
                             orbitOffset: Math.random() * Math.PI * 2,
                             twinkleOffset: Math.random() * Math.PI * 2,
-                            pulsePhase: Math.random() * Math.PI * 2
+                            pulsePhase: Math.random() * Math.PI * 2,
+                    _titleLower: ("[[" + concept + "]]").toLowerCase(),
+                            _subtitleLower: "ontological relational concept",
+                            _seriesLabelLower: "",
+                            _conceptsLower: [(concept || "").toLowerCase()]
                         };
                         conceptHubs[concept] = conceptNode;
                         nodes.push(conceptNode);
@@ -3819,10 +3835,10 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return node.title.toLowerCase().includes(searchQuery) ||
-                   node.subtitle.toLowerCase().includes(searchQuery) ||
-                   (node.seriesLabel && node.seriesLabel.toLowerCase().includes(searchQuery)) ||
-                   (node.concepts && node.concepts.some(c => c.toLowerCase().includes(searchQuery)));
+            return (node._titleLower && node._titleLower.includes(searchQuery)) ||
+                   (node._subtitleLower && node._subtitleLower.includes(searchQuery)) ||
+                   (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery)) ||
+                   (node._conceptsLower && node._conceptsLower.some(c => c.includes(searchQuery)));
         }
 
         // Layout Physics Simulation
