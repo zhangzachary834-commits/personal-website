@@ -3835,10 +3835,16 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return (node._titleLower && node._titleLower.includes(searchQuery)) ||
-                   (node._subtitleLower && node._subtitleLower.includes(searchQuery)) ||
-                   (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery)) ||
-                   (node._conceptsLower && node._conceptsLower.some(c => c.includes(searchQuery)));
+            if (node._titleLower && node._titleLower.includes(searchQuery)) return true;
+            if (node._subtitleLower && node._subtitleLower.includes(searchQuery)) return true;
+            if (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery)) return true;
+            if (node._conceptsLower) {
+                // Optimize: Replace .some() with a standard for-loop to prevent closure allocation and GC thrashing in high-frequency rendering loop
+                for (let i = 0; i < node._conceptsLower.length; i++) {
+                    if (node._conceptsLower[i].includes(searchQuery)) return true;
+                }
+            }
+            return false;
         }
 
         // Layout Physics Simulation
