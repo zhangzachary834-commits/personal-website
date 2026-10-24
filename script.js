@@ -3581,7 +3581,9 @@ ${currentDraft.content}`;
 
         function drawNebulae(ctx, width, height) {
             if (!enableNebulae) return;
-            nebulae.forEach(n => {
+            // ⚡ Bolt Optimization: Replaced nebulae.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < nebulae.length; i++) {
+                const n = nebulae[i];
                 n.x += n.vx;
                 n.y += n.vy;
                 if (n.x < 50 || n.x > width - 50) n.vx *= -1;
@@ -3592,21 +3594,25 @@ ${currentDraft.content}`;
                 grad.addColorStop(1, "transparent");
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, width, height);
-            });
+            }
         }
 
         function drawBackgroundMicroStars(ctx, time) {
-            bgMicroStars.forEach(s => {
+            // ⚡ Bolt Optimization: Replaced bgMicroStars.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < bgMicroStars.length; i++) {
+                const s = bgMicroStars[i];
                 const twinkle = Math.sin(time * s.twinkleSpeed * 50 + s.twinkleOffset) * 0.5 + 0.5;
                 ctx.fillStyle = `rgba(247, 243, 235, ${0.1 + twinkle * 0.4})`;
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.r * (0.8 + twinkle * 0.4), 0, Math.PI * 2);
                 ctx.fill();
-            });
+            }
         }
 
         function drawSynapseEdges(ctx, time) {
-            edges.forEach(edge => {
+            // ⚡ Bolt Optimization: Replaced edges.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < edges.length; i++) {
+                const edge = edges[i];
                 const a = edge.source;
                 const b = edge.target;
 
@@ -3617,7 +3623,7 @@ ${currentDraft.content}`;
                                       (selectedNode && (a === selectedNode || b === selectedNode));
                 const isIsolated = isolatedNode ? (a === isolatedNode || b === isolatedNode) : true;
 
-                if (!isFiltered || !isIsolated) return;
+                if (!isFiltered || !isIsolated) continue;
 
                 // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
                 const dx = b.x - a.x;
@@ -3665,7 +3671,7 @@ ${currentDraft.content}`;
                 // Save curve control point for particles
                 edge.lastCx = cx;
                 edge.lastCy = cy;
-            });
+            }
         }
 
         function drawPhotonPulseParticles(ctx) {
@@ -3699,14 +3705,16 @@ ${currentDraft.content}`;
         }
 
         function drawConstellationNodes(ctx, time) {
-            nodes.forEach(node => {
+            // ⚡ Bolt Optimization: Replaced nodes.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
                 const isFiltered = matchesActiveFilter(node);
                 const isSearched = matchesSearch(node);
                 const isHovered = (node === hoveredNode);
                 const isSelected = (node === selectedNode);
                 const isIsolated = isolatedNode ? (node === isolatedNode || isNeighbor(node, isolatedNode)) : true;
 
-                if (!isFiltered || !isIsolated) return;
+                if (!isFiltered || !isIsolated) continue;
 
                 const blink = Math.sin(time * 3 + node.twinkleOffset) * 0.5 + 0.5;
                 let currentRadius = node.isHub
@@ -3787,7 +3795,7 @@ ${currentDraft.content}`;
                 }
 
                 ctx.restore();
-            });
+            }
         }
 
         function draw() {
@@ -3849,14 +3857,16 @@ ${currentDraft.content}`;
 
             if (layoutMode === "orbital") {
                 // Orbital concentric rotations
-                nodes.forEach(node => {
-                    if (node === dragNode) return;
+                // ⚡ Bolt Optimization: Replaced nodes.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                    if (node === dragNode) continue;
                     node.orbitAngle += node.orbitSpeed;
                     const tx = center.x + Math.cos(node.orbitAngle) * node.orbitRadius;
                     const ty = center.y + Math.sin(node.orbitAngle) * node.orbitRadius;
                     node.x += (tx - node.x) * 0.08;
                     node.y += (ty - node.y) * 0.08;
-                });
+                }
                 return;
             }
 
@@ -3864,7 +3874,9 @@ ${currentDraft.content}`;
                 // Structured topological lattice
                 const k = 0.08;
                 const damping = 0.82;
-                edges.forEach(edge => {
+                // ⚡ Bolt Optimization: Replaced edges.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < edges.length; i++) {
+                const edge = edges[i];
                     const dx = edge.target.x - edge.source.x;
                     const dy = edge.target.y - edge.source.y;
                     // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
@@ -3875,16 +3887,18 @@ ${currentDraft.content}`;
                     const fy = (dy / dist) * force;
                     edge.source.vx += fx; edge.source.vy += fy;
                     edge.target.vx -= fx; edge.target.vy -= fy;
-                });
+                }
 
-                nodes.forEach(node => {
-                    if (node === dragNode) return;
+                // ⚡ Bolt Optimization: Replaced nodes.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                    if (node === dragNode) continue;
                     node.x += node.vx; node.y += node.vy;
                     node.vx *= damping; node.vy *= damping;
                     // Centering
                     node.x += (center.x - node.x) * 0.005;
                     node.y += (center.y - node.y) * 0.005;
-                });
+                }
                 return;
             }
 
@@ -3968,8 +3982,10 @@ ${currentDraft.content}`;
             }
 
             // Apply velocities & boundaries
-            nodes.forEach(node => {
-                if (node === dragNode) return;
+            // ⚡ Bolt Optimization: Replaced nodes.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                if (node === dragNode) continue;
                 node.x += node.vx;
                 node.y += node.vy;
                 node.vx *= damping;
@@ -3979,7 +3995,7 @@ ${currentDraft.content}`;
                 if (node.x > width - 30) { node.x = width - 30; node.vx *= -1; }
                 if (node.y < 30) { node.y = 30; node.vy *= -1; }
                 if (node.y > height - 30) { node.y = height - 30; node.vy *= -1; }
-            });
+            }
         }
 
         function loop() {
@@ -4041,8 +4057,10 @@ ${currentDraft.content}`;
             hoveredNode = null;
             let minDist = 22;
 
-            nodes.forEach(node => {
-                if (!matchesActiveFilter(node)) return;
+            // ⚡ Bolt Optimization: Replaced nodes.forEach with standard for loop to prevent GC allocation thrashing
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                if (!matchesActiveFilter(node)) continue;
                 // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
                 const dx = node.x - pos.worldX;
                 const dy = node.y - pos.worldY;
@@ -4053,7 +4071,7 @@ ${currentDraft.content}`;
                     minDist = dist;
                     hoveredNode = node;
                 }
-            });
+            }
 
             if (hoveredNode) {
                 canvas.style.cursor = "pointer";
