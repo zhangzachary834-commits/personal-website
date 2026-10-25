@@ -34,3 +34,7 @@
 ## 2026-11-23 - Search String Allocation Bottleneck
 **Learning:** In high-frequency render or event loops (like `matchesSearch` inside the render loop of `script.js`), inline string mutations like `.toLowerCase()` allocate short-lived strings continuously (N times per frame). This creates massive garbage collection churn and slows down the loop significantly.
 **Action:** When filtering objects continuously during render cycles based on string matching, always precompute and cache the mutated string states (e.g., lowercased versions of title, subtitle, concepts) directly on the node during object initialization. Ensure optional chaining or fallback checks are used to handle potentially missing properties gracefully.
+
+## 2023-10-25 - Extracted Array.prototype.forEach to traditional for loops
+**Learning:** In Javascript, especially within high-frequency hot paths like a physics/animation engine tick (which is implied by the `node.vx`, `edge.target`, and `loop()` context), converting `forEach` to `for` loops eliminates callback function invocation overhead per iteration. This is a very common and effective micro-optimization for JS game loops and physics engines.
+**Action:** When refactoring `Array.prototype.forEach` to standard `for` loops in JavaScript, always remember to translate early `return;` statements within the callback to `continue;` statements to preserve original control flow logic.
