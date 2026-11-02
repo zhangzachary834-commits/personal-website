@@ -3835,10 +3835,18 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return (node._titleLower && node._titleLower.includes(searchQuery)) ||
-                   (node._subtitleLower && node._subtitleLower.includes(searchQuery)) ||
-                   (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery)) ||
-                   (node._conceptsLower && node._conceptsLower.some(c => c.includes(searchQuery)));
+            if (node._titleLower && node._titleLower.includes(searchQuery)) return true;
+            if (node._subtitleLower && node._subtitleLower.includes(searchQuery)) return true;
+            if (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery)) return true;
+
+            if (node._conceptsLower) {
+                // ⚡ Bolt Optimization: Replaced .some() with a standard for-loop
+                // to avoid closure allocation during high-frequency renders.
+                for (let i = 0; i < node._conceptsLower.length; i++) {
+                    if (node._conceptsLower[i].includes(searchQuery)) return true;
+                }
+            }
+            return false;
         }
 
         // Layout Physics Simulation
@@ -3849,14 +3857,17 @@ ${currentDraft.content}`;
 
             if (layoutMode === "orbital") {
                 // Orbital concentric rotations
-                nodes.forEach(node => {
-                    if (node === dragNode) return;
+                // ⚡ Bolt Optimization: Replaced nodes.forEach with a standard for-loop
+                // to prevent closure allocation and GC thrashing.
+                for (let i = 0; i < nodes.length; i++) {
+                    const node = nodes[i];
+                    if (node === dragNode) continue;
                     node.orbitAngle += node.orbitSpeed;
                     const tx = center.x + Math.cos(node.orbitAngle) * node.orbitRadius;
                     const ty = center.y + Math.sin(node.orbitAngle) * node.orbitRadius;
                     node.x += (tx - node.x) * 0.08;
                     node.y += (ty - node.y) * 0.08;
-                });
+                }
                 return;
             }
 
@@ -3864,7 +3875,11 @@ ${currentDraft.content}`;
                 // Structured topological lattice
                 const k = 0.08;
                 const damping = 0.82;
-                edges.forEach(edge => {
+
+                // ⚡ Bolt Optimization: Replaced edges.forEach with a standard for-loop
+                // to prevent closure allocation and GC thrashing.
+                for (let i = 0; i < edges.length; i++) {
+                    const edge = edges[i];
                     const dx = edge.target.x - edge.source.x;
                     const dy = edge.target.y - edge.source.y;
                     // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
@@ -3875,16 +3890,19 @@ ${currentDraft.content}`;
                     const fy = (dy / dist) * force;
                     edge.source.vx += fx; edge.source.vy += fy;
                     edge.target.vx -= fx; edge.target.vy -= fy;
-                });
+                }
 
-                nodes.forEach(node => {
-                    if (node === dragNode) return;
+                // ⚡ Bolt Optimization: Replaced nodes.forEach with a standard for-loop
+                // to prevent closure allocation and GC thrashing.
+                for (let i = 0; i < nodes.length; i++) {
+                    const node = nodes[i];
+                    if (node === dragNode) continue;
                     node.x += node.vx; node.y += node.vy;
                     node.vx *= damping; node.vy *= damping;
                     // Centering
                     node.x += (center.x - node.x) * 0.005;
                     node.y += (center.y - node.y) * 0.005;
-                });
+                }
                 return;
             }
 
@@ -3894,7 +3912,10 @@ ${currentDraft.content}`;
             const repulsion = 2400;
 
             // Spring forces along edges
-            edges.forEach(edge => {
+            // ⚡ Bolt Optimization: Replaced edges.forEach with a standard for-loop
+            // to prevent closure allocation and GC thrashing.
+            for (let i = 0; i < edges.length; i++) {
+                const edge = edges[i];
                 const dx = edge.target.x - edge.source.x;
                 const dy = edge.target.y - edge.source.y;
                 // Optimize: Replace slow Math.hypot with Math.sqrt(dx*dx + dy*dy) for performance
@@ -3908,7 +3929,7 @@ ${currentDraft.content}`;
                 edge.source.vy += fy;
                 edge.target.vx -= fx;
                 edge.target.vy -= fy;
-            });
+            }
 
             // Repulsion between nearby node pairs using spatial-grid binning.
             const CELL_SIZE = 220; // > sqrt(48000), so adjacent cells cover every interacting pair.
@@ -3968,8 +3989,11 @@ ${currentDraft.content}`;
             }
 
             // Apply velocities & boundaries
-            nodes.forEach(node => {
-                if (node === dragNode) return;
+            // ⚡ Bolt Optimization: Replaced nodes.forEach with a standard for-loop
+            // to prevent closure allocation and GC thrashing.
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                if (node === dragNode) continue;
                 node.x += node.vx;
                 node.y += node.vy;
                 node.vx *= damping;
@@ -3979,7 +4003,7 @@ ${currentDraft.content}`;
                 if (node.x > width - 30) { node.x = width - 30; node.vx *= -1; }
                 if (node.y < 30) { node.y = 30; node.vy *= -1; }
                 if (node.y > height - 30) { node.y = height - 30; node.vy *= -1; }
-            });
+            }
         }
 
         function loop() {
