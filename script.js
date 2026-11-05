@@ -3835,10 +3835,21 @@ ${currentDraft.content}`;
 
         function matchesSearch(node) {
             if (!searchQuery) return false;
-            return (node._titleLower && node._titleLower.includes(searchQuery)) ||
-                   (node._subtitleLower && node._subtitleLower.includes(searchQuery)) ||
-                   (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery)) ||
-                   (node._conceptsLower && node._conceptsLower.some(c => c.includes(searchQuery)));
+            if ((node._titleLower && node._titleLower.includes(searchQuery)) ||
+                (node._subtitleLower && node._subtitleLower.includes(searchQuery)) ||
+                (node._seriesLabelLower && node._seriesLabelLower.includes(searchQuery))) {
+                return true;
+            }
+            if (node._conceptsLower) {
+                // ⚡ Bolt Optimization: Use a standard for loop instead of .some to avoid closure allocation
+                // in this high-frequency function that runs continuously during search interactions.
+                for (let i = 0; i < node._conceptsLower.length; i++) {
+                    if (node._conceptsLower[i].includes(searchQuery)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         // Layout Physics Simulation
