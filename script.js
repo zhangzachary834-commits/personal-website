@@ -5718,6 +5718,14 @@ class VesselEngine {
             { icon: "✍️", title: "Article Drafting Studio", desc: "Visual essay authoring workspace", action: () => { window.location.href = "studio.html"; }, group: "Navigation" }
         ];
 
+        // ⚡ Bolt Optimization: Precompute lowercase strings to prevent GC thrashing and string allocation on every keystroke
+        for (let i = 0; i < PALETTE_ACTIONS.length; i++) {
+            const item = PALETTE_ACTIONS[i];
+            item._titleLower = (item.title || "").toLowerCase();
+            item._descLower = (item.desc || "").toLowerCase();
+            item._groupLower = (item.group || "").toLowerCase();
+        }
+
         let selectedIdx = 0;
         let filteredActions = [...PALETTE_ACTIONS];
 
@@ -5791,9 +5799,9 @@ class VesselEngine {
         paletteInput.addEventListener("input", (e) => {
             const query = e.target.value.toLowerCase().trim();
             filteredActions = PALETTE_ACTIONS.filter(item =>
-                item.title.toLowerCase().includes(query) ||
-                item.desc.toLowerCase().includes(query) ||
-                item.group.toLowerCase().includes(query)
+                item._titleLower.includes(query) ||
+                item._descLower.includes(query) ||
+                item._groupLower.includes(query)
             );
             selectedIdx = 0;
             renderResults();
