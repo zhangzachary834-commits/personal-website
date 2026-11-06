@@ -34,3 +34,7 @@
 ## 2026-11-23 - Search String Allocation Bottleneck
 **Learning:** In high-frequency render or event loops (like `matchesSearch` inside the render loop of `script.js`), inline string mutations like `.toLowerCase()` allocate short-lived strings continuously (N times per frame). This creates massive garbage collection churn and slows down the loop significantly.
 **Action:** When filtering objects continuously during render cycles based on string matching, always precompute and cache the mutated string states (e.g., lowercased versions of title, subtitle, concepts) directly on the node during object initialization. Ensure optional chaining or fallback checks are used to handle potentially missing properties gracefully.
+
+## 2026-11-24 - Precompute Lowercase Strings for Command Palette Search
+**Learning:** In high-frequency event loops like `input` on a search field, repeatedly calling `toLowerCase()` on properties of large arrays of objects causes unnecessary string allocation and garbage collection, degrading performance.
+**Action:** Precompute and cache the lowercase strings during object initialization and reference the cached lowercase strings in the `filter` loop.
