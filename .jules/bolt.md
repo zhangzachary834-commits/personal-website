@@ -34,3 +34,7 @@
 ## 2026-11-23 - Search String Allocation Bottleneck
 **Learning:** In high-frequency render or event loops (like `matchesSearch` inside the render loop of `script.js`), inline string mutations like `.toLowerCase()` allocate short-lived strings continuously (N times per frame). This creates massive garbage collection churn and slows down the loop significantly.
 **Action:** When filtering objects continuously during render cycles based on string matching, always precompute and cache the mutated string states (e.g., lowercased versions of title, subtitle, concepts) directly on the node during object initialization. Ensure optional chaining or fallback checks are used to handle potentially missing properties gracefully.
+
+## 2026-11-24 - Closure Allocation Overhead in High-Frequency Loops
+**Learning:** Using higher-order array methods like `Array.prototype.some` or `.forEach` inside high-frequency loops (such as physics simulations, render loops, or event listeners processing many elements) creates significant closure allocation overhead and triggers constant garbage collection (GC) thrashing, which can drastically reduce performance and frame rates.
+**Action:** Always replace higher-order array iteration methods (`.some()`, `.forEach()`, etc.) with standard `for` loops in performance-sensitive high-frequency paths to eliminate closure allocations.
