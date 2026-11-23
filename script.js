@@ -5716,7 +5716,9 @@ class VesselEngine {
             { icon: "✧", title: "Switch to Dimension of Thought Mode", desc: "View holistic narrative platform", action: () => setSiteMode("dimension"), group: "Navigation" },
             { icon: "📚", title: "The Library Archives", desc: "Browse essays & philosophical inquiries", action: () => { window.location.href = "library.html"; }, group: "Navigation" },
             { icon: "✍️", title: "Article Drafting Studio", desc: "Visual essay authoring workspace", action: () => { window.location.href = "studio.html"; }, group: "Navigation" }
-        ];
+        // ⚡ Bolt Optimization: Precompute lowercase strings during initialization
+        // to prevent allocating new strings continuously on every keystroke event.
+        ].map(item => ({ ...item, _titleLower: (item.title || "").toLowerCase(), _descLower: (item.desc || "").toLowerCase(), _groupLower: (item.group || "").toLowerCase() }));
 
         let selectedIdx = 0;
         let filteredActions = [...PALETTE_ACTIONS];
@@ -5791,9 +5793,9 @@ class VesselEngine {
         paletteInput.addEventListener("input", (e) => {
             const query = e.target.value.toLowerCase().trim();
             filteredActions = PALETTE_ACTIONS.filter(item =>
-                item.title.toLowerCase().includes(query) ||
-                item.desc.toLowerCase().includes(query) ||
-                item.group.toLowerCase().includes(query)
+                item._titleLower.includes(query) ||
+                item._descLower.includes(query) ||
+                item._groupLower.includes(query)
             );
             selectedIdx = 0;
             renderResults();
