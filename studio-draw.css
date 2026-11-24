@@ -46,7 +46,7 @@
     background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
 }
 .draw-tool-btn {
-    width: 48px; min-height: 48px; display: grid; place-items: center; gap: 1px; padding: 6px 3px;
+    flex: 0 0 auto; width: 48px; min-height: 48px; display: grid; place-items: center; gap: 1px; padding: 6px 3px;
     border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--muted);
     cursor: pointer; transition: transform var(--ease), color var(--ease), border-color var(--ease), background var(--ease), box-shadow var(--ease);
 }
