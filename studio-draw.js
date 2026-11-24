@@ -214,12 +214,14 @@
                 const angleStep = Math.PI / 4;
                 const angle = Math.round(Math.atan2(dy, dx) / angleStep) * angleStep;
                 return {
-                    x: start.x + Math.cos(angle) * distance,
-                    y: start.y + Math.sin(angle) * distance
+                    x: Math.max(0, Math.min(WIDTH, start.x + Math.cos(angle) * distance)),
+                    y: Math.max(0, Math.min(HEIGHT, start.y + Math.sin(angle) * distance))
                 };
             }
 
-            const side = Math.max(Math.abs(dx), Math.abs(dy));
+            const maxX = dx < 0 ? start.x : WIDTH - start.x;
+            const maxY = dy < 0 ? start.y : HEIGHT - start.y;
+            const side = Math.min(Math.max(Math.abs(dx), Math.abs(dy)), maxX, maxY);
             return {
                 x: start.x + (dx < 0 ? -side : side),
                 y: start.y + (dy < 0 ? -side : side)
@@ -684,6 +686,7 @@
                 redo();
                 return;
             }
+            if (mod) return;
 
             const key = e.key.toLowerCase();
             if (key === "b") setTool("brush");
