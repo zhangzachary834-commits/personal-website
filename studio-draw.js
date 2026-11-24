@@ -5,6 +5,9 @@
     const WIDTH = 1600;
     const HEIGHT = 1000;
     const byId = (id) => document.getElementById(id);
+    const SHAPE_TOOLS = new Set(["line", "rectangle", "ellipse"]);
+    const DRAWABLE_TOOLS = new Set(["brush", "eraser", "line", "rectangle", "ellipse"]);
+    const DRAW_TOOL_NAMES = new Set(["brush", "eraser", "line", "rectangle", "ellipse", "eyedropper", "pan"]);
 
     function init() {
         const articleWorkspace = byId("studio-workspace");
@@ -141,6 +144,36 @@
             target.lineCap = "round";
             target.lineJoin = "round";
 
+            if (SHAPE_TOOLS.has(stroke.tool)) {
+                if (pts.length < 2) {
+                    target.restore();
+                    return;
+                }
+
+                const first = pts[0];
+                const last = pts[pts.length - 1];
+                target.beginPath();
+
+                if (stroke.tool === "line") {
+                    target.moveTo(first.x, first.y);
+                    target.lineTo(last.x, last.y);
+                } else if (stroke.tool === "rectangle") {
+                    target.rect(first.x, first.y, last.x - first.x, last.y - first.y);
+                } else {
+                    const centerX = (first.x + last.x) / 2;
+                    const centerY = (first.y + last.y) / 2;
+                    const radiusX = Math.abs(last.x - first.x) / 2;
+                    const radiusY = Math.abs(last.y - first.y) / 2;
+                    if (radiusX > 0 || radiusY > 0) {
+                        target.ellipse(centerX, centerY, Math.max(.01, radiusX), Math.max(.01, radiusY), 0, 0, Math.PI * 2);
+                    }
+                }
+
+                target.stroke();
+                target.restore();
+                return;
+            }
+
             if (pts.length === 1) {
                 target.beginPath();
                 target.arc(pts[0].x, pts[0].y, stroke.size / 2, 0, Math.PI * 2);
@@ -169,11 +202,77 @@
             updateUI();
         }
 
+        function constrainShapePoint(start, point, tool, shiftKey) {
+            if (!shiftKey) return point;
+
+            const dx = point.x - start.x;
+            const dy = point.y - start.y;
+
+            if (tool === "line") {
+                const distance = Math.hypot(dx, dy);
+                if (!distance) return point;
+                const angleStep = Math.PI / 4;
+                const angle = Math.round(Math.atan2(dy, dx) / angleStep) * angleStep;
+                return {
+                    x: start.x + Math.cos(angle) * distance,
+                    y: start.y + Math.sin(angle) * distance
+                };
+            }
+
+            const side = Math.max(Math.abs(dx), Math.abs(dy));
+            return {
+                x: start.x + (dx < 0 ? -side : side),
+                y: start.y + (dy < 0 ? -side : side)
+            };
+        }
+
+        function parseHexColor(value) {
+            const match = /^#([0-9a-f]{6})$/i.exec(value || "");
+            if (!match) return { r: 17, g: 19, b: 28 };
+            return {
+                r: parseInt(match[1].slice(0, 2), 16),
+                g: parseInt(match[1].slice(2, 4), 16),
+                b: parseInt(match[1].slice(4, 6), 16)
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            const channel = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0");
+            return "#" + channel(r) + channel(g) + channel(b);
+        }
+
+        function sampleColorAt(point) {
+            const x = Math.max(0, Math.min(WIDTH - 1, Math.floor(point.x)));
+            const y = Math.max(0, Math.min(HEIGHT - 1, Math.floor(point.y)));
+            const pixel = ctx.getImageData(x, y, 1, 1).data;
+            const paper = parseHexColor(state.paper);
+            const alpha = pixel[3] / 255;
+
+            state.color = rgbToHex(
+                pixel[0] * alpha + paper.r * (1 - alpha),
+                pixel[1] * alpha + paper.g * (1 - alpha),
+                pixel[2] * alpha + paper.b * (1 - alpha)
+            );
+
+            if (colorInput) colorInput.value = state.color;
+            syncSwatches();
+            updateBrushPreview();
+            setSavedStatus("Sampled " + state.color.toUpperCase(), false);
+        }
+
         function startStroke(e) {
             if (state.tool === "pan" || e.button !== 0) return;
             cachedCanvasRect = canvas.getBoundingClientRect();
             const point = normalizePoint(e);
             if (!point) return;
+
+            if (state.tool === "eyedropper" || e.altKey) {
+                sampleColorAt(point);
+                cachedCanvasRect = null;
+                return;
+            }
+
+            if (!DRAWABLE_TOOLS.has(state.tool)) return;
 
             state.pointerId = e.pointerId;
             state.drawing = true;
@@ -182,7 +281,7 @@
                 color: state.color,
                 size: state.size,
                 opacity: state.opacity,
-                points: [point]
+                points: SHAPE_TOOLS.has(state.tool) ? [point, point] : [point]
             };
             if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
             render();
@@ -193,6 +292,13 @@
             const point = normalizePoint(e);
             if (!point) return;
             const pts = state.currentStroke.points;
+
+            if (SHAPE_TOOLS.has(state.currentStroke.tool)) {
+                pts[1] = constrainShapePoint(pts[0], point, state.currentStroke.tool, e.shiftKey);
+                render();
+                return;
+            }
+
             const last = pts[pts.length - 1];
             const dx = point.x - last.x;
             const dy = point.y - last.y;
@@ -206,10 +312,22 @@
             if (!state.drawing || state.pointerId !== e.pointerId) return;
             state.drawing = false;
             state.pointerId = null;
+
             if (state.currentStroke && state.currentStroke.points && state.currentStroke.points.length) {
-                state.strokes.push(state.currentStroke);
-                state.redo = [];
+                const pts = state.currentStroke.points;
+                const first = pts[0];
+                const last = pts[pts.length - 1];
+                const shapeHasExtent = !SHAPE_TOOLS.has(state.currentStroke.tool)
+                    || !first
+                    || !last
+                    || Math.abs(last.x - first.x) + Math.abs(last.y - first.y) > .5;
+
+                if (shapeHasExtent) {
+                    state.strokes.push(state.currentStroke);
+                    state.redo = [];
+                }
             }
+
             state.currentStroke = null;
             render();
             scheduleSave();
@@ -283,14 +401,14 @@
         }, { passive: false });
 
         function setTool(tool) {
-            if (!["brush", "eraser", "pan"].includes(tool)) return;
+            if (!DRAW_TOOL_NAMES.has(tool)) return;
             state.tool = tool;
             document.querySelectorAll("[data-draw-tool]").forEach((btn) => {
                 btn.classList.toggle("active", btn.getAttribute("data-draw-tool") === tool);
             });
-            stage.classList.toggle("tool-pan", tool === "pan");
-            stage.classList.toggle("tool-eraser", tool === "eraser");
-            stage.classList.toggle("tool-brush", tool === "brush");
+            DRAW_TOOL_NAMES.forEach((name) => {
+                stage.classList.toggle("tool-" + name, tool === name);
+            });
             if (toolReadout) toolReadout.textContent = "Tool: " + tool.charAt(0).toUpperCase() + tool.slice(1);
             updateBrushPreview();
         }
@@ -309,8 +427,24 @@
                 brushPreview.style.setProperty("--preview-opacity", String(isErase ? .45 : state.opacity));
             }
             if (brushSummary) {
-                const name = isErase ? "Soft Eraser" : state.tool === "pan" ? "Canvas Hand" : "Round Brush";
-                brushSummary.innerHTML = "<strong>" + name + "</strong><span>" + state.size + "px · " + Math.round(state.opacity * 100) + "% opacity</span>";
+                const names = {
+                    brush: "Round Brush",
+                    eraser: "Soft Eraser",
+                    line: "Line Tool",
+                    rectangle: "Rectangle Tool",
+                    ellipse: "Ellipse Tool",
+                    eyedropper: "Eyedropper",
+                    pan: "Canvas Hand"
+                };
+                const name = names[state.tool] || "Round Brush";
+                const detail = state.tool === "eyedropper"
+                    ? "Click canvas to sample color"
+                    : state.tool === "pan"
+                        ? "Drag to move canvas"
+                        : SHAPE_TOOLS.has(state.tool)
+                            ? state.size + "px stroke · Shift constrains"
+                            : state.size + "px · " + Math.round(state.opacity * 100) + "% opacity";
+                brushSummary.innerHTML = "<strong>" + name + "</strong><span>" + detail + "</span>";
             }
             updateBrushCursorSize();
         }
@@ -332,7 +466,7 @@
         stage.addEventListener("pointermove", (e) => {
             const rect = cachedStageRect || stage.getBoundingClientRect();
             cursor.style.transform = "translate3d(" + (e.clientX - rect.left) + "px, " + (e.clientY - rect.top) + "px, 0)";
-            stage.classList.toggle("cursor-visible", state.tool !== "pan");
+            stage.classList.toggle("cursor-visible", state.tool === "brush" || state.tool === "eraser");
         });
         stage.addEventListener("pointerleave", () => {
             cachedStageRect = null;
@@ -485,7 +619,7 @@
                 if (!data || data.version !== 1 || !Array.isArray(data.strokes)) return;
 
                 state.strokes = data.strokes.filter((stroke) =>
-                    stroke && ["brush", "eraser"].includes(stroke.tool) && Array.isArray(stroke.points)
+                    stroke && DRAWABLE_TOOLS.has(stroke.tool) && Array.isArray(stroke.points)
                 );
                 if (typeof data.paper === "string") state.paper = data.paper;
                 if (typeof data.color === "string") state.color = data.color;
@@ -554,6 +688,10 @@
             const key = e.key.toLowerCase();
             if (key === "b") setTool("brush");
             else if (key === "e") setTool("eraser");
+            else if (key === "l") setTool("line");
+            else if (key === "r") setTool("rectangle");
+            else if (key === "o") setTool("ellipse");
+            else if (key === "i") setTool("eyedropper");
             else if (key === "p") setTool("pan");
             else if (e.key === "[") {
                 state.size = Math.max(1, state.size - 2);
