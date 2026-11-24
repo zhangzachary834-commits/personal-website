@@ -325,6 +325,22 @@
                         <span class="draw-tool-icon" aria-hidden="true">◇</span>
                         <span class="draw-tool-label">Erase</span>
                     </button>
+                    <button type="button" class="draw-tool-btn" data-draw-tool="line" title="Line (L) · hold Shift for 45° increments">
+                        <span class="draw-tool-icon" aria-hidden="true">╱</span>
+                        <span class="draw-tool-label">Line</span>
+                    </button>
+                    <button type="button" class="draw-tool-btn" data-draw-tool="rectangle" title="Rectangle (R) · hold Shift for square">
+                        <span class="draw-tool-icon" aria-hidden="true">□</span>
+                        <span class="draw-tool-label">Rect</span>
+                    </button>
+                    <button type="button" class="draw-tool-btn" data-draw-tool="ellipse" title="Ellipse (O) · hold Shift for circle">
+                        <span class="draw-tool-icon" aria-hidden="true">○</span>
+                        <span class="draw-tool-label">Ellipse</span>
+                    </button>
+                    <button type="button" class="draw-tool-btn" data-draw-tool="eyedropper" title="Eyedropper (I) · Option/Alt-click from any drawing tool">
+                        <span class="draw-tool-icon" aria-hidden="true">⌾</span>
+                        <span class="draw-tool-label">Pick</span>
+                    </button>
                     <button type="button" class="draw-tool-btn" data-draw-tool="pan" title="Pan canvas (P)">
                         <span class="draw-tool-icon" aria-hidden="true">✥</span>
                         <span class="draw-tool-label">Pan</span>
@@ -433,7 +449,13 @@
                         <div class="draw-shortcuts">
                             <kbd>B</kbd><span>Brush</span>
                             <kbd>E</kbd><span>Eraser</span>
+                            <kbd>L</kbd><span>Line</span>
+                            <kbd>R</kbd><span>Rectangle</span>
+                            <kbd>O</kbd><span>Ellipse</span>
+                            <kbd>I</kbd><span>Eyedropper</span>
                             <kbd>P</kbd><span>Pan</span>
+                            <kbd>⇧</kbd><span>Constrain shape</span>
+                            <kbd>⌥</kbd><span>Sample color</span>
                             <kbd>[ ]</kbd><span>Brush size</span>
                             <kbd>⌘ Z</kbd><span>Undo</span>
                         </div>
